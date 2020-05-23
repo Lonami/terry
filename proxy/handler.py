@@ -21,9 +21,28 @@ def handle_1(tag, body):
     print('protocol magic:', body.decode('ascii'))
 
 def handle_4(tag, body):
+    # player info on login + when changing hair or display accessories
     name_len = struct.unpack('<B', body[2:3])[0]
-    name = body[3:3 + name_len].decode('ascii')
-    print('player name:', name)
+    skin_variant, hair, name_len = struct.unpack('<BBB', body[:3])
+    body = body[3:]
+    name = body[:name_len].decode('ascii')
+    body = body[name_len:]
+
+    hair_dye, visible_accesory_flags8, visible_accesory_flags2, hide_misc, = struct.unpack('<BBBB', body[:4])
+    body = body[4:]
+    hair_rgb = struct.unpack('<3B', body[0:3])
+    skin_rgb = struct.unpack('<3B', body[3:6])
+    eye_rgb = struct.unpack('<3B', body[6:9])
+    shirt_rgb = struct.unpack('<3B', body[9:12])
+    undershirt_rgb = struct.unpack('<3B', body[12:15])
+    pants_rgb = struct.unpack('<3B', body[15:18])
+    shoe_rgb = struct.unpack('<3B', body[18:21])
+    body = body[21:]
+
+    # difficulty includes if we have extra accessory
+    difficulty_flag = struct.unpack('<B', body)[0]
+    assert len(body) == 1
+    print(bin(difficulty_flag))
 
 def handle_5(tag, body):
     # inventory
