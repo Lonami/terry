@@ -38,6 +38,10 @@ def handle_5(tag, body):
         print(f'inventory: {count} items with id {item_id} at pos {index}, a {a}')
     """
 
+def handle_8(tag, body):
+    # during login no idea what
+    assert all(x == 0xff for x in body)
+
 def handle_12(tag, body):
     x, y, timer, how = struct.unpack('<HHIB', body)
     # x, y seem to always be ffff
@@ -83,6 +87,9 @@ def handle_13(tag, body):
 
     #print('item', hotbar, 'move', nx, ny, '( + speed', dx, dy, ')')
 
+def handle_16(tag, body):
+    life, max_life = struct.unpack('<HH', body)
+
 def handle_17(tag, body):
     # placing or removing (tile_id 0) things from the world
     x, y, tile_id, d = struct.unpack('<HHHB', body)
@@ -124,25 +131,88 @@ def handle_27(tag, body):
 
     assert not body
 
+def handle_28(tag, body):
+    # damaging enemies
+    a, damage, maybe_knockback, d, e = struct.unpack('<BHfBB', body)
+    assert a == 0
+
 def handle_29(tag, body):
     # seems to be 0000 while shooting
     assert body == b'\0\0'
+
+def handle_36(tag, body):
+    # changing biome triggers this, may be flags
+    zones = struct.unpack('<4B', body)
+
+def handle_40(tag, body):
+    # -1 if not talking to anybody
+    talk_npc = struct.unpack('<h', body)[0]
 
 def handle_41(tag, body):
     # projectile animation, rotation in radians (0 left, clockwise)
     rotation, stage = struct.unpack('<fH', body)
 
-# 28 53 seem kills
+def handle_42(tag, body):
+    mana, max_mana = struct.unpack('<HH', body)
 
 def handle_50(tag, body):
     mount_id = body[6]
     print('using mount', mount_id)
 
+def handle_53(tag, body):
+    # on melee kills
+    a, b, c = struct.unpack('<BHH', body)
+    assert a == 0
+
+def handle_56(tag, body):
+    # after login
+    assert body == b'\0'
+
+def handle_59(tag, body):
+    # occurs taking damage sometimes
+    a, b = struct.unpack('<BH', body)
+
 def handle_68(tag, body):
     print('player uuid4:', body.decode('ascii'))
 
+def handle_73(tag, body):
+    assert not body
+    print('teleported to beach')
+
+def handle_82(tag, body):
+    # after login but no idea what
+    pass
+
+def handle_84(tag, body):
+    stealth = struct.unpack('<f', body)[0]
+
+def handle_109(tag, body):
+    # wires
+    direction, x, y, end_y, wire_flag = struct.unpack('<?HHHB', body)
+    _red_wire = wire_flag & 0b0000_0001
+    _green_wire = wire_flag & 0b0000_0010
+    _blue_wire = wire_flag & 0b0000_0100
+    _yellow_wire = wire_flag & 0b0000_1000
+    _actuator_wire = wire_flag & 0b0001_0000
+    _remove_wire = wire_flag & 0b0010_0000
+
+def handle_117(tag, body):
+    # no idea on this one, happens when taking damage
+    pass
+"""
+new 55 (1): ab0005000000
+new 28 (1): 00a000000070410000
+new 28 (2): 009400000070410000
+new 28 (1): 00640133336f410201
+
+new 59 (1): 071b01
+new 53 (1): 0018006801
+
+"""
+
+
 def handle_new(tag, body):
-    #print(f'new {tag} ({seen[tag]}): {body.hex()}')
+    print(f'new {tag} ({seen[tag]}): {body.hex()}')
     pass  # so we can comment out the print easily
 
 def handle(packet):
