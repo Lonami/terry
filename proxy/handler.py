@@ -22,7 +22,6 @@ def handle_1(tag, body):
 
 def handle_4(tag, body):
     # player info on login + when changing hair or display accessories
-    name_len = struct.unpack('<B', body[2:3])[0]
     skin_variant, hair, name_len = struct.unpack('<BBB', body[:3])
     body = body[3:]
     name = body[:name_len].decode('ascii')
@@ -257,6 +256,10 @@ def handle_new(tag, body):
 
 def handle(packet):
     tag = packet[2]
+
+    if tag in (6, 82, 56):
+        print(packet.hex())
+
     seen[tag] += 1
 
     if tag in (6, 138):
