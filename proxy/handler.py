@@ -62,7 +62,7 @@ def handle_13(tag, body):
 
     assert not (flags & 0b1000_0000)
     assert (speed_flag & 0b1111_1011) == 0b0001_0000
-    assert c == 0b00000010
+    assert c in (0, 0b00000010)  # seems 0 for void bag
     assert d == 0b00000000
 
     # normalize
@@ -78,6 +78,11 @@ def handle_13(tag, body):
         dy = 0.0
 
     #print('item', hotbar, 'move', nx, ny, '( + speed', dx, dy, ')')
+
+def handle_21(tag, body):
+    # item moved in the world
+    created, x, y, dx, dy, count, modifier, d, item_id = struct.unpack('<?ffffHBBH', body)
+    assert d == 0
 
 def handle_22(tag, body):
     a, b = struct.unpack('<BB', body)
