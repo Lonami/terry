@@ -31,10 +31,12 @@ def handle_5(tag, body):
     # a = 72 for accessories
     # a = 73 or 76 for vanity accessories
     # a = 0 otherwise
+    """
     if index == HELD_ITEM_INVENTORY_INDEX:
         print(f'holding {count} items with id {item_id}')
     else:
         print(f'inventory: {count} items with id {item_id} at pos {index}, a {a}')
+    """
 
 def handle_12(tag, body):
     x, y, timer, how = struct.unpack('<HHIB', body)
@@ -45,6 +47,7 @@ def handle_12(tag, body):
 
 def handle_13(tag, body):
     flags, speed_flag, c, d, hotbar, x, y = MOVEMENT.unpack(body[:MOVEMENT.size])
+    """
     if flags & 0b0000_0001:
         print('holding up')
     if flags & 0b0000_0010:
@@ -59,6 +62,7 @@ def handle_13(tag, body):
         print('holding mouse')
     if flags & 0b0100_0000:
         print('facing right')
+    """
 
     assert not (flags & 0b1000_0000)
     assert (speed_flag & 0b1111_1011) == 0b0001_0000
@@ -78,6 +82,11 @@ def handle_13(tag, body):
         dy = 0.0
 
     #print('item', hotbar, 'move', nx, ny, '( + speed', dx, dy, ')')
+
+def handle_17(tag, body):
+    # placing or removing (tile_id 0) things from the world
+    x, y, tile_id, d = struct.unpack('<HHHB', body)
+    assert d == 0
 
 def handle_21(tag, body):
     # item moved in the world
