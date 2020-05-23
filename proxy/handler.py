@@ -95,6 +95,14 @@ def handle_17(tag, body):
     x, y, tile_id, d = struct.unpack('<HHHB', body)
     assert d == 0
 
+def handle_19(tag, body):
+    # door opening or closing
+    x, y, auto_close = struct.unpack('<HH?', body)
+
+def handle_20(tag, body):
+    # tiles changed e.g. opening or closing doors, a lot of data...
+    pass
+
 def handle_21(tag, body):
     # item moved in the world
     created, x, y, dx, dy, count, modifier, d, item_id = struct.unpack('<?ffffHBBH', body)
@@ -140,6 +148,10 @@ def handle_29(tag, body):
     # seems to be 0000 while shooting
     assert body == b'\0\0'
 
+def handle_35(tag, body):
+    # drank health potion
+    healed = struct.unpack('<H', body)[0]
+
 def handle_36(tag, body):
     # changing biome triggers this, may be flags
     zones = struct.unpack('<4B', body)
@@ -155,14 +167,26 @@ def handle_41(tag, body):
 def handle_42(tag, body):
     mana, max_mana = struct.unpack('<HH', body)
 
+def handle_43(tag, body):
+    # drank mana potion
+    healed_mana = struct.unpack('<H', body)[0]
+
 def handle_50(tag, body):
-    mount_id = body[6]
-    print('using mount', mount_id)
+    # includes debuffs or pets or mounts...
+    buffs = struct.unpack('<22H', body)
+
+def handle_51(tag, body):
+    # when using hook
+    hook = struct.unpack('<B', body)
 
 def handle_53(tag, body):
     # on melee kills
     a, b, c = struct.unpack('<BHH', body)
     assert a == 0
+
+def handle_55(tag, body):
+    # placing sunflowers and new buff becomes active (?)
+    struct.unpack('<HI', body)
 
 def handle_56(tag, body):
     # after login
@@ -179,12 +203,20 @@ def handle_73(tag, body):
     assert not body
     print('teleported to beach')
 
+def handle_79(tag, body):
+    # placing things like sunflowers
+    a, b, c, d, e, f, g = struct.unpack('<HHHBBB?', body)
+
 def handle_82(tag, body):
     # after login but no idea what
     pass
 
 def handle_84(tag, body):
     stealth = struct.unpack('<f', body)[0]
+
+def handle_85(tag, body):
+    # happens when quick stashing to nearby chests to piggy but has no data
+    assert not body
 
 def handle_109(tag, body):
     # wires
@@ -199,17 +231,6 @@ def handle_109(tag, body):
 def handle_117(tag, body):
     # no idea on this one, happens when taking damage
     pass
-"""
-new 55 (1): ab0005000000
-new 28 (1): 00a000000070410000
-new 28 (2): 009400000070410000
-new 28 (1): 00640133336f410201
-
-new 59 (1): 071b01
-new 53 (1): 0018006801
-
-"""
-
 
 def handle_new(tag, body):
     print(f'new {tag} ({seen[tag]}): {body.hex()}')
