@@ -97,6 +97,43 @@ def handle_22(tag, body):
     a, b = struct.unpack('<BB', body)
     # seems to always be 00ff or ff00
 
+def handle_27(tag, body):
+    # shooting 007ba9ff4600c88f45369b60414429c9be000e003029009a994940
+    a, x, y, dx, dy, player_id, kind, flags = struct.unpack('<BffffBHB', body[:21])
+    body = body[21:]
+    assert a == 0
+    ai = flags & 0b0000_1111
+    while ai:
+        ai >>= 1
+        x = struct.unpack('<f', body[:4])[0]
+        body = body[4:]
+        # no idea what this means but it is a float
+
+    if flags & 0b0001_0000:
+        damage = struct.unpack('<H', body[:2])[0]
+        body = body[2:]
+    if flags & 0b0010_0000:
+        knockback = struct.unpack('<f', body[:4])[0]
+        body = body[4:]
+    if flags & 0b0100_0000:
+        original_damage = struct.unpack('<H', body[:2])[0]
+        body = body[2:]
+    if flags & 0b1000_0000:
+        projectile_id = struct.unpack('<H', body[:2])[0]
+        body = body[2:]
+
+    assert not body
+
+def handle_29(tag, body):
+    # seems to be 0000 while shooting
+    assert body == b'\0\0'
+
+def handle_41(tag, body):
+    # projectile animation, rotation in radians (0 left, clockwise)
+    rotation, stage = struct.unpack('<fH', body)
+
+# 28 53 seem kills
+
 def handle_50(tag, body):
     mount_id = body[6]
     print('using mount', mount_id)
