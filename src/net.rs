@@ -15,6 +15,17 @@ pub struct Terraria {
     stream: TcpStream,
 }
 
+const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
+
+fn as_hex(buf: &[u8]) -> String {
+    let mut bytes = Vec::with_capacity(buf.len() * 2);
+    buf.into_iter().for_each(|b| {
+        bytes.push(HEX_DIGITS[(b >> 4) as usize]);
+        bytes.push(HEX_DIGITS[(b & 15) as usize]);
+    });
+    unsafe { String::from_utf8_unchecked(bytes) }
+}
+
 impl Terraria {
     pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<Self> {
         // connection
@@ -84,10 +95,11 @@ impl Terraria {
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
         let mut cursor = SliceCursor::new(self.out_buffer.as_mut_slice());
-        packet.serialize(self.player, &mut cursor);
+        packet.serialize(None, &mut cursor);
         let pos = cursor.finish();
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
+        println!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
         Ok(())
     }
 

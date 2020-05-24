@@ -25,10 +25,13 @@ pub trait PacketBody: Sized {
 
     fn from_body(cursor: &mut SliceCursor) -> Self;
 
-    fn serialize(&self, player: u8, cursor: &mut SliceCursor) {
+    // TODO player should probably go inside the packets
+    fn serialize(&self, player: Option<u8>, cursor: &mut SliceCursor) {
         let length_pos = cursor.pos();
         cursor.write(&0u16); // length
-        cursor.write(&player); // player
+        if let Some(player) = player {
+            cursor.write(&player); // player
+        }
         cursor.write(&Self::TAG);
         self.write_body(cursor);
         let length: u16 = (cursor.pos() - length_pos)
@@ -101,5 +104,21 @@ impl Deserializable for RGB {
             g: cursor.read(),
             b: cursor.read(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_good_packet_serialization() {
+        let mut buffer = vec![0; 64];
+        let mut cursor = SliceCursor::new(buffer.as_mut_slice());
+        Magic { magic: "Terraria228".to_string() }.serialize(None, &mut cursor);
+        let pos = cursor.finish();
+        assert_eq!(&buffer[..pos], &[
+            0x0f, 0x00, 0x01, 0x0b, 0x54, 0x65, 0x72, 0x72, 0x61, 0x72, 0x69, 0x61, 0x32, 0x32, 0x38
+        ]);
     }
 }
