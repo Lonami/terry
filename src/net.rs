@@ -11,7 +11,6 @@ const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 pub struct Terraria {
     player: u8,
-    in_buffer: Vec<u8>,
     out_buffer: Vec<u8>,
     stream: TcpStream,
 }
@@ -22,7 +21,6 @@ impl Terraria {
         let stream = TcpStream::connect(addr)?;
         let mut this = Self {
             player: 0,
-            in_buffer: vec![0; 1024],
             out_buffer: vec![0; 1024],
             stream,
         };
@@ -47,14 +45,15 @@ impl Terraria {
     }
 
     pub fn recv_packet(&mut self) -> io::Result<Packet> {
-        let n = self.stream.read(self.in_buffer.as_mut_slice())?;
-        if n == 0 {
-            Err(io::Error::new(
-                io::ErrorKind::ConnectionReset,
-                "read returned 0",
-            ))
-        } else {
-            Ok(Packet::from_slice(&mut self.in_buffer[..n]).1)
-        }
+        // TODO this is very inefficient
+        let mut len = [0u8; 2];
+        self.stream.read_exact(&mut len)?;
+        let mut cursor = SliceCursor::new(&mut len);
+        let len = cursor.read::<u16>() as usize;
+        cursor.finish();
+
+        let mut packet = vec![0u8; len];
+        self.stream.read_exact(&mut packet)?;
+        Ok(Packet::from_slice(&mut packet).1)
     }
 }
