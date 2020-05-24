@@ -5,7 +5,14 @@ pub struct SliceCursor<'a> {
     pos: usize,
 }
 
-impl SliceCursor<'_> {
+impl<'a> SliceCursor<'a> {
+    pub fn new(slice: &'a mut [u8]) -> Self {
+        Self {
+            slice,
+            pos: 0,
+        }
+    }
+
     #[inline(always)]
     pub fn read<D: Deserializable>(&mut self) -> D {
         D::deserialize(self)
@@ -27,6 +34,11 @@ impl SliceCursor<'_> {
 
     #[inline(always)]
     pub fn pos(&self) -> usize {
+        self.pos
+    }
+
+    #[inline(always)]
+    pub fn finish(self) -> usize {
         self.pos
     }
 

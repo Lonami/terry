@@ -5,14 +5,13 @@ mod serialization;
 use crate::packets::{Packet, RGB};
 use std::io::{self, Read, Write};
 use std::net::TcpStream;
-use std::thread;
-use std::time::Duration;
 
 // TODO don't use a constant
-//const SERVER_ADDR: &str = "localhost:7777";
+const SERVER_ADDR: &str = "localhost:7777";
 
 fn main() -> io::Result<()> {
-    todo!()
+    let mut terraria = net::Terraria::connect(SERVER_ADDR)?;
+    Ok(())
     /*
     let mut stream = TcpStream::connect(SERVER_ADDR)?;
     let mut buffer = Vec::with_capacity(256);
