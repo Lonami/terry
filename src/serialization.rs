@@ -118,6 +118,12 @@ impl Serializable for u32 {
     }
 }
 
+impl Serializable for f32 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
 impl Serializable for String {
     fn serialize(&self, cursor: &mut SliceCursor) {
         let len: u8 = self.len().try_into().expect("string too long");
@@ -138,31 +144,37 @@ impl Deserializable for bool {
 
 impl Deserializable for u8 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        u8::from_le_bytes(cursor.read1())
+        Self::from_le_bytes(cursor.read1())
     }
 }
 
 impl Deserializable for i16 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        i16::from_le_bytes(cursor.read2())
+        Self::from_le_bytes(cursor.read2())
     }
 }
 
 impl Deserializable for u16 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        u16::from_le_bytes(cursor.read2())
+        Self::from_le_bytes(cursor.read2())
     }
 }
 
 impl Deserializable for i32 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        i32::from_le_bytes(cursor.read4())
+        Self::from_le_bytes(cursor.read4())
     }
 }
 
 impl Deserializable for u32 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        u32::from_le_bytes(cursor.read4())
+        Self::from_le_bytes(cursor.read4())
+    }
+}
+
+impl Deserializable for f32 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self::from_le_bytes(cursor.read4())
     }
 }
 

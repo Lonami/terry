@@ -17,6 +17,7 @@ pub struct Terraria {
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
 
 fn as_hex(buf: &[u8]) -> String {
+    let buf = &buf[..buf.len().min(80)];
     let mut bytes = Vec::with_capacity(buf.len() * 2);
     buf.into_iter().for_each(|b| {
         bytes.push(HEX_DIGITS[(b >> 4) as usize]);
