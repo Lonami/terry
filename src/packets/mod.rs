@@ -5,10 +5,12 @@ mod player_info;
 mod player_mana;
 mod player_uuid;
 mod to_spawn;
+mod packet82;
 
 use crate::serialization::{Deserializable, Serializable, SliceCursor};
 pub use magic::Magic;
 pub use packet8::Packet8;
+pub use packet82::Packet82;
 pub use player_buffs::PlayerBuffs;
 pub use player_info::PlayerInfo;
 pub use player_mana::PlayerMana;
@@ -44,6 +46,7 @@ pub enum Packet {
     PlayerMana(PlayerMana),
     PlayerBuffs(PlayerBuffs),
     PlayerUuid(PlayerUuid),
+    Packet82(Packet82),
 }
 
 impl Packet {
@@ -62,6 +65,7 @@ impl Packet {
                 PlayerMana::TAG => Self::PlayerMana(PlayerMana::from_body(&mut cursor)),
                 PlayerBuffs::TAG => Self::PlayerBuffs(PlayerBuffs::from_body(&mut cursor)),
                 PlayerUuid::TAG => Self::PlayerUuid(PlayerUuid::from_body(&mut cursor)),
+                Packet82::TAG => Self::Packet82(Packet82::from_body(&mut cursor)),
                 tag => panic!(format!("unknown tag {}", tag)),
             },
         )
