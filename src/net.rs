@@ -30,8 +30,9 @@ impl Terraria {
             magic: PROTOCOL_MAGIC.to_string(),
         })?;
 
-        dbg!(this.recv_packet()?);
-        // TODO continue with the rest of the handshake
+        for _ in 0..3 {
+            dbg!(this.recv_packet()?);
+        }
 
         Ok(this)
     }
@@ -41,6 +42,7 @@ impl Terraria {
         packet.serialize(self.player, &mut cursor);
         let pos = cursor.finish();
         self.stream.write_all(&self.out_buffer[..pos])?;
+        self.stream.flush()?;
         Ok(())
     }
 
@@ -52,7 +54,7 @@ impl Terraria {
         let len = cursor.read::<u16>() as usize;
         cursor.finish();
 
-        let mut packet = vec![0u8; len];
+        let mut packet = vec![0u8; len - 2];
         self.stream.read_exact(&mut packet)?;
         Ok(Packet::from_slice(&mut packet).1)
     }
