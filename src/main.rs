@@ -1,4 +1,6 @@
+mod net;
 mod packets;
+mod serialization;
 
 use crate::packets::{Packet, RGB};
 use std::io::{self, Read, Write};
@@ -6,12 +8,12 @@ use std::net::TcpStream;
 use std::thread;
 use std::time::Duration;
 
-const PLAYER_NAME: &str = "terry";
-const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
-const PROTOCOL_MAGIC: &str = "Terraria228";
-const SERVER_ADDR: &str = "localhost:7777";
+// TODO don't use a constant
+//const SERVER_ADDR: &str = "localhost:7777";
 
 fn main() -> io::Result<()> {
+    todo!()
+    /*
     let mut stream = TcpStream::connect(SERVER_ADDR)?;
     let mut buffer = Vec::with_capacity(256);
 
@@ -115,6 +117,5 @@ fn main() -> io::Result<()> {
         }
         eprintln!("{:?}", &buffer[..n]);
     }
-
-    Ok(())
+    */
 }
