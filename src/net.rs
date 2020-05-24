@@ -28,8 +28,11 @@ impl Terraria {
         };
 
         // handshake
-        this.send_packet(&packets::Magic { magic: PROTOCOL_MAGIC.to_string() })?;
+        this.send_packet(&packets::Magic {
+            magic: PROTOCOL_MAGIC.to_string(),
+        })?;
 
+        let _packet = this.recv_packet()?;
         // TODO continue with the rest of the handshake
 
         Ok(this)
@@ -43,7 +46,15 @@ impl Terraria {
         Ok(())
     }
 
-    pub fn recv_packet() -> io::Result<Packet> {
-        todo!()
+    pub fn recv_packet(&mut self) -> io::Result<Packet> {
+        let n = self.stream.read(self.in_buffer.as_mut_slice())?;
+        if n == 0 {
+            Err(io::Error::new(
+                io::ErrorKind::ConnectionReset,
+                "read returned 0",
+            ))
+        } else {
+            Ok(Packet::from_slice(&mut self.in_buffer[..n]).1)
+        }
     }
 }

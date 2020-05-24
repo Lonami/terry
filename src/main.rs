@@ -2,15 +2,13 @@ mod net;
 mod packets;
 mod serialization;
 
-use crate::packets::{Packet, RGB};
-use std::io::{self, Read, Write};
-use std::net::TcpStream;
+use std::io;
 
 // TODO don't use a constant
 const SERVER_ADDR: &str = "localhost:7777";
 
 fn main() -> io::Result<()> {
-    let mut terraria = net::Terraria::connect(SERVER_ADDR)?;
+    let _terraria = net::Terraria::connect(SERVER_ADDR)?;
     Ok(())
     /*
     let mut stream = TcpStream::connect(SERVER_ADDR)?;

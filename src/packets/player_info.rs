@@ -1,6 +1,5 @@
 use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
-use std::convert::TryInto;
 
 /// Player information, sent on login or when the player looks change.
 pub struct PlayerInfo {

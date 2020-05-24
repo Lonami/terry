@@ -47,7 +47,7 @@ pub enum Packet {
 }
 
 impl Packet {
-    fn from_slice(slice: &mut [u8]) -> (u8, Self) {
+    pub fn from_slice(slice: &mut [u8]) -> (u8, Self) {
         let mut cursor = SliceCursor::new(slice);
         let player = cursor.read::<u8>();
         let tag = cursor.read::<u8>();
