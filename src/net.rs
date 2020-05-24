@@ -40,6 +40,7 @@ impl Terraria {
         })?;
 
         this.send_packet(&packets::PlayerInfo {
+            player: 0,
             skin_variant: 0,
             hair_variant: 0,
             name: PLAYER_NAME.to_string(),

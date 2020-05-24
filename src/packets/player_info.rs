@@ -4,6 +4,7 @@ use crate::serialization::SliceCursor;
 /// Player information, sent on login or when the player looks change.
 #[derive(Debug)]
 pub struct PlayerInfo {
+    pub player: u8,
     pub skin_variant: u8,
     pub hair_variant: u8,
     pub name: String,
@@ -24,6 +25,7 @@ impl PacketBody for PlayerInfo {
     const TAG: u8 = 4;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.player);
         cursor.write(&self.skin_variant);
         cursor.write(&self.hair_variant);
         cursor.write(&self.name);
@@ -42,6 +44,7 @@ impl PacketBody for PlayerInfo {
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
+            player: cursor.read(),
             skin_variant: cursor.read(),
             hair_variant: cursor.read(),
             name: cursor.read(),
