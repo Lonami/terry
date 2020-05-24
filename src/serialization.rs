@@ -17,7 +17,7 @@ impl SliceCursor<'_> {
     }
 
     #[inline(always)]
-    fn rewrite<S: Serializable>(&mut self, pos: usize, s: &S) {
+    pub fn rewrite<S: Serializable>(&mut self, pos: usize, s: &S) {
         let last = self.pos;
         self.pos = pos;
         self.write(s);
@@ -26,7 +26,7 @@ impl SliceCursor<'_> {
     }
 
     #[inline(always)]
-    fn pos(&self) -> usize {
+    pub fn pos(&self) -> usize {
         self.pos
     }
 

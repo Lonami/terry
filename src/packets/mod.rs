@@ -16,32 +16,23 @@ pub use player_uuid::PlayerUuid;
 use std::convert::TryInto;
 pub use to_spawn::ToSpawn;
 
-pub trait Packet {
+pub trait Packet: Sized {
     const TAG: u8;
 
     fn write_body(&self, cursor: &mut SliceCursor);
 
     fn from_body(&self, cursor: &mut SliceCursor) -> Self;
-}
 
-/*
-impl Serializable for Packet {
-
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize(&self, player: u8, cursor: &mut SliceCursor) {
         let length_pos = cursor.pos();
-        cursor.write(0u16); // length
-        cursor.write(0u8); // player
-        cursor.write(Self::TAG);
+        cursor.write(&0u16); // length
+        cursor.write(&player); // player
+        cursor.write(&Self::TAG);
         self.write_body(cursor);
         let length: u16 = (cursor.pos() - length_pos).try_into().expect("packet too long");
-        cursor.rewrite(length_pos, length);
+        cursor.rewrite(length_pos, &length);
     }
 }
-
-impl Deserializable for Packet {
-
-}
-*/
 
 pub struct RGB {
     r: u8,
