@@ -7,22 +7,22 @@ pub struct SliceCursor<'a> {
 
 impl SliceCursor<'_> {
     #[inline(always)]
-    fn read<D: Deserializable>(&mut self) -> D {
+    pub fn read<D: Deserializable>(&mut self) -> D {
         D::deserialize(self)
     }
 
     #[inline(always)]
-    fn write<S: Serializable>(&mut self, s: &S) {
+    pub fn write<S: Serializable>(&mut self, s: &S) {
         s.serialize(self)
     }
 
     #[inline(always)]
     fn rewrite<S: Serializable>(&mut self, pos: usize, s: &S) {
-         let last = self.pos;
-         self.pos = pos;
-         self.write(s);
-         assert!(self.pos <= last);
-         self.pos = last;
+        let last = self.pos;
+        self.pos = pos;
+        self.write(s);
+        assert!(self.pos <= last);
+        self.pos = last;
     }
 
     #[inline(always)]
@@ -53,7 +53,12 @@ impl SliceCursor<'_> {
     #[inline(always)]
     fn read4(&mut self) -> [u8; 4] {
         self.pos += 4;
-        [self.slice[self.pos - 4], self.slice[self.pos - 3], self.slice[self.pos - 2], self.slice[self.pos - 1]]
+        [
+            self.slice[self.pos - 4],
+            self.slice[self.pos - 3],
+            self.slice[self.pos - 2],
+            self.slice[self.pos - 1],
+        ]
     }
 
     #[inline(always)]
@@ -68,9 +73,39 @@ pub trait Serializable {
     fn serialize(&self, cursor: &mut SliceCursor);
 }
 
+impl Serializable for bool {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&(*self as u8));
+    }
+}
+
 impl Serializable for u8 {
     fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&[*self]);
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
+impl Serializable for i16 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
+impl Serializable for u16 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
+impl Serializable for i32 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
+impl Serializable for u32 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
     }
 }
 
@@ -86,15 +121,33 @@ pub trait Deserializable {
     fn deserialize(cursor: &mut SliceCursor) -> Self;
 }
 
+impl Deserializable for bool {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        cursor.read::<u8>() != 0
+    }
+}
+
 impl Deserializable for u8 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
         u8::from_le_bytes(cursor.read1())
     }
 }
 
+impl Deserializable for i16 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        i16::from_le_bytes(cursor.read2())
+    }
+}
+
 impl Deserializable for u16 {
-    fn deserialize( cursor: &mut SliceCursor) -> Self {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
         u16::from_le_bytes(cursor.read2())
+    }
+}
+
+impl Deserializable for i32 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        i32::from_le_bytes(cursor.read4())
     }
 }
 
@@ -105,7 +158,7 @@ impl Deserializable for u32 {
 }
 
 impl Deserializable for String {
-    fn deserialize( cursor: &mut SliceCursor) -> Self {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
         let len = u8::deserialize(cursor) as usize;
         String::from_utf8_lossy(cursor.readn(len)).to_string()
     }

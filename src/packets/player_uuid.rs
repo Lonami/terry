@@ -1,4 +1,5 @@
 use crate::packets::Packet;
+use crate::serialization::SliceCursor;
 
 /// Player UUID-4.
 pub struct PlayerUuid {
@@ -8,7 +9,13 @@ pub struct PlayerUuid {
 impl Packet for PlayerUuid {
     const TAG: u8 = 68;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.extend(self.uuid4.as_bytes());
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.uuid4);
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        Self {
+            uuid4: cursor.read(),
+        }
     }
 }

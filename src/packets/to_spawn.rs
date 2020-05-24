@@ -1,4 +1,5 @@
 use crate::packets::Packet;
+use crate::serialization::SliceCursor;
 
 /// Goes to spawn, either by login, death or recall.
 pub struct ToSpawn {
@@ -11,10 +12,19 @@ pub struct ToSpawn {
 impl Packet for ToSpawn {
     const TAG: u8 = 12;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.extend(&self.x.to_le_bytes());
-        buf.extend(&self.y.to_le_bytes());
-        buf.extend(&self.timer.to_le_bytes());
-        buf.push(self.how);
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.x);
+        cursor.write(&self.y);
+        cursor.write(&self.timer);
+        cursor.write(&self.how);
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        Self {
+            x: cursor.read(),
+            y: cursor.read(),
+            timer: cursor.read(),
+            how: cursor.read(),
+        }
     }
 }

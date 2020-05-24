@@ -10,10 +10,12 @@ impl Packet for Magic {
     const TAG: u8 = 1;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        todo!()
+        cursor.write(&self.magic);
     }
 
     fn from_body(&self, cursor: &mut SliceCursor) -> Self {
-        todo!()
+        Self {
+            magic: cursor.read(),
+        }
     }
 }

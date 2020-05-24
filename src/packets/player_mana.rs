@@ -1,4 +1,5 @@
 use crate::packets::Packet;
+use crate::serialization::SliceCursor;
 
 /// Current and maximum mana of the player.
 pub struct PlayerMana {
@@ -9,8 +10,15 @@ pub struct PlayerMana {
 impl Packet for PlayerMana {
     const TAG: u8 = 42;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.extend(&self.mana.to_le_bytes());
-        buf.extend(&self.max_mana.to_le_bytes());
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.mana);
+        cursor.write(&self.max_mana);
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        Self {
+            mana: cursor.read(),
+            max_mana: cursor.read(),
+        }
     }
 }

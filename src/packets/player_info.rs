@@ -1,4 +1,5 @@
 use crate::packets::{Packet, RGB};
+use crate::serialization::SliceCursor;
 use std::convert::TryInto;
 
 /// Player information, sent on login or when the player looks change.
@@ -22,21 +23,39 @@ pub struct PlayerInfo {
 impl Packet for PlayerInfo {
     const TAG: u8 = 4;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.push(self.skin_variant);
-        buf.push(self.hair_variant);
-        buf.push(self.name.len().try_into().expect("name too long"));
-        buf.extend(self.name.as_bytes());
-        buf.push(self.hair_dye);
-        buf.extend(&self.visible_accesories_flags.to_le_bytes());
-        buf.push(self.hide_misc as u8);
-        self.hair_color.append_body(buf);
-        self.skin_color.append_body(buf);
-        self.eye_color.append_body(buf);
-        self.shirt_color.append_body(buf);
-        self.undershirt_color.append_body(buf);
-        self.pants_color.append_body(buf);
-        self.shoes_color.append_body(buf);
-        buf.push(self.difficulty_flags);
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.skin_variant);
+        cursor.write(&self.hair_variant);
+        cursor.write(&self.name);
+        cursor.write(&self.hair_dye);
+        cursor.write(&self.visible_accesories_flags);
+        cursor.write(&self.hide_misc);
+        cursor.write(&self.hair_color);
+        cursor.write(&self.skin_color);
+        cursor.write(&self.eye_color);
+        cursor.write(&self.shirt_color);
+        cursor.write(&self.undershirt_color);
+        cursor.write(&self.pants_color);
+        cursor.write(&self.shoes_color);
+        cursor.write(&self.difficulty_flags);
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        Self {
+            skin_variant: cursor.read(),
+            hair_variant: cursor.read(),
+            name: cursor.read(),
+            hair_dye: cursor.read(),
+            visible_accesories_flags: cursor.read(),
+            hide_misc: cursor.read(),
+            hair_color: cursor.read(),
+            skin_color: cursor.read(),
+            eye_color: cursor.read(),
+            shirt_color: cursor.read(),
+            undershirt_color: cursor.read(),
+            pants_color: cursor.read(),
+            shoes_color: cursor.read(),
+            difficulty_flags: cursor.read(),
+        }
     }
 }

@@ -1,4 +1,5 @@
 use crate::packets::Packet;
+use crate::serialization::SliceCursor;
 
 /// Packet 8, used during login. Seems to always be -1.
 pub struct Packet8 {
@@ -8,7 +9,11 @@ pub struct Packet8 {
 impl Packet for Packet8 {
     const TAG: u8 = 8;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.extend(&self.n.to_le_bytes());
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.n);
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        Self { n: cursor.read() }
     }
 }
