@@ -258,7 +258,7 @@ def handle(remote, packet):
     tag = packet[2]
     seen[tag] += 1
 
-    print('><'[remote], tag, ':', packet.hex())
+    print('><'[remote], tag, ':', packet[:82].hex())
 
     return
     if tag in (6, 138):

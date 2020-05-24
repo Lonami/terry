@@ -8,12 +8,15 @@ mod packet22;
 mod packet3;
 mod packet49;
 mod packet57;
+mod packet6;
 mod packet7;
 mod packet8;
 mod packet82;
 mod packet9;
 mod player_buffs;
 mod player_info;
+mod player_inventory;
+mod player_life;
 mod player_mana;
 mod player_uuid;
 mod to_spawn;
@@ -29,12 +32,15 @@ pub use packet22::Packet22;
 pub use packet3::Packet3;
 pub use packet49::Packet49;
 pub use packet57::Packet57;
+pub use packet6::Packet6;
 pub use packet7::Packet7;
 pub use packet8::Packet8;
 pub use packet82::Packet82;
 pub use packet9::Packet9;
 pub use player_buffs::PlayerBuffs;
 pub use player_info::PlayerInfo;
+pub use player_inventory::PlayerInventory;
+pub use player_life::PlayerLife;
 pub use player_mana::PlayerMana;
 pub use player_uuid::PlayerUuid;
 use std::convert::TryInto;
@@ -65,12 +71,15 @@ pub enum Packet {
     Magic(Magic),                             // 1
     Packet3(Packet3),                         // 3
     PlayerInfo(PlayerInfo),                   // 4
+    PlayerInventory(PlayerInventory),         // 5
+    Packet6(Packet6),                         // 6
     Packet7(Packet7),                         // 7
     Packet8(Packet8),                         // 8
     Packet9(Packet9),                         // 9
     CompressedTileBlock(CompressedTileBlock), // 10
     Packet11(Packet11),                       // 11
     ToSpawn(ToSpawn),                         // 12
+    PlayerLife(PlayerLife),                   // 16
     ItemMoved(ItemMoved),                     // 21
     Packet22(Packet22),                       // 22
     NpcInfo(NpcInfo),                         // 23
@@ -92,6 +101,8 @@ impl Packet {
             Magic::TAG => Self::Magic(Magic::from_body(&mut cursor)),
             Packet3::TAG => Self::Packet3(Packet3::from_body(&mut cursor)),
             PlayerInfo::TAG => Self::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
+            PlayerInventory::TAG => Self::PlayerInventory(PlayerInventory::from_body(&mut cursor)),
+            Packet6::TAG => Self::Packet6(Packet6::from_body(&mut cursor)),
             Packet7::TAG => Self::Packet7(Packet7::from_body(&mut cursor)),
             Packet8::TAG => Self::Packet8(Packet8::from_body(&mut cursor)),
             Packet9::TAG => Self::Packet9(Packet9::from_body(&mut cursor)),
@@ -100,6 +111,7 @@ impl Packet {
             }
             Packet11::TAG => Self::Packet11(Packet11::from_body(&mut cursor)),
             ToSpawn::TAG => Self::ToSpawn(ToSpawn::from_body(&mut cursor)),
+            PlayerLife::TAG => Self::PlayerLife(PlayerLife::from_body(&mut cursor)),
             ItemMoved::TAG => Self::ItemMoved(ItemMoved::from_body(&mut cursor)),
             Packet22::TAG => Self::Packet22(Packet22::from_body(&mut cursor)),
             NpcInfo::TAG => Self::NpcInfo(NpcInfo::from_body(&mut cursor)),
@@ -110,12 +122,96 @@ impl Packet {
             PlayerUuid::TAG => Self::PlayerUuid(PlayerUuid::from_body(&mut cursor)),
             Packet82::TAG => Self::Packet82(Packet82::from_body(&mut cursor)),
             KillCount::TAG => Self::KillCount(KillCount::from_body(&mut cursor)),
+            13 => {
+                eprintln!("TODO 13");
+                Self::Packet49(Packet49 {})
+            }
+            14 => {
+                eprintln!("TODO 14");
+                Self::Packet49(Packet49 {})
+            }
+            19 => {
+                eprintln!("TODO 19");
+                Self::Packet49(Packet49 {})
+            }
+            20 => {
+                eprintln!("TODO 20");
+                Self::Packet49(Packet49 {})
+            }
+            27 => {
+                eprintln!("TODO 27");
+                Self::Packet49(Packet49 {})
+            }
+            28 => {
+                eprintln!("TODO 28");
+                Self::Packet49(Packet49 {})
+            }
+            29 => {
+                eprintln!("TODO 29");
+                Self::Packet49(Packet49 {})
+            }
+            30 => {
+                eprintln!("TODO 30");
+                Self::Packet49(Packet49 {})
+            }
+            36 => {
+                eprintln!("TODO 36");
+                Self::Packet49(Packet49 {})
+            }
+            39 => {
+                eprintln!("TODO 39");
+                Self::Packet49(Packet49 {})
+            }
+            40 => {
+                eprintln!("TODO 40");
+                Self::Packet49(Packet49 {})
+            }
+            41 => {
+                eprintln!("TODO 41");
+                Self::Packet49(Packet49 {})
+            }
+            45 => {
+                eprintln!("TODO 45");
+                Self::Packet49(Packet49 {})
+            }
+            54 => {
+                eprintln!("TODO 54");
+                Self::Packet49(Packet49 {})
+            }
+            60 => {
+                eprintln!("TODO 60");
+                Self::Packet49(Packet49 {})
+            }
+            74 => {
+                eprintln!("TODO 74");
+                Self::Packet49(Packet49 {})
+            }
+            80 => {
+                eprintln!("TODO 80");
+                Self::Packet49(Packet49 {})
+            }
+            88 => {
+                eprintln!("TODO 88");
+                Self::Packet49(Packet49 {})
+            }
+            98 => {
+                eprintln!("TODO 98");
+                Self::Packet49(Packet49 {})
+            }
             101 => {
                 eprintln!("TODO 101");
                 Self::Packet49(Packet49 {})
             }
+            129 => {
+                eprintln!("TODO 129");
+                Self::Packet49(Packet49 {})
+            }
             136 => {
                 eprintln!("TODO 136");
+                Self::Packet49(Packet49 {})
+            }
+            139 => {
+                eprintln!("TODO 139");
                 Self::Packet49(Packet49 {})
             }
             tag => panic!(format!("unknown tag {}", tag)),
@@ -158,15 +254,6 @@ impl Deserializable for RGB {
 pub struct Vec2 {
     x: f32,
     y: f32,
-}
-
-impl Vec2 {
-    pub fn new() -> Self {
-        Vec2 {
-            x: 0.0f32,
-            y: 0.0f32,
-        }
-    }
 }
 
 impl Serializable for Vec2 {

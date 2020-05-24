@@ -62,25 +62,51 @@ impl Terraria {
             uuid4: PLAYER_UUID.to_string(),
         })?;
 
+        this.send_packet(&packets::PlayerLife {
+            id: 0,
+            life: 100,
+            max_life: 100,
+        })?;
+
         this.send_packet(&packets::PlayerMana {
+            id: 0,
             mana: 200,
             max_mana: 200,
         })?;
-        this.send_packet(&packets::PlayerBuffs { buffs: [0u16; 22] })?;
 
-        // TODO 6
+        this.send_packet(&packets::PlayerBuffs {
+            id: 0,
+            buffs: [0u16; 22],
+        })?;
+
+        for i in 0..260 {
+            this.send_packet(&packets::PlayerInventory {
+                id: 0,
+                index: i,
+                count: 0,
+                a: 0,
+                item_id: 0,
+            })?;
+        }
+
+        this.send_packet(&packets::Packet6 {})?;
 
         this.send_packet(&packets::Packet8 { n: -1 })?;
 
         this.send_packet(&packets::ToSpawn {
+            id: 0,
             x: -1,
             y: -1,
             timer: 0,
             how: 1,
         })?;
 
-        // 127.0.0.1:41124 was booted: Invalid operation at this state.
+        // some more stuff to send at this point
+        // > 82 : 0c005206000e00000000003f
+        // > 56 : 0500380100
+        // > 36 : 0800240000004200
 
+        this.stream.set_read_timeout(None)?;
         loop {
             match this.recv_packet()? {
                 Packet::Packet82(_) => eprintln!("Packet82"),
@@ -89,8 +115,6 @@ impl Terraria {
                 }
             };
         }
-
-        Ok(this)
     }
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
@@ -100,7 +124,25 @@ impl Terraria {
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
         println!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
+
+        // recv during send to see it real time
+        self.try_recv_packets()?;
+
         Ok(())
+    }
+
+    pub fn try_recv_packets(&mut self) -> io::Result<()> {
+        self.stream
+            .set_read_timeout(Some(std::time::Duration::from_millis(10)))?;
+        loop {
+            match self.recv_packet() {
+                Ok(_) => continue,
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    break Ok(());
+                }
+                e => break e.map(drop),
+            }
+        }
     }
 
     pub fn recv_packet(&mut self) -> io::Result<Packet> {

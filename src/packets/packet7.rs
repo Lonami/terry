@@ -8,11 +8,11 @@ pub struct Packet7 {}
 impl PacketBody for Packet7 {
     const TAG: u8 = 7;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
+    fn write_body(&self, _cursor: &mut SliceCursor) {
         todo!()
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
+    fn from_body(_cursor: &mut SliceCursor) -> Self {
         // TODO
         Self {}
     }
