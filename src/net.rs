@@ -105,14 +105,16 @@ impl Terraria {
 
     pub fn recv_packet(&mut self) -> io::Result<Packet> {
         // TODO this is very inefficient
-        let mut len = [0u8; 2];
-        self.stream.read_exact(&mut len)?;
-        let mut cursor = SliceCursor::new(&mut len);
+        let mut lenbuf = [0u8; 2];
+        self.stream.read_exact(&mut lenbuf)?;
+        let mut cursor = SliceCursor::new(&mut lenbuf);
         let len = cursor.read::<u16>() as usize;
         cursor.finish();
 
         let mut packet = vec![0u8; len - 2];
         self.stream.read_exact(&mut packet)?;
+
+        println!("< {} : {}{}", packet[0], as_hex(&lenbuf), as_hex(&packet));
         Ok(Packet::from_slice(&mut packet).1)
     }
 }

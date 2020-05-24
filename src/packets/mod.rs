@@ -1,4 +1,5 @@
 mod magic;
+mod packet3;
 mod packet8;
 mod packet82;
 mod player_buffs;
@@ -9,6 +10,7 @@ mod to_spawn;
 
 use crate::serialization::{Deserializable, Serializable, SliceCursor};
 pub use magic::Magic;
+pub use packet3::Packet3;
 pub use packet8::Packet8;
 pub use packet82::Packet82;
 pub use player_buffs::PlayerBuffs;
@@ -44,6 +46,7 @@ pub trait PacketBody: Sized {
 #[derive(Debug)]
 pub enum Packet {
     Magic(Magic),
+    Packet3(Packet3),
     Packet8(Packet8),
     PlayerInfo(PlayerInfo),
     ToSpawn(ToSpawn),
@@ -57,12 +60,13 @@ impl Packet {
     pub fn from_slice(slice: &mut [u8]) -> (u8, Self) {
         let mut cursor = SliceCursor::new(slice);
         let tag = cursor.read::<u8>();
-        let player = cursor.read::<u8>();
+        //let player = cursor.read::<u8>();
         // TODO too bad packet body is not serializable
         (
-            player,
+            0,
             match tag {
                 Magic::TAG => Self::Magic(Magic::from_body(&mut cursor)),
+                Packet3::TAG => Self::Packet3(Packet3::from_body(&mut cursor)),
                 Packet8::TAG => Self::Packet8(Packet8::from_body(&mut cursor)),
                 PlayerInfo::TAG => Self::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
                 ToSpawn::TAG => Self::ToSpawn(ToSpawn::from_body(&mut cursor)),
