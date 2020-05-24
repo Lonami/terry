@@ -1,4 +1,4 @@
-use crate::packets::{self, Packet, PacketBody};
+use crate::packets::{self, Packet, PacketBody, RGB};
 use crate::serialization::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
@@ -30,8 +30,53 @@ impl Terraria {
             magic: PROTOCOL_MAGIC.to_string(),
         })?;
 
-        for _ in 0..3 {
-            dbg!(this.recv_packet()?);
+        this.send_packet(&packets::PlayerInfo {
+            skin_variant: 0,
+            hair_variant: 0,
+            name: PLAYER_NAME.to_string(),
+            hair_dye: 0,
+            visible_accesories_flags: 0,
+            hide_misc: false,
+            hair_color: RGB::new(),
+            skin_color: RGB::new(),
+            eye_color: RGB::new(),
+            shirt_color: RGB::new(),
+            undershirt_color: RGB::new(),
+            pants_color: RGB::new(),
+            shoes_color: RGB::new(),
+            difficulty_flags: 4,
+        })?;
+
+        this.send_packet(&packets::PlayerUuid {
+            uuid4: PLAYER_UUID.to_string(),
+        })?;
+
+        this.send_packet(&packets::PlayerMana {
+            mana: 200,
+            max_mana: 200,
+        })?;
+        this.send_packet(&packets::PlayerBuffs { buffs: [0u16; 22] })?;
+
+        // TODO 6
+
+        this.send_packet(&packets::Packet8 { n: -1 })?;
+
+        this.send_packet(&packets::ToSpawn {
+            x: -1,
+            y: -1,
+            timer: 0,
+            how: 1,
+        })?;
+
+        // 127.0.0.1:41124 was booted: Invalid operation at this state.
+
+        loop {
+            match this.recv_packet()? {
+                Packet::Packet82(_) => eprintln!("Packet82"),
+                packet => {
+                    dbg!(packet);
+                }
+            };
         }
 
         Ok(this)

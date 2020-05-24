@@ -1,11 +1,11 @@
 mod magic;
 mod packet8;
+mod packet82;
 mod player_buffs;
 mod player_info;
 mod player_mana;
 mod player_uuid;
 mod to_spawn;
-mod packet82;
 
 use crate::serialization::{Deserializable, Serializable, SliceCursor};
 pub use magic::Magic;
