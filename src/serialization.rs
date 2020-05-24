@@ -7,10 +7,7 @@ pub struct SliceCursor<'a> {
 
 impl<'a> SliceCursor<'a> {
     pub fn new(slice: &'a mut [u8]) -> Self {
-        Self {
-            slice,
-            pos: 0,
-        }
+        Self { slice, pos: 0 }
     }
 
     #[inline(always)]

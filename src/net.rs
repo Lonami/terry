@@ -1,7 +1,7 @@
-use crate::packets::{self, Packet};
+use crate::packets::{self, Packet, PacketBody};
+use crate::serialization::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
-use crate::serialization::SliceCursor;
 
 const PROTOCOL_MAGIC: &str = "Terraria228";
 
@@ -19,26 +19,31 @@ pub struct Terraria {
 impl Terraria {
     pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<Self> {
         // connection
-        let mut stream = TcpStream::connect(addr)?;
-        let this = Self {
+        let stream = TcpStream::connect(addr)?;
+        let mut this = Self {
             player: 0,
             in_buffer: vec![0; 1024],
             out_buffer: vec![0; 1024],
             stream,
         };
 
-        todo!()
+        // handshake
+        this.send_packet(&packets::Magic { magic: PROTOCOL_MAGIC.to_string() })?;
+
+        // TODO continue with the rest of the handshake
+
+        Ok(this)
     }
 
-    pub fn send_packet<P: Packet>(&mut self, packet: &P) -> io::Result<()> {
+    pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
         let mut cursor = SliceCursor::new(self.out_buffer.as_mut_slice());
         packet.serialize(self.player, &mut cursor);
         let pos = cursor.finish();
-        self.stream.write_all(&self.out_buffer[..pos]);
+        self.stream.write_all(&self.out_buffer[..pos])?;
         Ok(())
     }
 
-    pub fn recv_packet() -> io::Result<()> {
+    pub fn recv_packet() -> io::Result<Packet> {
         todo!()
     }
 }

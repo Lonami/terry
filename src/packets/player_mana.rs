@@ -1,4 +1,4 @@
-use crate::packets::Packet;
+use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Current and maximum mana of the player.
@@ -7,7 +7,7 @@ pub struct PlayerMana {
     pub max_mana: u16,
 }
 
-impl Packet for PlayerMana {
+impl PacketBody for PlayerMana {
     const TAG: u8 = 42;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
@@ -15,7 +15,7 @@ impl Packet for PlayerMana {
         cursor.write(&self.max_mana);
     }
 
-    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+    fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             mana: cursor.read(),
             max_mana: cursor.read(),

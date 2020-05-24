@@ -1,4 +1,4 @@
-use crate::packets::{Packet, RGB};
+use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 use std::convert::TryInto;
 
@@ -20,7 +20,7 @@ pub struct PlayerInfo {
     pub difficulty_flags: u8,
 }
 
-impl Packet for PlayerInfo {
+impl PacketBody for PlayerInfo {
     const TAG: u8 = 4;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
@@ -40,7 +40,7 @@ impl Packet for PlayerInfo {
         cursor.write(&self.difficulty_flags);
     }
 
-    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+    fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             skin_variant: cursor.read(),
             hair_variant: cursor.read(),

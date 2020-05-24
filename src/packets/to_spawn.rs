@@ -1,4 +1,4 @@
-use crate::packets::Packet;
+use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Goes to spawn, either by login, death or recall.
@@ -9,7 +9,7 @@ pub struct ToSpawn {
     pub how: u8,
 }
 
-impl Packet for ToSpawn {
+impl PacketBody for ToSpawn {
     const TAG: u8 = 12;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
@@ -19,7 +19,7 @@ impl Packet for ToSpawn {
         cursor.write(&self.how);
     }
 
-    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+    fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             x: cursor.read(),
             y: cursor.read(),
