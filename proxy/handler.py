@@ -254,14 +254,16 @@ def handle_new(tag, body):
     print(f'new {tag} ({seen[tag]}): {body.hex()}')
     pass  # so we can comment out the print easily
 
-def handle(packet):
+def handle(remote, packet):
     tag = packet[2]
-
-    if tag in (6, 82, 56):
-        print(packet.hex())
-
     seen[tag] += 1
 
+    if seen[tag] == 1:
+        print('><'[remote], tag, '( 1 ):', packet.hex())
+    else:
+        print('><'[remote], tag, '(', seen[tag], ')')
+
+    return
     if tag in (6, 138):
         return  # these don't have more info
 
