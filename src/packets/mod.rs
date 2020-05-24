@@ -12,6 +12,7 @@ pub use player_buffs::PlayerBuffs;
 pub use player_info::PlayerInfo;
 pub use player_mana::PlayerMana;
 pub use player_uuid::PlayerUuid;
+use std::convert::TryInto;
 pub use to_spawn::ToSpawn;
 
 pub trait Packet {
@@ -23,8 +24,11 @@ pub trait Packet {
     /// Intended for easy use when writing to a stream.
     fn as_byte_slice<'a>(&self, buf: &'a mut Vec<u8>) -> &'a [u8] {
         buf.clear();
+        buf.extend(&[0, 0, 0]); // length, length, player
         buf.push(Self::TAG);
         self.append_body(buf);
+        let len: u16 = buf.len().try_into().expect("packet too long");
+        buf[0..2].copy_from_slice(&len.to_le_bytes());
         &buf[..]
     }
 }
