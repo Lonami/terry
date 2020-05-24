@@ -18,6 +18,7 @@ mod player_info;
 mod player_inventory;
 mod player_life;
 mod player_mana;
+mod player_move;
 mod player_uuid;
 mod to_spawn;
 
@@ -42,6 +43,7 @@ pub use player_info::PlayerInfo;
 pub use player_inventory::PlayerInventory;
 pub use player_life::PlayerLife;
 pub use player_mana::PlayerMana;
+pub use player_move::PlayerMove;
 pub use player_uuid::PlayerUuid;
 use std::convert::TryInto;
 pub use to_spawn::ToSpawn;
@@ -79,6 +81,7 @@ pub enum Packet {
     CompressedTileBlock(CompressedTileBlock), // 10
     Packet11(Packet11),                       // 11
     ToSpawn(ToSpawn),                         // 12
+    PlayerMove(PlayerMove),                   // 13
     PlayerLife(PlayerLife),                   // 16
     ItemMoved(ItemMoved),                     // 21
     Packet22(Packet22),                       // 22
@@ -111,6 +114,7 @@ impl Packet {
             }
             Packet11::TAG => Self::Packet11(Packet11::from_body(&mut cursor)),
             ToSpawn::TAG => Self::ToSpawn(ToSpawn::from_body(&mut cursor)),
+            PlayerMove::TAG => Self::PlayerMove(PlayerMove::from_body(&mut cursor)),
             PlayerLife::TAG => Self::PlayerLife(PlayerLife::from_body(&mut cursor)),
             ItemMoved::TAG => Self::ItemMoved(ItemMoved::from_body(&mut cursor)),
             Packet22::TAG => Self::Packet22(Packet22::from_body(&mut cursor)),
@@ -122,10 +126,6 @@ impl Packet {
             PlayerUuid::TAG => Self::PlayerUuid(PlayerUuid::from_body(&mut cursor)),
             Packet82::TAG => Self::Packet82(Packet82::from_body(&mut cursor)),
             KillCount::TAG => Self::KillCount(KillCount::from_body(&mut cursor)),
-            13 => {
-                eprintln!("TODO 13");
-                Self::Packet49(Packet49 {})
-            }
             14 => {
                 eprintln!("TODO 14");
                 Self::Packet49(Packet49 {})
@@ -221,9 +221,9 @@ impl Packet {
 
 #[derive(Debug)]
 pub struct RGB {
-    r: u8,
-    g: u8,
-    b: u8,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
 impl RGB {
@@ -252,8 +252,8 @@ impl Deserializable for RGB {
 
 #[derive(Debug)]
 pub struct Vec2 {
-    x: f32,
-    y: f32,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Serializable for Vec2 {

@@ -1,4 +1,4 @@
-use crate::packets::{self, Packet, PacketBody, RGB};
+use crate::packets::{self, Packet, PacketBody, Vec2, RGB};
 use crate::serialization::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
@@ -106,14 +106,21 @@ impl Terraria {
         // > 56 : 0500380100
         // > 36 : 0800240000004200
 
-        this.stream.set_read_timeout(None)?;
+        let (mut x, y) = (33534.0f32, 4582.0f32);
         loop {
-            match this.recv_packet()? {
-                Packet::Packet82(_) => eprintln!("Packet82"),
-                packet => {
-                    dbg!(packet);
-                }
-            };
+            this.try_recv_packets()?;
+
+            x -= 0.5;
+            this.send_packet(&packets::PlayerMove {
+                id: 0,
+                flags: 0,
+                speed_flags: 0,
+                c: 0,
+                d: 0,
+                hotbar: 0,
+                pos: Vec2 { x, y },
+                vel: None,
+            })?;
         }
     }
 
