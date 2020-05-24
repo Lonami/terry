@@ -1,37 +1,47 @@
 mod magic;
-mod packet8;
-mod player_buffs;
-mod player_info;
-mod player_mana;
-mod player_uuid;
-mod to_spawn;
+//mod packet8;
+//mod player_buffs;
+//mod player_info;
+//mod player_mana;
+//mod player_uuid;
+//mod to_spawn;
 
 pub use magic::Magic;
-pub use packet8::Packet8;
-pub use player_buffs::PlayerBuffs;
-pub use player_info::PlayerInfo;
-pub use player_mana::PlayerMana;
-pub use player_uuid::PlayerUuid;
+//pub use packet8::Packet8;
+//pub use player_buffs::PlayerBuffs;
+//pub use player_info::PlayerInfo;
+//pub use player_mana::PlayerMana;
+//pub use player_uuid::PlayerUuid;
 use std::convert::TryInto;
-pub use to_spawn::ToSpawn;
+use crate::serialization::{Serializable, Deserializable, SliceCursor};
+//pub use to_spawn::ToSpawn;
 
 pub trait Packet {
     const TAG: u8;
 
-    fn append_body(&self, buf: &mut Vec<u8>);
+    fn write_body(&self, cursor: &mut SliceCursor);
 
-    /// Clears the buffer and returns the slice it wrote to.
-    /// Intended for easy use when writing to a stream.
-    fn as_byte_slice<'a>(&self, buf: &'a mut Vec<u8>) -> &'a [u8] {
-        buf.clear();
-        buf.extend(&[0, 0, 0]); // length, length, player
-        buf.push(Self::TAG);
-        self.append_body(buf);
-        let len: u16 = buf.len().try_into().expect("packet too long");
-        buf[0..2].copy_from_slice(&len.to_le_bytes());
-        &buf[..]
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self;
+}
+
+/*
+impl Serializable for Packet {
+
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        let length_pos = cursor.pos();
+        cursor.write(0u16); // length
+        cursor.write(0u8); // player
+        cursor.write(Self::TAG);
+        self.write_body(cursor);
+        let length: u16 = (cursor.pos() - length_pos).try_into().expect("packet too long");
+        cursor.rewrite(length_pos, length);
     }
 }
+
+impl Deserializable for Packet {
+
+}
+*/
 
 pub struct RGB {
     r: u8,

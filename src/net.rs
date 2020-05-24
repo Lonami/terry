@@ -28,9 +28,7 @@ impl Terraria {
     }
 
     pub fn send_packet<P: Packet>(&mut self, packet: P) -> io::Result<()> {
-        self.stream
-            .write_all(packet.as_byte_slice(&mut self.out_buffer))?;
-        Ok(())
+        todo!()
     }
 
     pub fn recv_packet() -> io::Result<()> {

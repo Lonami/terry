@@ -1,4 +1,5 @@
 use crate::packets::Packet;
+use crate::serialization::SliceCursor;
 
 /// Magic sent at the very beginning of the communication.
 pub struct Magic {
@@ -8,7 +9,11 @@ pub struct Magic {
 impl Packet for Magic {
     const TAG: u8 = 1;
 
-    fn append_body(&self, buf: &mut Vec<u8>) {
-        buf.extend(self.magic.as_bytes());
+    fn write_body(&self, cursor: &mut SliceCursor) {
+        todo!()
+    }
+
+    fn from_body(&self, cursor: &mut SliceCursor) -> Self {
+        todo!()
     }
 }
