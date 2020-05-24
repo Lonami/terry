@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Packet 82, used during login. May contain "who am I" information.
+/// Packet 82, used during login. Seems to be chat messages.
 #[derive(Debug)]
 pub struct Packet82 {
     pub a: u8,

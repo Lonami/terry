@@ -130,6 +130,10 @@ impl Packet {
                 eprintln!("TODO 14");
                 Self::Packet49(Packet49 {})
             }
+            17 => {
+                eprintln!("TODO 17");
+                Self::Packet49(Packet49 {})
+            }
             19 => {
                 eprintln!("TODO 19");
                 Self::Packet49(Packet49 {})
@@ -174,6 +178,10 @@ impl Packet {
                 eprintln!("TODO 45");
                 Self::Packet49(Packet49 {})
             }
+            51 => {
+                eprintln!("TODO 51");
+                Self::Packet49(Packet49 {})
+            }
             54 => {
                 eprintln!("TODO 54");
                 Self::Packet49(Packet49 {})
@@ -184,6 +192,10 @@ impl Packet {
             }
             74 => {
                 eprintln!("TODO 74");
+                Self::Packet49(Packet49 {})
+            }
+            79 => {
+                eprintln!("TODO 79");
                 Self::Packet49(Packet49 {})
             }
             80 => {
@@ -200,6 +212,10 @@ impl Packet {
             }
             101 => {
                 eprintln!("TODO 101");
+                Self::Packet49(Packet49 {})
+            }
+            103 => {
+                eprintln!("TODO 103");
                 Self::Packet49(Packet49 {})
             }
             129 => {

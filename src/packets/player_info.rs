@@ -21,6 +21,56 @@ pub struct PlayerInfo {
     pub difficulty_flags: u8,
 }
 
+impl Default for PlayerInfo {
+    fn default() -> Self {
+        PlayerInfo {
+            player: 0,
+            skin_variant: 0,
+            hair_variant: 0,
+            name: "terry".to_string(),
+            hair_dye: 0,
+            visible_accesories_flags: 0,
+            hide_misc: false,
+            hair_color: RGB {
+                r: 215,
+                g: 90,
+                b: 55,
+            },
+            skin_color: RGB {
+                r: 255,
+                g: 125,
+                b: 90,
+            },
+            eye_color: RGB {
+                r: 105,
+                g: 90,
+                b: 75,
+            },
+            shirt_color: RGB {
+                r: 175,
+                g: 165,
+                b: 140,
+            },
+            undershirt_color: RGB {
+                r: 160,
+                g: 180,
+                b: 215,
+            },
+            pants_color: RGB {
+                r: 255,
+                g: 230,
+                b: 175,
+            },
+            shoes_color: RGB {
+                r: 160,
+                g: 105,
+                b: 60,
+            },
+            difficulty_flags: 0,
+        }
+    }
+}
+
 impl PacketBody for PlayerInfo {
     const TAG: u8 = 4;
 

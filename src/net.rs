@@ -40,23 +40,7 @@ impl Terraria {
             magic: PROTOCOL_MAGIC.to_string(),
         })?;
 
-        this.send_packet(&packets::PlayerInfo {
-            player: 0,
-            skin_variant: 0,
-            hair_variant: 0,
-            name: PLAYER_NAME.to_string(),
-            hair_dye: 0,
-            visible_accesories_flags: 0,
-            hide_misc: false,
-            hair_color: RGB::new(),
-            skin_color: RGB::new(),
-            eye_color: RGB::new(),
-            shirt_color: RGB::new(),
-            undershirt_color: RGB::new(),
-            pants_color: RGB::new(),
-            shoes_color: RGB::new(),
-            difficulty_flags: 4,
-        })?;
+        this.send_packet(&packets::PlayerInfo::default())?;
 
         this.send_packet(&packets::PlayerUuid {
             uuid4: PLAYER_UUID.to_string(),
