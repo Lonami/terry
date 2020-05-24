@@ -28,12 +28,9 @@ pub trait PacketBody: Sized {
     fn from_body(cursor: &mut SliceCursor) -> Self;
 
     // TODO player should probably go inside the packets
-    fn serialize(&self, player: Option<u8>, cursor: &mut SliceCursor) {
+    fn serialize(&self, cursor: &mut SliceCursor) {
         let length_pos = cursor.pos();
         cursor.write(&0u16); // length
-        if let Some(player) = player {
-            cursor.write(&player); // player
-        }
         cursor.write(&Self::TAG);
         self.write_body(cursor);
         let length: u16 = (cursor.pos() - length_pos)
@@ -57,26 +54,22 @@ pub enum Packet {
 }
 
 impl Packet {
-    pub fn from_slice(slice: &mut [u8]) -> (u8, Self) {
+    pub fn from_slice(slice: &mut [u8]) -> Self {
         let mut cursor = SliceCursor::new(slice);
         let tag = cursor.read::<u8>();
-        //let player = cursor.read::<u8>();
         // TODO too bad packet body is not serializable
-        (
-            0,
-            match tag {
-                Magic::TAG => Self::Magic(Magic::from_body(&mut cursor)),
-                Packet3::TAG => Self::Packet3(Packet3::from_body(&mut cursor)),
-                Packet8::TAG => Self::Packet8(Packet8::from_body(&mut cursor)),
-                PlayerInfo::TAG => Self::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
-                ToSpawn::TAG => Self::ToSpawn(ToSpawn::from_body(&mut cursor)),
-                PlayerMana::TAG => Self::PlayerMana(PlayerMana::from_body(&mut cursor)),
-                PlayerBuffs::TAG => Self::PlayerBuffs(PlayerBuffs::from_body(&mut cursor)),
-                PlayerUuid::TAG => Self::PlayerUuid(PlayerUuid::from_body(&mut cursor)),
-                Packet82::TAG => Self::Packet82(Packet82::from_body(&mut cursor)),
-                tag => panic!(format!("unknown tag {}", tag)),
-            },
-        )
+        match tag {
+            Magic::TAG => Self::Magic(Magic::from_body(&mut cursor)),
+            Packet3::TAG => Self::Packet3(Packet3::from_body(&mut cursor)),
+            Packet8::TAG => Self::Packet8(Packet8::from_body(&mut cursor)),
+            PlayerInfo::TAG => Self::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
+            ToSpawn::TAG => Self::ToSpawn(ToSpawn::from_body(&mut cursor)),
+            PlayerMana::TAG => Self::PlayerMana(PlayerMana::from_body(&mut cursor)),
+            PlayerBuffs::TAG => Self::PlayerBuffs(PlayerBuffs::from_body(&mut cursor)),
+            PlayerUuid::TAG => Self::PlayerUuid(PlayerUuid::from_body(&mut cursor)),
+            Packet82::TAG => Self::Packet82(Packet82::from_body(&mut cursor)),
+            tag => panic!(format!("unknown tag {}", tag)),
+        }
     }
 }
 

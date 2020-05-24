@@ -10,7 +10,6 @@ const PLAYER_NAME: &str = "terry";
 const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 pub struct Terraria {
-    player: u8,
     out_buffer: Vec<u8>,
     stream: TcpStream,
 }
@@ -31,7 +30,6 @@ impl Terraria {
         // connection
         let stream = TcpStream::connect(addr)?;
         let mut this = Self {
-            player: 0,
             out_buffer: vec![0; 1024],
             stream,
         };
@@ -95,7 +93,7 @@ impl Terraria {
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
         let mut cursor = SliceCursor::new(self.out_buffer.as_mut_slice());
-        packet.serialize(None, &mut cursor);
+        packet.serialize(&mut cursor);
         let pos = cursor.finish();
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
@@ -115,6 +113,6 @@ impl Terraria {
         self.stream.read_exact(&mut packet)?;
 
         println!("< {} : {}{}", packet[0], as_hex(&lenbuf), as_hex(&packet));
-        Ok(Packet::from_slice(&mut packet).1)
+        Ok(Packet::from_slice(&mut packet))
     }
 }
