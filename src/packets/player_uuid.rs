@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Player UUID-4.
+#[derive(Debug)]
 pub struct PlayerUuid {
     pub uuid4: String,
 }

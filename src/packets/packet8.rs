@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Packet 8, used during login. Seems to always be -1.
+#[derive(Debug)]
 pub struct Packet8 {
     pub n: i32,
 }

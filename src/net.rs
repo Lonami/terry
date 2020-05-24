@@ -30,7 +30,7 @@ impl Terraria {
             magic: PROTOCOL_MAGIC.to_string(),
         })?;
 
-        let _packet = this.recv_packet()?;
+        dbg!(this.recv_packet()?);
         // TODO continue with the rest of the handshake
 
         Ok(this)

@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Magic sent at the very beginning of the communication.
+#[derive(Debug)]
 pub struct Magic {
     pub magic: String,
 }

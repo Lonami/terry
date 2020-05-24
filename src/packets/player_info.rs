@@ -2,6 +2,7 @@ use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Player information, sent on login or when the player looks change.
+#[derive(Debug)]
 pub struct PlayerInfo {
     pub skin_variant: u8,
     pub hair_variant: u8,

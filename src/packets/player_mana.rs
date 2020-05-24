@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Current and maximum mana of the player.
+#[derive(Debug)]
 pub struct PlayerMana {
     pub mana: u16,
     pub max_mana: u16,

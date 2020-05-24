@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Player buffs and debuffs.
+#[derive(Debug)]
 pub struct PlayerBuffs {
     pub buffs: [u16; 22],
 }

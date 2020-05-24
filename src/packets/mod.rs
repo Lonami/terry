@@ -38,6 +38,7 @@ pub trait PacketBody: Sized {
     }
 }
 
+#[derive(Debug)]
 pub enum Packet {
     Magic(Magic),
     Packet8(Packet8),
@@ -72,6 +73,7 @@ impl Packet {
     }
 }
 
+#[derive(Debug)]
 pub struct RGB {
     r: u8,
     g: u8,

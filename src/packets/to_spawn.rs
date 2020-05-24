@@ -2,6 +2,7 @@ use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
 /// Goes to spawn, either by login, death or recall.
+#[derive(Debug)]
 pub struct ToSpawn {
     pub x: i16,
     pub y: i16,
