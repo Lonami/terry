@@ -2,6 +2,8 @@ use crate::packets::PacketBody;
 use crate::structures::RGB;
 use crate::SliceCursor;
 
+const MAX_HAIR_VARIANT: u8 = 162;
+
 /// Player information.
 ///
 /// Direction: Server <-> Client (Sync).
@@ -9,7 +11,7 @@ use crate::SliceCursor;
 pub struct PlayerInfo {
     pub player_id: u8,
     pub skin_variant: u8,
-    /// If > 162 then Set To 0
+    /// Will be 0 if it's set to something greater than 162.
     pub hair_variant: u8,
     pub name: String,
     pub hair_dye: u8,
@@ -81,7 +83,11 @@ impl PacketBody for PlayerInfo {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.player_id);
         cursor.write(&self.skin_variant);
-        cursor.write(&self.hair_variant);
+        if self.hair_variant > MAX_HAIR_VARIANT {
+            cursor.write(&0u8);
+        } else {
+            cursor.write(&self.hair_variant);
+        }
         cursor.write(&self.name);
         cursor.write(&self.hair_dye);
         cursor.write(&self.hide_visuals[0]);

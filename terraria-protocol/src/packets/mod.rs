@@ -196,7 +196,7 @@ pub use player_dodge::PlayerDodge;
 pub use player_hp::PlayerHP;
 pub use player_hurt::PlayerHurt;
 pub use player_info::PlayerInfo;
-pub use player_inventory_slot::PlayerInventorySlot;
+pub use player_inventory_slot::{PlayerInventorySlot, SlotLocation};
 pub use player_item_animation::PlayerItemAnimation;
 pub use player_mana::PlayerMana;
 pub use player_npc_killed::PlayerNpcKilled;
@@ -264,7 +264,7 @@ pub use update_shield_strengths::UpdateShieldStrengths;
 pub use update_sign::UpdateSign;
 pub use update_tile_entity::UpdateTileEntity;
 pub use wired_cannon_shot::WiredCannonShot;
-pub use world_info::WorldInfo;
+pub use world_info::{WorldInfo, DayInfo};
 
 use crate::SliceCursor;
 use std::convert::TryInto;

@@ -1,3 +1,4 @@
+pub(crate) mod bitflags;
 mod chest;
 mod core;
 mod net_string;
@@ -13,7 +14,7 @@ pub use chest::Chest;
 pub use net_string::{NetString, NetStringMode};
 pub use player_death_reason::PlayerDeathReason;
 pub use rgb::RGB;
-pub use serialization::{Deserializable, Serializable, SliceCursor};
+pub(crate) use serialization::{Deserializable, Serializable, SliceCursor};
 pub use sign::Sign;
 pub use tile::Tile;
 pub use tile_entity::TileEntity;

@@ -1,5 +1,12 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
+use crate::bitflags;
+
+bitflags!(DayInfo[1] {
+    0 => day_time & set_day_time,
+    1 => blood_moon & set_blood_moon,
+    2 => eclipse & set_eclipse
+});
 
 /// World Info.
 ///
@@ -8,7 +15,7 @@ use crate::SliceCursor;
 pub struct WorldInfo {
     pub time: i32,
     /// BitFlags: 1 = Day Time, 2 = Blood Moon, 4 = Eclipse
-    pub day_and_moon_info: u8,
+    pub day_and_moon_info: DayInfo,
     pub moon_phase: u8,
     pub max_tiles_x: i16,
     pub max_tiles_y: i16,
