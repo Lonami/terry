@@ -7,10 +7,10 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct NpcUpdate {
     pub npc_id: i16,
-    pub position_x: i32 /* single */ ,
-    pub position_y: i32 /* single */ ,
-    pub velocity_x: i32 /* single */ ,
-    pub velocity_y: i32 /* single */ ,
+    pub position_x: i32, /* single */
+    pub position_y: i32, /* single */
+    pub velocity_x: i32, /* single */
+    pub velocity_y: i32, /* single */
     /// Player ID
     pub target: u16,
     /// BitFlags: 1 = Direction, 2 = DirectionY, 4 = AI
@@ -18,16 +18,16 @@ pub struct NpcUpdate {
     /// BitFlags: 1 = StatsScaled, 2 = SpawnedFromStatue, 4 = StrengthMultiplier
     pub npcflags2: u8,
     /// Only sent for each true AI flag in NpcFlags1
-    pub ai: i32 /* single */ ,
+    pub ai: i32, /* single */
     pub npc_netid: i16,
     /// Only sent if StatsScaled flag is true
     pub playercountformultiplayerdifficultyoverride: u8,
     /// Only sent if StrengthMultiplier flag is true
-    pub strength_multiplier: i32 /* single */ ,
+    pub strength_multiplier: i32, /* single */
     /// The size of Life (in bytes), only sent if LifeMax flag is not true
     pub lifebytes: u8,
     /// Byte, Int16, or Int32 according to LifeBytes, only sent if LifeMax flag is not true
-    pub life: () /* variable */ ,
+    pub life: (), /* variable */
     /// Only present if NPC is catchable
     pub releaseowner: u8,
 }

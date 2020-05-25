@@ -8,8 +8,8 @@ use crate::serialization::SliceCursor;
 pub struct SyncExtraValue {
     pub npc_index: i16,
     pub extra_value: i32,
-    pub x: i32 /* single */ ,
-    pub y: i32 /* single */ ,
+    pub x: i32, /* single */
+    pub y: i32, /* single */
 }
 
 impl PacketBody for SyncExtraValue {

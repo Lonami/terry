@@ -38,7 +38,7 @@ pub struct WorldInfo {
     pub ice_back_style: u8,
     pub jungle_back_style: u8,
     pub hell_back_style: u8,
-    pub wind_speed_set: i32 /* single */ ,
+    pub wind_speed_set: i32, /* single */
     pub cloud_number: u8,
     pub tree_1: i32,
     pub tree_2: i32,
@@ -67,7 +67,7 @@ pub struct WorldInfo {
     pub ocean_tree_top_style: i32,
     pub glowing_mushroom_tree_top_style: i32,
     pub underworld_tree_top_style: i32,
-    pub rain: i32 /* single */ ,
+    pub rain: i32, /* single */
     /// BitFlags: 1 = Shadow Orb Smashed, 2 = Downed Boss 1, 4 = Downed Boss 2, 8 = Downed Boss 3, 16 = Hard Mode, 32 = Downed Clown, 64 = Server Side Character, 128 = Downed Plant Boss
     pub event_info: u8,
     /// BitFlags: 1 = Mech Boss Downed, 2 = Mech Boss Downed 2, 4 = Mech Boss Downed 3, 8 = Mech Boss Any Downed, 16 = Cloud BG, 32 = Crimson, 64 = Pumpkin Moon, 128 = Snow Moon
@@ -98,7 +98,7 @@ pub struct WorldInfo {
     pub adamantite_ore_tier: i16,
     pub invasion_type: i8,
     pub lobby_id: u64,
-    pub sandstorm_severity: i32 /* single */ ,
+    pub sandstorm_severity: i32, /* single */
 }
 
 impl PacketBody for WorldInfo {

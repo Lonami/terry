@@ -7,8 +7,8 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct UpdateMinionTarget {
     pub player_id: u8,
-    pub target_x: i32 /* single */ ,
-    pub target_y: i32 /* single */ ,
+    pub target_x: i32, /* single */
+    pub target_y: i32, /* single */
 }
 
 impl PacketBody for UpdateMinionTarget {

@@ -7,7 +7,7 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct SetPlayerStealth {
     pub player: u8,
-    pub stealth: i32 /* single */ ,
+    pub stealth: i32, /* single */
 }
 
 impl PacketBody for SetPlayerStealth {

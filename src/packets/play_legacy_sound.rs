@@ -6,8 +6,8 @@ use crate::serialization::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct PlayLegacySound {
-    pub x: i32 /* single */ ,
-    pub y: i32 /* single */ ,
+    pub x: i32, /* single */
+    pub y: i32, /* single */
     pub sound_id: u16,
     /// BitFlags: 1 = Style, 2 = Volume Scale, 3 = Pitch Offset
     pub sound_flags: u8,

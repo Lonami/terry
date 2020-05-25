@@ -8,7 +8,7 @@ use crate::serialization::SliceCursor;
 pub struct UpdatePlayerLuck {
     pub player_id: u8,
     pub ladybug_luck_time_remaining: i32,
-    pub torch_luck: i32 /* single */ ,
+    pub torch_luck: i32, /* single */
     pub luck_potion: u8,
     pub hasgardengnomenearby: bool,
 }

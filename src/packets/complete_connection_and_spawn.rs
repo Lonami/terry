@@ -5,15 +5,12 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct CompleteConnectionAndSpawn {
-}
+pub struct CompleteConnectionAndSpawn {}
 
 impl PacketBody for CompleteConnectionAndSpawn {
     const TAG: u8 = 49;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-    }
+    fn write_body(&self, cursor: &mut SliceCursor) {}
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-    }
+    fn from_body(cursor: &mut SliceCursor) -> Self {}
 }

@@ -18,8 +18,6 @@ impl PacketBody for TeleportationPotion {
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            ty: cursor.read(),
-        }
+        Self { ty: cursor.read() }
     }
 }

@@ -9,9 +9,9 @@ pub struct NebulaLevelUp {
     pub player_id: u8,
     pub level_up_type: u16,
     /// In world coordinate pixels.
-    pub origin_x: i32 /* single */ ,
+    pub origin_x: i32, /* single */
     /// In world coordinate pixels.
-    pub origin_y: i32 /* single */ ,
+    pub origin_y: i32, /* single */
 }
 
 impl PacketBody for NebulaLevelUp {

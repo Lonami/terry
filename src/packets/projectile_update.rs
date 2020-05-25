@@ -7,23 +7,23 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct ProjectileUpdate {
     pub projectile_id: i16,
-    pub position_x: i32 /* single */ ,
-    pub position_y: i32 /* single */ ,
-    pub velocity_x: i32 /* single */ ,
-    pub velocity_y: i32 /* single */ ,
+    pub position_x: i32, /* single */
+    pub position_y: i32, /* single */
+    pub velocity_x: i32, /* single */
+    pub velocity_y: i32, /* single */
     /// Player ID
     pub owner: u8,
     pub ty: i16,
     /// BitFlags: 1 = AI
     pub projflags: u8,
     /// Only sent if AI
-    pub ai0: i32 /* single */ ,
+    pub ai0: i32, /* single */
     /// Only sent if AI
-    pub ai1: i32 /* single */ ,
+    pub ai1: i32, /* single */
     /// Only sent if Damage flag is true
     pub damage: i16,
     /// Only sent if Knockback flag is true
-    pub knockback: i32 /* single */ ,
+    pub knockback: i32, /* single */
     /// Only sent if OriginalDamage flag is true
     pub original_damage: i16,
     /// Only sent if ProjUUID flag is true

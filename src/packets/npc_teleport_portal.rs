@@ -8,10 +8,10 @@ use crate::serialization::SliceCursor;
 pub struct NpcTeleportPortal {
     pub npc_id: u16,
     pub portal_color_index: i16,
-    pub new_position_x: i32 /* single */ ,
-    pub new_position_y: i32 /* single */ ,
-    pub velocity_x: i32 /* single */ ,
-    pub velocity_y: i32 /* single */ ,
+    pub new_position_x: i32, /* single */
+    pub new_position_y: i32, /* single */
+    pub velocity_x: i32,     /* single */
+    pub velocity_y: i32,     /* single */
 }
 
 impl PacketBody for NpcTeleportPortal {

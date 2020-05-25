@@ -8,10 +8,10 @@ use crate::serialization::SliceCursor;
 pub struct UpdateItemDrop2 {
     /// If below 400 and NetID 0 Then Set NullIf ItemID is 400 Then New Item
     pub item_id: i16,
-    pub position_x: i32 /* single */ ,
-    pub position_y: i32 /* single */ ,
-    pub velocity_x: i32 /* single */ ,
-    pub velocity_y: i32 /* single */ ,
+    pub position_x: i32, /* single */
+    pub position_y: i32, /* single */
+    pub velocity_x: i32, /* single */
+    pub velocity_y: i32, /* single */
     pub stack_size: i16,
     pub prefix: u8,
     /// If 0 then ownIgnore = 0 and ownTime = 100

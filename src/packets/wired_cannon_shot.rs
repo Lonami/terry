@@ -7,7 +7,7 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct WiredCannonShot {
     pub damage: i16,
-    pub knockback: i32 /* single */ ,
+    pub knockback: i32, /* single */
     pub x: i16,
     pub y: i16,
     pub angle: i16,

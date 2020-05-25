@@ -9,8 +9,8 @@ pub struct PlayerNPCTeleport {
     /// BitFlags: 0 = Player Teleport (Neither 1 or 2), 1 = NPC Teleport, 2 = Player Teleport to Other Player, 4 = GetPositionFromTarget, 8 = HasExtraInfo
     pub flags: u8,
     pub target_id: i16,
-    pub x: i32 /* single */ ,
-    pub y: i32 /* single */ ,
+    pub x: i32, /* single */
+    pub y: i32, /* single */
     pub style: u8,
     /// Only sent if HasExtraInfo flag is true
     pub extrainfo: i32,

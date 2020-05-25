@@ -6,8 +6,8 @@ use crate::serialization::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct CreateCombatText {
-    pub x: i32 /* single */ ,
-    pub y: i32 /* single */ ,
+    pub x: i32, /* single */
+    pub y: i32, /* single */
     pub color: Color,
     pub heal_amount: i32,
 }

@@ -14,7 +14,7 @@ pub struct TweakItem {
     /// if Flags1.Damage
     pub damage: u16,
     /// if Flags1.Knockback
-    pub knockback: i32 /* single */ ,
+    pub knockback: i32, /* single */
     /// if Flags1.UseAnimation
     pub use_animation: u16,
     /// if Flags1.UseTime

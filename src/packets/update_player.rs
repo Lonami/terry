@@ -16,20 +16,20 @@ pub struct UpdatePlayer {
     /// BitFlags: 1 = IsSleeping
     pub sleepinginfo: u8,
     pub selected_item: u8,
-    pub position_x: i32 /* single */ ,
-    pub position_y: i32 /* single */ ,
+    pub position_x: i32, /* single */
+    pub position_y: i32, /* single */
     /// Not sent if UpdateVelocity is not set
-    pub velocity_x: i32 /* single */ ,
+    pub velocity_x: i32, /* single */
     /// Not sent if UpdateVelocity is not set
-    pub velocity_y: i32 /* single */ ,
+    pub velocity_y: i32, /* single */
     /// Original Position for Potion of Return, only sent if UsedPotionofReturn flag is true
-    pub original_position_x: i32 /* single */ ,
+    pub original_position_x: i32, /* single */
     /// Original Position for Potion of Return, only sent if UsedPotionofReturn flag is true
-    pub original_position_y: i32 /* single */ ,
+    pub original_position_y: i32, /* single */
     /// Home Position for Potion of Return, only sent if UsedPotionofReturn flag is true
-    pub home_position_x: i32 /* single */ ,
+    pub home_position_x: i32, /* single */
     /// Home Position for Potion of Return, only sent if UsedPotionofReturn flag is true
-    pub home_position_y: i32 /* single */ ,
+    pub home_position_y: i32, /* single */
 }
 
 impl PacketBody for UpdatePlayer {

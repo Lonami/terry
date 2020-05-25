@@ -9,7 +9,7 @@ pub struct NpcStrike {
     pub npc_id: i16,
     /// -1 = Kill
     pub damage: i16,
-    pub knockback: i32 /* single */ ,
+    pub knockback: i32, /* single */
     pub hit_direction: u8,
     pub crit: bool,
 }

@@ -7,14 +7,14 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct SyncRevenge {
     pub unique_id: i32,
-    pub x: i32 /* single */ ,
-    pub y: i32 /* single */ ,
+    pub x: i32, /* single */
+    pub y: i32, /* single */
     pub npc_id: i32,
-    pub npc_hp_percent: i32 /* single */ ,
+    pub npc_hp_percent: i32, /* single */
     pub npc_type: i32,
     pub npc_ai: i32,
     pub coin_value: i32,
-    pub base_value: i32 /* single */ ,
+    pub base_value: i32, /* single */
     pub spawnedfromstatue: bool,
 }
 

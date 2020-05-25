@@ -5,17 +5,14 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Not used.
 #[derive(Debug)]
-pub struct SocialHandshake {
-}
+pub struct SocialHandshake {}
 
 impl PacketBody for SocialHandshake {
     const TAG: u8 = 93;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-    }
+    fn write_body(&self, cursor: &mut SliceCursor) {}
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-        }
+        Self {}
     }
 }
