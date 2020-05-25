@@ -231,7 +231,7 @@ pub use set_user_slot::SetUserSlot;
 pub use smart_text_message::SmartTextMessage;
 pub use social_handshake::SocialHandshake;
 pub use spawn_boss_invasion::SpawnBossInvasion;
-pub use spawn_player::{SpawnPlayer, SpawnContext};
+pub use spawn_player::{SpawnContext, SpawnPlayer};
 pub use special_npc_effect::SpecialNpcEffect;
 pub use status::Status;
 pub use strike_npc::StrikeNpc;
@@ -291,21 +291,24 @@ pub trait PacketBody: Sized {
 
 #[derive(Debug)]
 pub enum Packet {
-    Connect(Connect),                                         // 1
-    Disconnect(Disconnect),                                   // 2
-    SetUserSlot(SetUserSlot),                                 // 3
-    PlayerInfo(PlayerInfo),                                   // 4
-    PlayerInventorySlot(PlayerInventorySlot),                 // 5
-    RequestWorldData(RequestWorldData),                       // 6
-    WorldInfo(WorldInfo),                                     // 7
-    RequestEssentialTiles(RequestEssentialTiles),             // 8
-    Status(Status),                                           // 9
-    SendSection(SendSection),                                 // 10
-    SectionTileFrame(SectionTileFrame),                       // 11
-    SpawnPlayer(SpawnPlayer),                                 // 12
-    UpdatePlayer(UpdatePlayer),                               // 13
-    PlayerActive(PlayerActive),                               // 14
-    PlayerHP(PlayerHP),                                       // 16
+    Connect(Connect),                             // 1
+    Disconnect(Disconnect),                       // 2
+    SetUserSlot(SetUserSlot),                     // 3
+    PlayerInfo(PlayerInfo),                       // 4
+    PlayerInventorySlot(PlayerInventorySlot),     // 5
+    RequestWorldData(RequestWorldData),           // 6
+    WorldInfo(WorldInfo),                         // 7
+    RequestEssentialTiles(RequestEssentialTiles), // 8
+    Status(Status),                               // 9
+    // TODO implement SendSection
+    SendSection(SendSection),           // 10
+    SectionTileFrame(SectionTileFrame), // 11
+    SpawnPlayer(SpawnPlayer),           // 12
+    UpdatePlayer(UpdatePlayer),         // 13
+    PlayerActive(PlayerActive),         // 14
+    // 15 (null)
+    PlayerHP(PlayerHP), // 16
+    // TODO all below need to be reviewed still:
     ModifyTile(ModifyTile),                                   // 17
     Time(Time),                                               // 18
     DoorToggle(DoorToggle),                                   // 19

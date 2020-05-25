@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{RGB, Vec2};
+use crate::structures::{Vec2, RGB};
 use crate::SliceCursor;
 
 /// Create combat text.

@@ -1,6 +1,6 @@
 use crate::packets::PacketBody;
-use crate::SliceCursor;
 use crate::structures::Vec2;
+use crate::SliceCursor;
 
 /// NPC using a teleport portal.
 ///

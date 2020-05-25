@@ -1,6 +1,6 @@
 use crate::packets::PacketBody;
-use crate::SliceCursor;
 use crate::structures::Vec2;
+use crate::SliceCursor;
 
 /// No description known yet.
 ///

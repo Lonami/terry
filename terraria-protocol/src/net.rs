@@ -76,7 +76,10 @@ impl Terraria {
 
         this.send_packet(&packets::RequestWorldData {})?;
 
-        this.send_packet(&packets::RequestEssentialTiles { spawn_x: -1, spawn_y: -1 })?;
+        this.send_packet(&packets::RequestEssentialTiles {
+            spawn_x: -1,
+            spawn_y: -1,
+        })?;
 
         this.send_packet(&packets::SpawnPlayer {
             player_id: 0,

@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{NetString, RGB, Vec2};
+use crate::structures::{NetString, Vec2, RGB};
 use crate::SliceCursor;
 
 /// Combat text string.
