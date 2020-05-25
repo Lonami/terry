@@ -30,11 +30,11 @@ pub struct WorldInfo {
     pub crimson_background: u8,
     pub desert_background: u8,
     pub ocean_background: u8,
-    pub ??_background: u8,
-    pub ??_background: u8,
-    pub ??_background: u8,
-    pub ??_background: u8,
-    pub ??_background: u8,
+    pub a_background: u8,
+    pub b_background: u8,
+    pub c_background: u8,
+    pub d_background: u8,
+    pub e_background: u8,
     pub ice_back_style: u8,
     pub jungle_back_style: u8,
     pub hell_back_style: u8,
@@ -128,11 +128,11 @@ impl PacketBody for WorldInfo {
         cursor.write(&self.crimson_background);
         cursor.write(&self.desert_background);
         cursor.write(&self.ocean_background);
-        cursor.write(&self.??_background);
-        cursor.write(&self.??_background);
-        cursor.write(&self.??_background);
-        cursor.write(&self.??_background);
-        cursor.write(&self.??_background);
+        cursor.write(&self.a_background);
+        cursor.write(&self.b_background);
+        cursor.write(&self.c_background);
+        cursor.write(&self.d_background);
+        cursor.write(&self.e_background);
         cursor.write(&self.ice_back_style);
         cursor.write(&self.jungle_back_style);
         cursor.write(&self.hell_back_style);
@@ -210,11 +210,11 @@ impl PacketBody for WorldInfo {
             crimson_background: cursor.read(),
             desert_background: cursor.read(),
             ocean_background: cursor.read(),
-            ??_background: cursor.read(),
-            ??_background: cursor.read(),
-            ??_background: cursor.read(),
-            ??_background: cursor.read(),
-            ??_background: cursor.read(),
+            a_background: cursor.read(),
+            b_background: cursor.read(),
+            c_background: cursor.read(),
+            d_background: cursor.read(),
+            e_background: cursor.read(),
             ice_back_style: cursor.read(),
             jungle_back_style: cursor.read(),
             hell_back_style: cursor.read(),

@@ -5,12 +5,12 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct SmartTextMessage(FKA.ChatMessagev2) {
+pub struct SmartTextMessage {
     /// Client cannot change colors
     pub message_color: Color,
 }
 
-impl PacketBody for SmartTextMessage(FKA.ChatMessagev2) {
+impl PacketBody for SmartTextMessage {
     const TAG: u8 = 107;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

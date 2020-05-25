@@ -8,7 +8,7 @@ use crate::serialization::SliceCursor;
 pub struct PlaceObject {
     pub x: i16,
     pub y: i16,
-    pub type: i16,
+    pub ty: i16,
     pub style: i16,
     pub alternate: u8,
     pub random: i8,
@@ -21,7 +21,7 @@ impl PacketBody for PlaceObject {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.x);
         cursor.write(&self.y);
-        cursor.write(&self.type);
+        cursor.write(&self.ty);
         cursor.write(&self.style);
         cursor.write(&self.alternate);
         cursor.write(&self.random);
@@ -32,7 +32,7 @@ impl PacketBody for PlaceObject {
         Self {
             x: cursor.read(),
             y: cursor.read(),
-            type: cursor.read(),
+            ty: cursor.read(),
             style: cursor.read(),
             alternate: cursor.read(),
             random: cursor.read(),

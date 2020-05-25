@@ -13,7 +13,7 @@ pub struct ProjectileUpdate {
     pub velocity_y: i32 /* single */ ,
     /// Player ID
     pub owner: u8,
-    pub type: i16,
+    pub ty: i16,
     /// BitFlags: 1 = AI
     pub projflags: u8,
     /// Only sent if AI
@@ -40,7 +40,7 @@ impl PacketBody for ProjectileUpdate {
         cursor.write(&self.velocity_x);
         cursor.write(&self.velocity_y);
         cursor.write(&self.owner);
-        cursor.write(&self.type);
+        cursor.write(&self.ty);
         cursor.write(&self.projflags);
         cursor.write(&self.ai0);
         cursor.write(&self.ai1);
@@ -58,7 +58,7 @@ impl PacketBody for ProjectileUpdate {
             velocity_x: cursor.read(),
             velocity_y: cursor.read(),
             owner: cursor.read(),
-            type: cursor.read(),
+            ty: cursor.read(),
             projflags: cursor.read(),
             ai0: cursor.read(),
             ai1: cursor.read(),

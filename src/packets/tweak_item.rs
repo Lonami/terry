@@ -5,7 +5,7 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct TweakItem(FKA.AlterItemDrop) {
+pub struct TweakItem {
     pub item_index: i16,
     /// BitFlags: 1 = Color, 2 = Damage, 4 = Knockback, 8 = UseAnimation, 16 = UseTime, 32 = Shoot, 64 = ShootSpeed, 128 = NextFlags
     pub flags1: u8,
@@ -39,7 +39,7 @@ pub struct TweakItem(FKA.AlterItemDrop) {
     pub notammo: bool,
 }
 
-impl PacketBody for TweakItem(FKA.AlterItemDrop) {
+impl PacketBody for TweakItem {
     const TAG: u8 = 88;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

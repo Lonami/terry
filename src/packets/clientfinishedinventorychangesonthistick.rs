@@ -5,10 +5,10 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
-pub struct ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory) {
+pub struct ClientFinishedInventoryChangesOnThisTick {
 }
 
-impl PacketBody for ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory) {
+impl PacketBody for ClientFinishedInventoryChangesOnThisTick {
     const TAG: u8 = 138;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

@@ -80,7 +80,7 @@ mod set_player_stealth;
 mod force_item_into_nearest_chest;
 mod update_tile_entity;
 mod place_tile_entity;
-mod tweak_item_(fka._alter_item_drop);
+mod tweak_item;
 mod place_item_frame;
 mod update_item_drop_2;
 mod sync_emote_bubble;
@@ -99,7 +99,7 @@ mod moon_lord_countdown;
 mod npc_shop_item;
 mod gem_lock_toggle;
 mod poof_of_smoke;
-mod smart_text_message_(fka._chat_message_v2);
+mod smart_text_message;
 mod wired_cannon_shot;
 mod mass_wire_operation;
 mod mass_wire_operation_consume;
@@ -130,7 +130,7 @@ mod updateplayerluckfactors;
 mod deadplayer;
 mod synccavernmonstertype;
 mod requestnpcbuffremoval;
-mod clientfinishedinventorychangesonthistick_(formerly_clientsyncedinventory);
+mod clientfinishedinventorychangesonthistick;
 mod setcountsashostforgameplay;
 
 pub use connect_request::ConnectRequest;
@@ -215,7 +215,7 @@ pub use set_player_stealth::SetPlayerStealth;
 pub use force_item_into_nearest_chest::ForceItemIntoNearestChest;
 pub use update_tile_entity::UpdateTileEntity;
 pub use place_tile_entity::PlaceTileEntity;
-pub use tweak_item_(fka._alter_item_drop)::TweakItem(FKA.AlterItemDrop);
+pub use tweak_item::TweakItem;
 pub use place_item_frame::PlaceItemFrame;
 pub use update_item_drop_2::UpdateItemDrop2;
 pub use sync_emote_bubble::SyncEmoteBubble;
@@ -234,7 +234,7 @@ pub use moon_lord_countdown::MoonLordCountdown;
 pub use npc_shop_item::NPCShopItem;
 pub use gem_lock_toggle::GemLockToggle;
 pub use poof_of_smoke::PoofofSmoke;
-pub use smart_text_message_(fka._chat_message_v2)::SmartTextMessage(FKA.ChatMessagev2);
+pub use smart_text_message::SmartTextMessage;
 pub use wired_cannon_shot::WiredCannonShot;
 pub use mass_wire_operation::MassWireOperation;
 pub use mass_wire_operation_consume::MassWireOperationConsume;
@@ -265,7 +265,7 @@ pub use updateplayerluckfactors::UpdatePlayerLuckFactors;
 pub use deadplayer::DeadPlayer;
 pub use synccavernmonstertype::SyncCavernMonsterType;
 pub use requestnpcbuffremoval::RequestNPCBuffRemoval;
-pub use clientfinishedinventorychangesonthistick_(formerly_clientsyncedinventory)::ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory);
+pub use clientfinishedinventorychangesonthistick::ClientFinishedInventoryChangesOnThisTick;
 pub use setcountsashostforgameplay::SetCountsAsHostForGameplay;
 
 enum Packet {
@@ -351,7 +351,7 @@ enum Packet {
     ForceItemIntoNearestChest(ForceItemIntoNearestChest), // 85
     UpdateTileEntity(UpdateTileEntity), // 86
     PlaceTileEntity(PlaceTileEntity), // 87
-    TweakItem(FKA.AlterItemDrop)(TweakItem(FKA.AlterItemDrop)), // 88
+    TweakItem(TweakItem), // 88
     PlaceItemFrame(PlaceItemFrame), // 89
     UpdateItemDrop2(UpdateItemDrop2), // 90
     SyncEmoteBubble(SyncEmoteBubble), // 91
@@ -370,7 +370,7 @@ enum Packet {
     NPCShopItem(NPCShopItem), // 104
     GemLockToggle(GemLockToggle), // 105
     PoofofSmoke(PoofofSmoke), // 106
-    SmartTextMessage(FKA.ChatMessagev2)(SmartTextMessage(FKA.ChatMessagev2)), // 107
+    SmartTextMessage(SmartTextMessage), // 107
     WiredCannonShot(WiredCannonShot), // 108
     MassWireOperation(MassWireOperation), // 109
     MassWireOperationConsume(MassWireOperationConsume), // 110
@@ -401,6 +401,6 @@ enum Packet {
     DeadPlayer(DeadPlayer), // 135
     SyncCavernMonsterType(SyncCavernMonsterType), // 136
     RequestNPCBuffRemoval(RequestNPCBuffRemoval), // 137
-    ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory)(ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory)), // 138
+    ClientFinishedInventoryChangesOnThisTick(ClientFinishedInventoryChangesOnThisTick), // 138
     SetCountsAsHostForGameplay(SetCountsAsHostForGameplay), // 139
 }
