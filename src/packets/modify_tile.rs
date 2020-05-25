@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Modify Tile.
+/// Modify a single tile.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

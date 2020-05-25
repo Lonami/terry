@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Open Chest.
+/// Open a chest.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

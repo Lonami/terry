@@ -5,7 +5,7 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct UpdateNPCName {
+pub struct UpdateNpcName {
     pub npc_id: i16,
     /// Only if client is receiving packet
     pub name: String,
@@ -13,7 +13,7 @@ pub struct UpdateNPCName {
     pub townnpcvariationindex: i32,
 }
 
-impl PacketBody for UpdateNPCName {
+impl PacketBody for UpdateNpcName {
     const TAG: u8 = 56;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

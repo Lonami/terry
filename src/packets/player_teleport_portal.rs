@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Teleport Portal.
+/// Teleport a player through a portal.
 ///
 /// Direction: Server <-> Client.
 #[derive(Debug)]

@@ -1,12 +1,12 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Connect Request.
+/// Connect request.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
 pub struct ConnectRequest {
-    /// &quot;Terraria&quot; + Main.curRelease
+    /// "Terraria" + Main.curRelease
     pub version: String,
 }
 

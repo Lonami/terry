@@ -1,11 +1,11 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// NPC Update.
+/// NPC update, such as movement.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct NPCUpdate {
+pub struct NpcUpdate {
     pub npc_id: i16,
     pub position_x: i32 /* single */ ,
     pub position_y: i32 /* single */ ,
@@ -32,7 +32,7 @@ pub struct NPCUpdate {
     pub releaseowner: u8,
 }
 
-impl PacketBody for NPCUpdate {
+impl PacketBody for NpcUpdate {
     const TAG: u8 = 23;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

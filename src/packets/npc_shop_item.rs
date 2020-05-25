@@ -1,11 +1,11 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// NPC Shop Item.
+/// The item from a NPC shop.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct NPCShopItem {
+pub struct NpcShopItem {
     pub slot: u8,
     pub item_type: i16,
     pub stack: i16,
@@ -15,7 +15,7 @@ pub struct NPCShopItem {
     pub flags: u8,
 }
 
-impl PacketBody for NPCShopItem {
+impl PacketBody for NpcShopItem {
     const TAG: u8 = 104;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

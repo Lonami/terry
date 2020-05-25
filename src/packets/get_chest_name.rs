@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Get Chest Name.
+/// Get a chest's name.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

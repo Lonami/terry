@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Team.
+/// Set the player's team.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

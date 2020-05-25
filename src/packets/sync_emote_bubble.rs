@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Sync Emote Bubble.
+/// Sync an emote bubble.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

@@ -1,11 +1,11 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// NPC Teleport Portal.
+/// NPC using a teleport portal.
 ///
 /// Direction: Server <-> Client.
 #[derive(Debug)]
-pub struct NPCTeleportPortal {
+pub struct NpcTeleportPortal {
     pub npc_id: u16,
     pub portal_color_index: i16,
     pub new_position_x: i32 /* single */ ,
@@ -14,7 +14,7 @@ pub struct NPCTeleportPortal {
     pub velocity_y: i32 /* single */ ,
 }
 
-impl PacketBody for NPCTeleportPortal {
+impl PacketBody for NpcTeleportPortal {
     const TAG: u8 = 100;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

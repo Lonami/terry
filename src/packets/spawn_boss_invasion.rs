@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Spawn Boss Invasion.
+/// Spawn a boss invasion.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

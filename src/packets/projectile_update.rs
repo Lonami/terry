@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Projectile Update.
+/// Projectile update.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

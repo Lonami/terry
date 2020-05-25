@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Moon Lord Countdown.
+/// Countdown for Moon Lord.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

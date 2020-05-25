@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Place Tile Entity.
+/// Place a tile entity.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

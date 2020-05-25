@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Load Net Module.
+/// Load a network module.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Add Player Buff.
+/// Add a buff (or debuff) to some player for a certain duration.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

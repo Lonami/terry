@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Kill Portal.
+/// Kill a portal.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

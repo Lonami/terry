@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Heal Other Player.
+/// Apply a healing effect to other player.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

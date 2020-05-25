@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Request Essential Tiles.
+/// Request the essential tiles.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Send Tile Square.
+/// Send a tile square.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

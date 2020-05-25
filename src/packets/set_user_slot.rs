@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Set User Slot.
+/// Set the user's slot.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

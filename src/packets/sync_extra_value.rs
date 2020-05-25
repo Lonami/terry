@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Sync Extra Value.
+/// Sync an extra value.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Set Liquid.
+/// Set liquid.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

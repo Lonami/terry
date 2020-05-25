@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Sync Player Chest Index.
+/// Sync a player chest iIndex.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

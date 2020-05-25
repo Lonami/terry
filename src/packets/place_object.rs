@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Place Object.
+/// Place an object.
 ///
 /// Direction: Server <-> Client.
 #[derive(Debug)]

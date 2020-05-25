@@ -5,13 +5,13 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct SpecialNPCEffect {
+pub struct SpecialNpcEffect {
     pub player_id: u8,
     /// Values: 1 = Spawn Skeletron, 2 = Cause sound at player, 3 = Start Sundialing (Only works if server is receiving), 4 = BigMimcSpawnSmoke
     pub ty: u8,
 }
 
-impl PacketBody for SpecialNPCEffect {
+impl PacketBody for SpecialNpcEffect {
     const TAG: u8 = 51;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

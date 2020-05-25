@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Disconnect.
+/// Disconnect a client (e.g. via kicking).
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

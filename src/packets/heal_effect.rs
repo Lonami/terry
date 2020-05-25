@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Heal Effect.
+/// Apply a healing effect.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

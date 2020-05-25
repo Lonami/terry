@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Sync Active Chest.
+/// Sync an active chest.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

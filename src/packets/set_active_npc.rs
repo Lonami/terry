@@ -1,16 +1,16 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Set Active NPC.
+/// Set the active NPC.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct SetActiveNPC {
+pub struct SetActiveNpc {
     pub player_id: u8,
     pub npc_talk_target: i16,
 }
 
-impl PacketBody for SetActiveNPC {
+impl PacketBody for SetActiveNpc {
     const TAG: u8 = 40;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

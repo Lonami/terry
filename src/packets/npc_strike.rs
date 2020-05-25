@@ -1,11 +1,11 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// NPC Strike.
+/// NPC attacks.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct NPCStrike {
+pub struct NpcStrike {
     pub npc_id: i16,
     /// -1 = Kill
     pub damage: i16,
@@ -14,7 +14,7 @@ pub struct NPCStrike {
     pub crit: bool,
 }
 
-impl PacketBody for NPCStrike {
+impl PacketBody for NpcStrike {
     const TAG: u8 = 28;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

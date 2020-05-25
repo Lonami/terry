@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Active.
+/// Player activity.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

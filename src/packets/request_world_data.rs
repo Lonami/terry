@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Request World Data.
+/// Request world data.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Request Password.
+/// Request password.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

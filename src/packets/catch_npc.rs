@@ -1,16 +1,16 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Catch NPC.
+/// Catch a NPC, presumably used for pets.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
-pub struct CatchNPC {
+pub struct CatchNpc {
     pub npc_id: i16,
     pub player_id: u8,
 }
 
-impl PacketBody for CatchNPC {
+impl PacketBody for CatchNpc {
     const TAG: u8 = 70;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

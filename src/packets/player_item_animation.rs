@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Item Animation.
+/// Player item animation.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

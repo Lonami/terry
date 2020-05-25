@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Set Player Stealth.
+/// Set player stealth.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

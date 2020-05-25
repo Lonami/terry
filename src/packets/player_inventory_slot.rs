@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Inventory Slot.
+/// Player inventory slot.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

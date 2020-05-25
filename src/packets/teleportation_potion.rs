@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Teleportation Potion.
+/// Teleportation potion.
 ///
 /// Direction: Server <-> Client.
 #[derive(Debug)]

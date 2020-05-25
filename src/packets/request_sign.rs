@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Request Sign.
+/// Request a sign.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Send Section.
+/// Send section.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

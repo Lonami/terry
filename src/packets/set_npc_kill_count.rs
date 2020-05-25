@@ -1,16 +1,16 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Set NPC Kill Count.
+/// Set NPC kill count.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct SetNPCKillCount {
+pub struct SetNpcKillCount {
     pub npc_type: i16,
     pub kill_count: i32,
 }
 
-impl PacketBody for SetNPCKillCount {
+impl PacketBody for SetNpcKillCount {
     const TAG: u8 = 83;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

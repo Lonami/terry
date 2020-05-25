@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Create Combat Text.
+/// Create combat text.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

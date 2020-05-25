@@ -1,11 +1,11 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Release NPC.
+/// Release a NPC.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
-pub struct ReleaseNPC {
+pub struct ReleaseNpc {
     pub x: i32,
     pub y: i32,
     pub npc_type: i16,
@@ -13,7 +13,7 @@ pub struct ReleaseNPC {
     pub style: u8,
 }
 
-impl PacketBody for ReleaseNPC {
+impl PacketBody for ReleaseNpc {
     const TAG: u8 = 71;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

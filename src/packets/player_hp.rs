@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player HP.
+/// Player health points and maximum HP.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

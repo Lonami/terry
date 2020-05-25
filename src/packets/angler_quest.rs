@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Angler Quest.
+/// Information about Angler quests.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

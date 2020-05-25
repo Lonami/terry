@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Mana.
+/// Player mana and maximum mana.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

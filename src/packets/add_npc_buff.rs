@@ -1,17 +1,17 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Add NPC Buff.
+/// Add a buff (or debuff) to some NPC for a certain duration.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct AddNPCBuff {
+pub struct AddNpcBuff {
     pub npc_id: i16,
     pub buff: u16,
     pub time: i16,
 }
 
-impl PacketBody for AddNPCBuff {
+impl PacketBody for AddNpcBuff {
     const TAG: u8 = 53;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

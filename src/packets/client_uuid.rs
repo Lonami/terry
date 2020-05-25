@@ -5,10 +5,10 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
-pub struct ClientUUID {
+pub struct ClientUuid {
 }
 
-impl PacketBody for ClientUUID {
+impl PacketBody for ClientUuid {
     const TAG: u8 = 68;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

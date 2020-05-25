@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Mana Effect.
+/// Apply a mana healing effect.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

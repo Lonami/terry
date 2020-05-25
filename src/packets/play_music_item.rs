@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Play Music Item.
+/// Play a music item.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]

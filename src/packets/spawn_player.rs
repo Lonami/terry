@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Spawn Player.
+/// Spawn a player.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

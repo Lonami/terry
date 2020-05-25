@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Social Handshake.
+/// Social handshake.
 ///
 /// Direction: Not used.
 #[derive(Debug)]

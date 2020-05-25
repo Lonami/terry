@@ -1,14 +1,14 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Player Info.
+/// Player information.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
 pub struct PlayerInfo {
     pub player_id: u8,
     pub skin_varient: u8,
-    /// If &gt;162 then Set To 0
+    /// If > 162 then Set To 0
     pub hair: u8,
     pub name: String,
     pub hair_dye: u8,

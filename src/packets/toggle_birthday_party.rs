@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Toggle Birthday Party.
+/// Toggle a birthday party.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

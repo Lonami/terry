@@ -1,14 +1,14 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Place Item Frame.
+/// Place an item frame.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
 pub struct PlaceItemFrame {
     pub x: i16,
     pub y: i16,
-    pub itemid: i16,
+    pub item_id: i16,
     pub prefix: u8,
     pub stack: i16,
 }
@@ -19,7 +19,7 @@ impl PacketBody for PlaceItemFrame {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.x);
         cursor.write(&self.y);
-        cursor.write(&self.itemid);
+        cursor.write(&self.item_id);
         cursor.write(&self.prefix);
         cursor.write(&self.stack);
     }
@@ -28,7 +28,7 @@ impl PacketBody for PlaceItemFrame {
         Self {
             x: cursor.read(),
             y: cursor.read(),
-            itemid: cursor.read(),
+            item_id: cursor.read(),
             prefix: cursor.read(),
             stack: cursor.read(),
         }

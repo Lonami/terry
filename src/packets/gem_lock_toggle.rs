@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Gem Lock Toggle.
+/// Toggle the gem lock.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

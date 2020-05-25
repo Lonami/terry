@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Create Temporary Animation.
+/// Create a temporary animation.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]

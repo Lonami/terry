@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Remove Item Owner.
+/// Remove item owner.
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
