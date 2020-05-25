@@ -14,53 +14,67 @@ pub struct Tile {
 }
 
 impl Tile {
-    fn active(&self) -> bool {
+    pub fn active(&self) -> bool {
         self.flags[0] & 0x01 != 0
     }
-    fn lighted(&self) -> bool {
+
+    pub fn lighted(&self) -> bool {
         self.flags[0] & 0x02 != 0
     }
-    fn has_wall(&self) -> bool {
+
+    pub fn has_wall(&self) -> bool {
         self.flags[0] & 0x04 != 0
     }
-    fn has_liquid(&self) -> bool {
+
+    pub fn has_liquid(&self) -> bool {
         self.flags[0] & 0x08 != 0
     }
-    fn wire1(&self) -> bool {
+
+    pub fn wire1(&self) -> bool {
         self.flags[0] & 0x10 != 0
     }
-    fn half_brick(&self) -> bool {
+
+    pub fn half_brick(&self) -> bool {
         self.flags[0] & 0x20 != 0
     }
-    fn actuator(&self) -> bool {
+
+    pub fn actuator(&self) -> bool {
         self.flags[0] & 0x40 != 0
     }
-    fn inactive(&self) -> bool {
+
+    pub fn inactive(&self) -> bool {
         self.flags[0] & 0x80 != 0
     }
 
-    fn wire2(&self) -> bool {
+    pub fn wire2(&self) -> bool {
         self.flags[1] & 0x01 != 0
     }
-    fn wire3(&self) -> bool {
+
+    pub fn wire3(&self) -> bool {
         self.flags[1] & 0x02 != 0
     }
-    fn has_color(&self) -> bool {
+
+    pub fn has_color(&self) -> bool {
         self.flags[1] & 0x04 != 0
     }
-    fn has_wall_color(&self) -> bool {
+
+    pub fn has_wall_color(&self) -> bool {
         self.flags[1] & 0x08 != 0
     }
-    fn slope1(&self) -> bool {
+
+    pub fn slope1(&self) -> bool {
         self.flags[1] & 0x10 != 0
     }
-    fn slope2(&self) -> bool {
+
+    pub fn slope2(&self) -> bool {
         self.flags[1] & 0x20 != 0
     }
-    fn slope3(&self) -> bool {
+
+    pub fn slope3(&self) -> bool {
         self.flags[1] & 0x40 != 0
     }
-    fn wire4(&self) -> bool {
+
+    pub fn wire4(&self) -> bool {
         self.flags[1] & 0x80 != 0
     }
 }
@@ -94,7 +108,7 @@ impl Serializable for Tile {
 }
 
 impl Deserializable for Tile {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
+    fn deserialize(_cursor: &mut SliceCursor) -> Self {
         todo!()
     }
 }

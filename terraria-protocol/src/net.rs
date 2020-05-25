@@ -5,9 +5,8 @@ use std::net::{TcpStream, ToSocketAddrs};
 
 const PROTOCOL_VERSION: &str = "Terraria228";
 
-// TODO don't use constants for these
-const PLAYER_NAME: &str = "terry";
-const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
+// TODO don't use constants for this
+//const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 pub struct Terraria {
     out_buffer: Vec<u8>,

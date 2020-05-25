@@ -4,13 +4,13 @@ use crate::{Deserializable, Serializable, SliceCursor};
 pub struct PlayerDeathReason {}
 
 impl Serializable for PlayerDeathReason {
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize(&self, _cursor: &mut SliceCursor) {
         todo!()
     }
 }
 
 impl Deserializable for PlayerDeathReason {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
+    fn deserialize(_cursor: &mut SliceCursor) -> Self {
         todo!()
     }
 }

@@ -58,13 +58,13 @@ pub enum TileEntity {
 }
 
 impl Serializable for TileEntity {
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize(&self, _cursor: &mut SliceCursor) {
         todo!()
     }
 }
 
 impl Deserializable for TileEntity {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
+    fn deserialize(_cursor: &mut SliceCursor) -> Self {
         todo!()
     }
 }

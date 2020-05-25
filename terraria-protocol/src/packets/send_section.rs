@@ -23,7 +23,7 @@ pub struct SendSection {
 impl PacketBody for SendSection {
     const TAG: u8 = 10;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
+    fn write_body(&self, _cursor: &mut SliceCursor) {
         todo!()
         /*
         cursor.write(&self.compressed);
@@ -41,7 +41,7 @@ impl PacketBody for SendSection {
         */
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
+    fn from_body(_cursor: &mut SliceCursor) -> Self {
         todo!()
         /*
         Self {

@@ -13,11 +13,11 @@ pub struct UpdatePlayerBuff {
 impl PacketBody for UpdatePlayerBuff {
     const TAG: u8 = 50;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
+    fn write_body(&self, _cursor: &mut SliceCursor) {
         todo!()
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
+    fn from_body(_cursor: &mut SliceCursor) -> Self {
         todo!()
     }
 }
