@@ -34,10 +34,9 @@ pub struct SpawnPlayer {
     pub player_id: u8,
     pub spawn_x: i16,
     pub spawn_y: i16,
-    /// If > 0, then player is still dead
+    /// If > 0, then player is still dead.
     pub respawn_time_remaining: i32,
-    /// Enum: 0 = ReviveFromDeath, 1 = SpawningIntoWorld, 2 = RecallFromItem
-    pub player_spawn_context: u8,
+    pub player_spawn_context: SpawnContext,
 }
 
 impl PacketBody for SpawnPlayer {

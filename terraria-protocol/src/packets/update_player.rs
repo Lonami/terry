@@ -7,14 +7,36 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct UpdatePlayer {
     pub player_id: u8,
-    /// BitFlags: 1 = ControlUp, 2 = ControlDown, 4 = ControlLeft, 8 = ControlRight, 16 = ControlJump, 32 = ControlUseItem, 64 = Direction
-    pub control: u8,
-    /// BitFlags: 1 = Pulley Enabled, 2 = Direction, 4 = UpdateVelocity, 8 = VortexStealthActive, 16 = GravityDirection, 32 = ShieldRaised
-    pub pulley: u8,
-    /// BitFlags: 1 = HoveringUp, 2 = VoidVaultEnabled, 4 = Sitting, 8 = DownedDD2Event, 16 = IsPettingAnimal, 32 = IsPettingSmallAnimal, 64 = UsedPotionofReturn, 128 = HoveringDown
-    pub misc: u8,
-    /// BitFlags: 1 = IsSleeping
-    pub sleepinginfo: u8,
+    // bit flags {
+    pub key_up: bool,
+    pub key_down: bool,
+    pub key_left: bool,
+    pub key_right: bool,
+    pub key_jump: bool,
+    pub key_item_use: bool,
+    pub facing_right: bool,
+    // }
+    // bit flags {
+    pub pulley: bool,
+    pub pulley_right: bool,
+    pub update_velocity: bool,
+    pub vortex_stealth: bool,
+    pub gravity_flipped: bool,
+    pub shield_raised: bool,
+    // }
+    // bit flags {
+    pub hovering_up: bool,
+    pub void_vault: bool,
+    pub sitting: bool,
+    pub downed_dd2: bool,
+    pub petting_animal: bool,
+    pub petting_small_animal: bool,
+    pub used_return_potion: bool,
+    pub hovering_down: bool,
+    // }
+    // bit flags {
+    pub sleeping: u8,
+    // }
     pub selected_item: u8,
     pub position_x: i32, /* single */
     pub position_y: i32, /* single */

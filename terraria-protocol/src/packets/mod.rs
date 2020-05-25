@@ -231,7 +231,7 @@ pub use set_user_slot::SetUserSlot;
 pub use smart_text_message::SmartTextMessage;
 pub use social_handshake::SocialHandshake;
 pub use spawn_boss_invasion::SpawnBossInvasion;
-pub use spawn_player::SpawnPlayer;
+pub use spawn_player::{SpawnPlayer, SpawnContext};
 pub use special_npc_effect::SpecialNpcEffect;
 pub use status::Status;
 pub use strike_npc::StrikeNpc;
