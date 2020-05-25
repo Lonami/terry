@@ -459,7 +459,7 @@ impl Packet {
             Time::TAG => Packet::Time(Time::from_body(&mut cursor)),
             DoorToggle::TAG => Packet::DoorToggle(DoorToggle::from_body(&mut cursor)),
             SendTileSquare::TAG => Packet::SendTileSquare(SendTileSquare::from_body(&mut cursor)),
-            21 => panic!("tag 21 was replaced by tag 90"),
+            21 => Packet::UpdateItemDrop2(UpdateItemDrop2::from_body(&mut cursor)),
             UpdateItemOwner::TAG => {
                 Packet::UpdateItemOwner(UpdateItemOwner::from_body(&mut cursor))
             }

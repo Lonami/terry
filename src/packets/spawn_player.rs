@@ -1,5 +1,30 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::serialization::{Serializable, Deserializable, SliceCursor};
+
+#[repr(u8)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub enum SpawnContext {
+    ReviveFromDeath = 0,
+    SpawningIntoWorld = 1,
+    RecallFromItem = 2,
+}
+
+impl Serializable for SpawnContext {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&(*self as u8));
+    }
+}
+
+impl Deserializable for SpawnContext {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        match cursor.read::<u8>() {
+            0 => SpawnContext::ReviveFromDeath,
+            1 => SpawnContext::SpawningIntoWorld,
+            2 => SpawnContext::RecallFromItem,
+            n => panic!(format!("invalid respawn contet {}", n)),
+        }
+    }
+}
 
 /// Spawn a player.
 ///
@@ -9,7 +34,7 @@ pub struct SpawnPlayer {
     pub player_id: u8,
     pub spawn_x: i16,
     pub spawn_y: i16,
-    /// If &gt; 0, then player is still dead
+    /// If > 0, then player is still dead
     pub respawn_time_remaining: i32,
     /// Enum: 0 = ReviveFromDeath, 1 = SpawningIntoWorld, 2 = RecallFromItem
     pub player_spawn_context: u8,

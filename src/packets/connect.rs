@@ -1,7 +1,7 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Connect request.
+/// Connect request, sent at the very beginning of the communication.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
