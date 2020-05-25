@@ -1,5 +1,6 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
+use crate::structures::Vec2;
 
 /// NPC update, such as movement.
 ///
@@ -7,10 +8,8 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct NpcUpdate {
     pub npc_id: i16,
-    pub position_x: i32, /* single */
-    pub position_y: i32, /* single */
-    pub velocity_x: i32, /* single */
-    pub velocity_y: i32, /* single */
+    pub pos: Vec2,
+    pub vel: Vec2,
     /// Player ID
     pub target: u16,
     /// BitFlags: 1 = Direction, 2 = DirectionY, 4 = AI
@@ -18,12 +17,12 @@ pub struct NpcUpdate {
     /// BitFlags: 1 = StatsScaled, 2 = SpawnedFromStatue, 4 = StrengthMultiplier
     pub npcflags2: u8,
     /// Only sent for each true AI flag in NpcFlags1
-    pub ai: i32, /* single */
+    pub ai: f32,
     pub npc_netid: i16,
     /// Only sent if StatsScaled flag is true
     pub playercountformultiplayerdifficultyoverride: u8,
     /// Only sent if StrengthMultiplier flag is true
-    pub strength_multiplier: i32, /* single */
+    pub strength_multiplier: f32,
     /// The size of Life (in bytes), only sent if LifeMax flag is not true
     pub lifebytes: u8,
     /// Byte, Int16, or Int32 according to LifeBytes, only sent if LifeMax flag is not true
@@ -37,10 +36,8 @@ impl PacketBody for NpcUpdate {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.npc_id);
-        cursor.write(&self.position_x);
-        cursor.write(&self.position_y);
-        cursor.write(&self.velocity_x);
-        cursor.write(&self.velocity_y);
+        cursor.write(&self.pos);
+        cursor.write(&self.vel);
         cursor.write(&self.target);
         cursor.write(&self.npcflags1);
         cursor.write(&self.npcflags2);
@@ -56,10 +53,8 @@ impl PacketBody for NpcUpdate {
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             npc_id: cursor.read(),
-            position_x: cursor.read(),
-            position_y: cursor.read(),
-            velocity_x: cursor.read(),
-            velocity_y: cursor.read(),
+            pos: cursor.read(),
+            vel: cursor.read(),
             target: cursor.read(),
             npcflags1: cursor.read(),
             npcflags2: cursor.read(),

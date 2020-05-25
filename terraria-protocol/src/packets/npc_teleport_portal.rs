@@ -1,5 +1,6 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
+use crate::structures::Vec2;
 
 /// NPC using a teleport portal.
 ///
@@ -8,10 +9,8 @@ use crate::SliceCursor;
 pub struct NpcTeleportPortal {
     pub npc_id: u16,
     pub portal_color_index: i16,
-    pub new_position_x: i32, /* single */
-    pub new_position_y: i32, /* single */
-    pub velocity_x: i32,     /* single */
-    pub velocity_y: i32,     /* single */
+    pub pos: Vec2,
+    pub vel: Vec2,
 }
 
 impl PacketBody for NpcTeleportPortal {
@@ -20,20 +19,16 @@ impl PacketBody for NpcTeleportPortal {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.npc_id);
         cursor.write(&self.portal_color_index);
-        cursor.write(&self.new_position_x);
-        cursor.write(&self.new_position_y);
-        cursor.write(&self.velocity_x);
-        cursor.write(&self.velocity_y);
+        cursor.write(&self.pos);
+        cursor.write(&self.vel);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             npc_id: cursor.read(),
             portal_color_index: cursor.read(),
-            new_position_x: cursor.read(),
-            new_position_y: cursor.read(),
-            velocity_x: cursor.read(),
-            velocity_y: cursor.read(),
+            pos: cursor.read(),
+            vel: cursor.read(),
         }
     }
 }

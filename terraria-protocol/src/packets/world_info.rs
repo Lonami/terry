@@ -37,7 +37,7 @@ pub struct WorldInfo {
     pub ice_back_style: u8,
     pub jungle_back_style: u8,
     pub hell_back_style: u8,
-    pub wind_speed_set: i32, /* single */
+    pub wind_speed_set: f32,
     pub cloud_number: u8,
     pub trees: [i32; 3],
     pub tree_styles: [u8; 4],
@@ -53,7 +53,7 @@ pub struct WorldInfo {
     pub ocean_tree_top_style: i32,
     pub glowing_mushroom_tree_top_style: i32,
     pub underworld_tree_top_style: i32,
-    pub rain: i32, /* single */
+    pub rain: f32,
     // bitflags {
     pub shadow_orb_smashed: bool,
     pub downed_boss_1: bool,
@@ -123,7 +123,7 @@ pub struct WorldInfo {
     pub ore_tiers_tiles: [u16; 7],
     pub invasion_type: i8,
     pub lobby_id: u64,
-    pub sandstorm_severity: i32, /* single */
+    pub sandstorm_severity: f32,
 }
 
 impl PacketBody for WorldInfo {

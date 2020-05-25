@@ -1,5 +1,6 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
+use crate::structures::Vec2;
 
 /// Nebula Level Up.
 ///
@@ -9,9 +10,7 @@ pub struct NebulaLevelUp {
     pub player_id: u8,
     pub level_up_type: u16,
     /// In world coordinate pixels.
-    pub origin_x: i32, /* single */
-    /// In world coordinate pixels.
-    pub origin_y: i32, /* single */
+    pub origin: Vec2,
 }
 
 impl PacketBody for NebulaLevelUp {
@@ -20,16 +19,14 @@ impl PacketBody for NebulaLevelUp {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.player_id);
         cursor.write(&self.level_up_type);
-        cursor.write(&self.origin_x);
-        cursor.write(&self.origin_y);
+        cursor.write(&self.origin);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             player_id: cursor.read(),
             level_up_type: cursor.read(),
-            origin_x: cursor.read(),
-            origin_y: cursor.read(),
+            origin: cursor.read(),
         }
     }
 }

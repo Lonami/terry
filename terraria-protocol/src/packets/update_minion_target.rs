@@ -1,5 +1,6 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
+use crate::structures::Vec2;
 
 /// Update Minion Target.
 ///
@@ -7,8 +8,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct UpdateMinionTarget {
     pub player_id: u8,
-    pub target_x: i32, /* single */
-    pub target_y: i32, /* single */
+    pub target: Vec2,
 }
 
 impl PacketBody for UpdateMinionTarget {
@@ -16,15 +16,13 @@ impl PacketBody for UpdateMinionTarget {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.player_id);
-        cursor.write(&self.target_x);
-        cursor.write(&self.target_y);
+        cursor.write(&self.target);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             player_id: cursor.read(),
-            target_x: cursor.read(),
-            target_y: cursor.read(),
+            target: cursor.read(),
         }
     }
 }

@@ -7,7 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct PlayerItemAnimation {
     pub player_id: u8,
-    pub item_rotation: i32, /* single */
+    pub item_rotation: f32,
     pub item_animation: i16,
 }
 

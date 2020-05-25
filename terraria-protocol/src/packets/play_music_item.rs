@@ -7,7 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct PlayMusicItem {
     pub player_id: u8,
-    pub note: i32, /* single */
+    pub note: f32,
 }
 
 impl PacketBody for PlayMusicItem {

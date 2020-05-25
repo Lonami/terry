@@ -7,7 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct WiredCannonShot {
     pub damage: i16,
-    pub knockback: i32, /* single */
+    pub knockback: f32,
     pub x: i16,
     pub y: i16,
     pub angle: i16,
