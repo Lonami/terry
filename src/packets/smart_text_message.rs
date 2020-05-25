@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Smart Text Message (FKA. Chat Message v2).
@@ -7,7 +7,7 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct SmartTextMessage {
     /// Client cannot change colors
-    pub message_color: Color,
+    pub message_color: RGB,
 }
 
 impl PacketBody for SmartTextMessage {

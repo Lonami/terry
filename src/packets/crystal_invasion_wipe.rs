@@ -5,9 +5,9 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server -> Client.
 #[derive(Debug)]
-pub struct CrystalInvasionWipeAll {}
+pub struct CrystalInvasionWipe {}
 
-impl PacketBody for CrystalInvasionWipeAll {
+impl PacketBody for CrystalInvasionWipe {
     const TAG: u8 = 114;
 
     fn write_body(&self, cursor: &mut SliceCursor) {}

@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{PacketBody, PlayerDeathReason};
 use crate::serialization::SliceCursor;
 
 /// Player death (version 2).

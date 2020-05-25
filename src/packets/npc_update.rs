@@ -27,7 +27,7 @@ pub struct NpcUpdate {
     /// The size of Life (in bytes), only sent if LifeMax flag is not true
     pub lifebytes: u8,
     /// Byte, Int16, or Int32 according to LifeBytes, only sent if LifeMax flag is not true
-    pub life: (), /* variable */
+    pub life: i32, /* variable */
     /// Only present if NPC is catchable
     pub releaseowner: u8,
 }
@@ -49,7 +49,7 @@ impl PacketBody for NpcUpdate {
         cursor.write(&self.playercountformultiplayerdifficultyoverride);
         cursor.write(&self.strength_multiplier);
         cursor.write(&self.lifebytes);
-        cursor.write(&self.life);
+        cursor.write(&self.life); // TODO this field is variable
         cursor.write(&self.releaseowner);
     }
 
@@ -68,7 +68,7 @@ impl PacketBody for NpcUpdate {
             playercountformultiplayerdifficultyoverride: cursor.read(),
             strength_multiplier: cursor.read(),
             lifebytes: cursor.read(),
-            life: cursor.read(),
+            life: cursor.read(), // TODO this field is variable
             releaseowner: cursor.read(),
         }
     }

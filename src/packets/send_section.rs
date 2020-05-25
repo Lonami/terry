@@ -24,6 +24,8 @@ impl PacketBody for SendSection {
     const TAG: u8 = 10;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
+        todo!()
+        /*
         cursor.write(&self.compressed);
         cursor.write(&self.x_start);
         cursor.write(&self.y_start);
@@ -36,9 +38,12 @@ impl PacketBody for SendSection {
         cursor.write(&self.signs);
         cursor.write(&self.tileentity_count);
         cursor.write(&self.tileentities);
+        */
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
+        todo!()
+        /*
         Self {
             compressed: cursor.read(),
             x_start: cursor.read(),
@@ -53,5 +58,6 @@ impl PacketBody for SendSection {
             tileentity_count: cursor.read(),
             tileentities: cursor.read(),
         }
+        */
     }
 }

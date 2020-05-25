@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{NetString, PacketBody};
 use crate::serialization::SliceCursor;
 
 /// Disconnect a client (e.g. via kicking).

@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Create combat text.
@@ -8,7 +8,7 @@ use crate::serialization::SliceCursor;
 pub struct CreateCombatText {
     pub x: i32, /* single */
     pub y: i32, /* single */
-    pub color: Color,
+    pub color: RGB,
     pub heal_amount: i32,
 }
 

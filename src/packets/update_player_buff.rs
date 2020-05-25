@@ -7,21 +7,17 @@ use crate::serialization::SliceCursor;
 #[derive(Debug)]
 pub struct UpdatePlayerBuff {
     pub player_id: u8,
-    pub bufftype: u16,
+    pub bufftype: [u16; 22],
 }
 
 impl PacketBody for UpdatePlayerBuff {
     const TAG: u8 = 50;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.bufftype);
+        todo!()
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            bufftype: cursor.read(),
-        }
+        todo!()
     }
 }

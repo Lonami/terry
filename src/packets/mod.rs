@@ -8,7 +8,7 @@ mod client_uuid;
 mod combat_text;
 mod complete_angler_quest;
 mod complete_connection_and_spawn;
-mod connect_request;
+mod connect;
 mod connection_complete;
 mod create_combat_text;
 mod create_temporary_animation;
@@ -138,11 +138,11 @@ pub use angler_quest::AnglerQuest;
 pub use angler_quests::AnglerQuests;
 pub use catch_npc::CatchNpc;
 pub use client_synced_inventory::ClientSyncedInventory;
-pub use client_uuid::ClientUUID;
+pub use client_uuid::ClientUuid;
 pub use combat_text::CombatText;
 pub use complete_angler_quest::CompleteAnglerQuest;
 pub use complete_connection_and_spawn::CompleteConnectionAndSpawn;
-pub use connect_request::ConnectRequest;
+pub use connect::Connect;
 pub use connection_complete::ConnectionComplete;
 pub use create_combat_text::CreateCombatText;
 pub use create_temporary_animation::CreateTemporaryAnimation;
@@ -204,7 +204,7 @@ pub use player_npc_teleport::PlayerNpcTeleport;
 pub use player_team::PlayerTeam;
 pub use player_teleport_portal::PlayerTeleportPortal;
 pub use player_zone::PlayerZone;
-pub use poof_of_smoke::PoofofSmoke;
+pub use poof_of_smoke::PoofOfSmoke;
 pub use projectile_update::ProjectileUpdate;
 pub use quick_stash::QuickStash;
 pub use release_npc::ReleaseNpc;
@@ -246,7 +246,7 @@ pub use tamper_with_npc::TamperWithNpc;
 pub use teleportation_potion::TeleportationPotion;
 pub use time::Time;
 pub use toggle_birthday_party::ToggleBirthdayParty;
-pub use toggle_pvp::TogglePVP;
+pub use toggle_pvp::TogglePvp;
 pub use travelling_merchant_inventory::TravellingMerchantInventory;
 pub use tweak_item::TweakItem;
 pub use unlock::Unlock;
@@ -289,8 +289,9 @@ pub trait PacketBody: Sized {
     }
 }
 
-enum Packet {
-    ConnectRequest(ConnectRequest),                           // 1
+#[derive(Debug)]
+pub enum Packet {
+    Connect(Connect),                                         // 1
     Disconnect(Disconnect),                                   // 2
     SetUserSlot(SetUserSlot),                                 // 3
     PlayerInfo(PlayerInfo),                                   // 4
@@ -315,7 +316,7 @@ enum Packet {
     ProjectileUpdate(ProjectileUpdate),                       // 27
     NpcStrike(NpcStrike),                                     // 28
     DestroyProjectile(DestroyProjectile),                     // 29
-    TogglePVP(TogglePVP),                                     // 30
+    TogglePvp(TogglePvp),                                     // 30
     OpenChest(OpenChest),                                     // 31
     UpdateChestItem(UpdateChestItem),                         // 32
     SyncActiveChest(SyncActiveChest),                         // 33
@@ -352,7 +353,7 @@ enum Packet {
     PlayerNpcTeleport(PlayerNpcTeleport),                     // 65
     HealOtherPlayer(HealOtherPlayer),                         // 66
     Placeholder(Placeholder),                                 // 67
-    ClientUUID(ClientUUID),                                   // 68
+    ClientUuid(ClientUuid),                                   // 68
     GetChestName(GetChestName),                               // 69
     CatchNpc(CatchNpc),                                       // 70
     ReleaseNpc(ReleaseNpc),                                   // 71
@@ -389,7 +390,7 @@ enum Packet {
     MoonLordCountdown(MoonLordCountdown),                     // 103
     NpcShopItem(NpcShopItem),                                 // 104
     GemLockToggle(GemLockToggle),                             // 105
-    PoofofSmoke(PoofofSmoke),                                 // 106
+    PoofOfSmoke(PoofOfSmoke),                                 // 106
     SmartTextMessage(SmartTextMessage),                       // 107
     WiredCannonShot(WiredCannonShot),                         // 108
     MassWire(MassWire),                                       // 109
@@ -431,7 +432,7 @@ impl Packet {
         let tag = cursor.read::<u8>();
         // TODO too bad packet body is not serializable
         match tag {
-            ConnectRequest::TAG => Packet::ConnectRequest(ConnectRequest::from_body(&mut cursor)),
+            Connect::TAG => Packet::Connect(Connect::from_body(&mut cursor)),
             Disconnect::TAG => Packet::Disconnect(Disconnect::from_body(&mut cursor)),
             SetUserSlot::TAG => Packet::SetUserSlot(SetUserSlot::from_body(&mut cursor)),
             PlayerInfo::TAG => Packet::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
@@ -473,7 +474,7 @@ impl Packet {
             DestroyProjectile::TAG => {
                 Packet::DestroyProjectile(DestroyProjectile::from_body(&mut cursor))
             }
-            TogglePVP::TAG => Packet::TogglePVP(TogglePVP::from_body(&mut cursor)),
+            TogglePvp::TAG => Packet::TogglePvp(TogglePvp::from_body(&mut cursor)),
             OpenChest::TAG => Packet::OpenChest(OpenChest::from_body(&mut cursor)),
             UpdateChestItem::TAG => {
                 Packet::UpdateChestItem(UpdateChestItem::from_body(&mut cursor))
@@ -533,7 +534,7 @@ impl Packet {
                 Packet::HealOtherPlayer(HealOtherPlayer::from_body(&mut cursor))
             }
             Placeholder::TAG => Packet::Placeholder(Placeholder::from_body(&mut cursor)),
-            ClientUUID::TAG => Packet::ClientUUID(ClientUUID::from_body(&mut cursor)),
+            ClientUuid::TAG => Packet::ClientUuid(ClientUuid::from_body(&mut cursor)),
             GetChestName::TAG => Packet::GetChestName(GetChestName::from_body(&mut cursor)),
             CatchNpc::TAG => Packet::CatchNpc(CatchNpc::from_body(&mut cursor)),
             ReleaseNpc::TAG => Packet::ReleaseNpc(ReleaseNpc::from_body(&mut cursor)),
@@ -611,7 +612,7 @@ impl Packet {
             }
             NpcShopItem::TAG => Packet::NpcShopItem(NpcShopItem::from_body(&mut cursor)),
             GemLockToggle::TAG => Packet::GemLockToggle(GemLockToggle::from_body(&mut cursor)),
-            PoofofSmoke::TAG => Packet::PoofofSmoke(PoofofSmoke::from_body(&mut cursor)),
+            PoofOfSmoke::TAG => Packet::PoofOfSmoke(PoofOfSmoke::from_body(&mut cursor)),
             SmartTextMessage::TAG => {
                 Packet::SmartTextMessage(SmartTextMessage::from_body(&mut cursor))
             }
@@ -1028,6 +1029,21 @@ impl Deserializable for Vec2 {
     }
 }
 
+#[derive(Debug)]
+pub struct PlayerDeathReason {}
+
+impl Serializable for PlayerDeathReason {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        todo!()
+    }
+}
+
+impl Deserializable for PlayerDeathReason {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        todo!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1037,7 +1053,7 @@ mod tests {
         let mut buffer = vec![0; 64];
         let mut cursor = SliceCursor::new(buffer.as_mut_slice());
         Connect {
-            magic: "Terraria228".to_string(),
+            version: "Terraria228".to_string(),
         }
         .serialize(None, &mut cursor);
         let pos = cursor.finish();

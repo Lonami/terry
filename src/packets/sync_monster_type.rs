@@ -6,40 +6,24 @@ use crate::serialization::SliceCursor;
 /// Direction: Client <-> Server.
 #[derive(Debug)]
 pub struct SyncMonsterType {
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
-    /// NPC.cavernMonsterType
-    pub net_id: u16,
+    pub net_id: [[u16; 3]; 2],
 }
 
 impl PacketBody for SyncMonsterType {
     const TAG: u8 = 136;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.net_id);
-        cursor.write(&self.net_id);
-        cursor.write(&self.net_id);
-        cursor.write(&self.net_id);
-        cursor.write(&self.net_id);
-        cursor.write(&self.net_id);
+        self.net_id
+            .iter()
+            .for_each(|row| row.iter().for_each(|x| cursor.write(x)));
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
-            net_id: cursor.read(),
-            net_id: cursor.read(),
-            net_id: cursor.read(),
-            net_id: cursor.read(),
-            net_id: cursor.read(),
-            net_id: cursor.read(),
+            net_id: [
+                [cursor.read(), cursor.read(), cursor.read()],
+                [cursor.read(), cursor.read(), cursor.read()],
+            ],
         }
     }
 }

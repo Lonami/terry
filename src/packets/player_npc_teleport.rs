@@ -5,7 +5,7 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
-pub struct PlayerNPCTeleport {
+pub struct PlayerNpcTeleport {
     /// BitFlags: 0 = Player Teleport (Neither 1 or 2), 1 = NPC Teleport, 2 = Player Teleport to Other Player, 4 = GetPositionFromTarget, 8 = HasExtraInfo
     pub flags: u8,
     pub target_id: i16,
@@ -16,7 +16,7 @@ pub struct PlayerNPCTeleport {
     pub extrainfo: i32,
 }
 
-impl PacketBody for PlayerNPCTeleport {
+impl PacketBody for PlayerNpcTeleport {
     const TAG: u8 = 65;
 
     fn write_body(&self, cursor: &mut SliceCursor) {

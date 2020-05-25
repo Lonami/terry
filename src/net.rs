@@ -1,4 +1,4 @@
-use crate::packets::{self, Packet, PacketBody, Vec2, RGB};
+use crate::packets::{self, Packet, PacketBody};
 use crate::serialization::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
@@ -40,49 +40,51 @@ impl Terraria {
             version: PROTOCOL_VERSION.to_string(),
         })?;
 
-        this.send_packet(&packets::PlayerInfo::default())?;
+        // TODO
+        //this.send_packet(&packets::PlayerInfo::default())?;
 
-        this.send_packet(&packets::PlayerUuid {
-            uuid4: PLAYER_UUID.to_string(),
-        })?;
+        // TODO
+        this.send_packet(&packets::ClientUuid {})?;
 
-        this.send_packet(&packets::PlayerLife {
-            id: 0,
-            life: 100,
-            max_life: 100,
+        // TODO rename to Health?
+        this.send_packet(&packets::PlayerHP {
+            player_id: 0,
+            hp: 100,
+            max_hp: 100,
         })?;
 
         this.send_packet(&packets::PlayerMana {
-            id: 0,
+            player_id: 0,
             mana: 200,
             max_mana: 200,
         })?;
 
-        this.send_packet(&packets::PlayerBuffs {
-            id: 0,
-            buffs: [0u16; 22],
+        // TODO bad name
+        this.send_packet(&packets::UpdatePlayerBuff {
+            player_id: 0,
+            bufftype: [0u16; 22],
         })?;
 
         for i in 0..260 {
-            this.send_packet(&packets::PlayerInventory {
-                id: 0,
-                index: i,
-                count: 0,
-                a: 0,
-                item_id: 0,
+            this.send_packet(&packets::PlayerInventorySlot {
+                player_id: 0,
+                slot_id: i,
+                stack: 0,
+                prefix: 0,
+                item_netid: 0,
             })?;
         }
 
-        this.send_packet(&packets::Packet6 {})?;
+        this.send_packet(&packets::RequestWorldData {})?;
 
-        this.send_packet(&packets::Packet8 { n: -1 })?;
+        this.send_packet(&packets::RequestEssentialTiles { x: -1, y: -1 })?;
 
-        this.send_packet(&packets::ToSpawn {
-            id: 0,
-            x: -1,
-            y: -1,
-            timer: 0,
-            how: 1,
+        this.send_packet(&packets::SpawnPlayer {
+            player_id: 0,
+            spawn_x: -1,
+            spawn_y: -1,
+            respawn_time_remaining: 0,
+            player_spawn_context: 1,
         })?;
 
         // some more stuff to send at this point
@@ -90,6 +92,7 @@ impl Terraria {
         // > 56 : 0500380100
         // > 36 : 0800240000004200
 
+        /*
         let (mut x, y) = (33534.0f32, 4582.0f32);
         loop {
             this.try_recv_packets()?;
@@ -106,6 +109,8 @@ impl Terraria {
                 vel: None,
             })?;
         }
+        */
+        Ok(this)
     }
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {

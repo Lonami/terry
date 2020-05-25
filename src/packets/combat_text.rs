@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{NetString, PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Combat text string.
@@ -8,7 +8,7 @@ use crate::serialization::SliceCursor;
 pub struct CombatText {
     pub x: i32, /* single */
     pub y: i32, /* single */
-    pub color: Color,
+    pub color: RGB,
     pub combat_text: NetString,
 }
 

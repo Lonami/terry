@@ -12,5 +12,7 @@ impl PacketBody for CompleteConnectionAndSpawn {
 
     fn write_body(&self, cursor: &mut SliceCursor) {}
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {}
+    fn from_body(cursor: &mut SliceCursor) -> Self {
+        Self {}
+    }
 }

@@ -71,6 +71,21 @@ impl<'a> SliceCursor<'a> {
     }
 
     #[inline(always)]
+    fn read8(&mut self) -> [u8; 8] {
+        self.pos += 8;
+        [
+            self.slice[self.pos - 8],
+            self.slice[self.pos - 7],
+            self.slice[self.pos - 6],
+            self.slice[self.pos - 5],
+            self.slice[self.pos - 4],
+            self.slice[self.pos - 3],
+            self.slice[self.pos - 2],
+            self.slice[self.pos - 1],
+        ]
+    }
+
+    #[inline(always)]
     fn write_slice(&mut self, slice: &[u8]) {
         let pos = self.pos;
         self.slice[pos..pos + slice.len()].copy_from_slice(slice);
@@ -85,6 +100,12 @@ pub trait Serializable {
 impl Serializable for bool {
     fn serialize(&self, cursor: &mut SliceCursor) {
         cursor.write(&(*self as u8));
+    }
+}
+
+impl Serializable for i8 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
     }
 }
 
@@ -124,6 +145,18 @@ impl Serializable for f32 {
     }
 }
 
+impl Serializable for i64 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
+impl Serializable for u64 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write_slice(&self.to_le_bytes());
+    }
+}
+
 impl Serializable for String {
     fn serialize(&self, cursor: &mut SliceCursor) {
         let len: u8 = self.len().try_into().expect("string too long");
@@ -139,6 +172,12 @@ pub trait Deserializable {
 impl Deserializable for bool {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
         cursor.read::<u8>() != 0
+    }
+}
+
+impl Deserializable for i8 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self::from_le_bytes(cursor.read1())
     }
 }
 
@@ -175,6 +214,18 @@ impl Deserializable for u32 {
 impl Deserializable for f32 {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
         Self::from_le_bytes(cursor.read4())
+    }
+}
+
+impl Deserializable for i64 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self::from_le_bytes(cursor.read8())
+    }
+}
+
+impl Deserializable for u64 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self::from_le_bytes(cursor.read8())
     }
 }
 

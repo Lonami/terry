@@ -1,4 +1,4 @@
-use crate::packets::PacketBody;
+use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Player information.
@@ -15,13 +15,13 @@ pub struct PlayerInfo {
     pub hide_visuals: u8,
     pub hide_visuals_2: u8,
     pub hide_misc: u8,
-    pub hair_color: Color,
-    pub skin_color: Color,
-    pub eye_color: Color,
-    pub shirt_color: Color,
-    pub under_shirt_color: Color,
-    pub pants_color: Color,
-    pub shoe_color: Color,
+    pub hair_color: RGB,
+    pub skin_color: RGB,
+    pub eye_color: RGB,
+    pub shirt_color: RGB,
+    pub under_shirt_color: RGB,
+    pub pants_color: RGB,
+    pub shoe_color: RGB,
     pub difficulty: u8,
 }
 

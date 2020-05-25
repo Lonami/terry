@@ -5,12 +5,12 @@ use crate::serialization::SliceCursor;
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]
-pub struct ConnectRequest {
+pub struct Connect {
     /// "Terraria" + Main.curRelease
     pub version: String,
 }
 
-impl PacketBody for ConnectRequest {
+impl PacketBody for Connect {
     const TAG: u8 = 1;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
