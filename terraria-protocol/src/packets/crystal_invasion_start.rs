@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 
 /// Start the Invasion of the Eternia Crystal.
 ///

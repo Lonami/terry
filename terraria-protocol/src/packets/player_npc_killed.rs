@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 
 /// Notifies when a player's NPC is killed.
 ///

@@ -1,5 +1,5 @@
 use crate::packets::{self, Packet, PacketBody};
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 

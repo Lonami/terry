@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 
 /// Catch a NPC, presumably used for pets.
 ///

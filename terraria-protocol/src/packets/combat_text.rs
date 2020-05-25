@@ -1,5 +1,6 @@
-use crate::packets::{NetString, PacketBody, RGB};
-use crate::serialization::SliceCursor;
+use crate::packets::PacketBody;
+use crate::structures::{NetString, RGB};
+use crate::SliceCursor;
 
 /// Combat text string.
 ///

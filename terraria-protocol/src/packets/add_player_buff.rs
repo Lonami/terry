@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 
 /// Add a buff (or debuff) to some player for a certain duration.
 ///

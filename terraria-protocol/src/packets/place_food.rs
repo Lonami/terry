@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::SliceCursor;
+use crate::SliceCursor;
 
 /// Tries to place food in a food platter.
 ///

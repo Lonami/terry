@@ -1,5 +1,6 @@
-use crate::packets::{PacketBody, PlayerDeathReason};
-use crate::serialization::SliceCursor;
+use crate::packets::PacketBody;
+use crate::structures::PlayerDeathReason;
+use crate::SliceCursor;
 
 /// Player hurt (version 2).
 ///

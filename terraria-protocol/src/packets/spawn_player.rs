@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::serialization::{Serializable, Deserializable, SliceCursor};
+use crate::{Deserializable, Serializable, SliceCursor};
 
 #[repr(u8)]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]

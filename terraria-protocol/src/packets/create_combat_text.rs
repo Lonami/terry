@@ -1,5 +1,6 @@
-use crate::packets::{PacketBody, RGB};
-use crate::serialization::SliceCursor;
+use crate::packets::PacketBody;
+use crate::structures::RGB;
+use crate::SliceCursor;
 
 /// Create combat text.
 ///
