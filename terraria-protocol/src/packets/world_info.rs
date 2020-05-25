@@ -1,12 +1,5 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
-use crate::bitflags;
-
-bitflags!(DayInfo[1] {
-    0 => day_time & set_day_time,
-    1 => blood_moon & set_blood_moon,
-    2 => eclipse & set_eclipse
-});
 
 /// World Info.
 ///
@@ -14,15 +7,18 @@ bitflags!(DayInfo[1] {
 #[derive(Debug)]
 pub struct WorldInfo {
     pub time: i32,
-    /// BitFlags: 1 = Day Time, 2 = Blood Moon, 4 = Eclipse
-    pub day_and_moon_info: DayInfo,
+    // bitflags {
+    pub day_time: bool,
+    pub blood_moon: bool,
+    pub eclipse: bool,
+    // }
     pub moon_phase: u8,
     pub max_tiles_x: i16,
     pub max_tiles_y: i16,
     pub spawn_x: i16,
     pub spawn_y: i16,
-    pub worldsurface: i16,
-    pub rocklayer: i16,
+    pub world_surface: i16,
+    pub rock_layer: i16,
     pub world_id: i32,
     pub world_name: String,
     pub game_mode: u8,
@@ -37,34 +33,17 @@ pub struct WorldInfo {
     pub crimson_background: u8,
     pub desert_background: u8,
     pub ocean_background: u8,
-    pub a_background: u8,
-    pub b_background: u8,
-    pub c_background: u8,
-    pub d_background: u8,
-    pub e_background: u8,
+    pub unknown_background: [u8; 5],
     pub ice_back_style: u8,
     pub jungle_back_style: u8,
     pub hell_back_style: u8,
     pub wind_speed_set: i32, /* single */
     pub cloud_number: u8,
-    pub tree_1: i32,
-    pub tree_2: i32,
-    pub tree_3: i32,
-    pub tree_style_1: u8,
-    pub tree_style_2: u8,
-    pub tree_style_3: u8,
-    pub tree_style_4: u8,
-    pub cave_back_1: i32,
-    pub cave_back_2: i32,
-    pub cave_back_3: i32,
-    pub cave_back_style_1: u8,
-    pub cave_back_style_2: u8,
-    pub cave_back_style_3: u8,
-    pub cave_back_style_4: u8,
-    pub forest_1_tree_top_style: i32,
-    pub forest_2_tree_top_style: i32,
-    pub forest_3_tree_top_style: i32,
-    pub forest_4_tree_top_style: i32,
+    pub trees: [i32; 3],
+    pub tree_styles: [u8; 4],
+    pub cave_backs: [i32; 3],
+    pub cave_back_styles: [u8; 4],
+    pub forest_tree_top_styles: [i32; 4],
     pub corruption_tree_top_style: i32,
     pub jungle_tree_top_style: i32,
     pub snow_tree_top_style: i32,
@@ -75,14 +54,63 @@ pub struct WorldInfo {
     pub glowing_mushroom_tree_top_style: i32,
     pub underworld_tree_top_style: i32,
     pub rain: i32, /* single */
-    /// BitFlags[0]: 1 = Shadow Orb Smashed, 2 = Downed Boss 1, 4 = Downed Boss 2, 8 = Downed Boss 3, 16 = Hard Mode, 32 = Downed Clown, 64 = Server Side Character, 128 = Downed Plant Boss
-    /// BitFlags[1]: 1 = Mech Boss Downed, 2 = Mech Boss Downed 2, 4 = Mech Boss Downed 3, 8 = Mech Boss Any Downed, 16 = Cloud BG, 32 = Crimson, 64 = Pumpkin Moon, 128 = Snow Moon
-    /// BitFlags[2]: 1 = Expert Mode, 2 = FastForwardTime, 4 = Slime Rain, 8 = Downed Slime King, 16 = Downed Queen Bee, 32 = Downed Fishron, 64 = Downed Martians, 128 = Downed Ancient Cultist
-    /// BitFlags[3]: 1 = Downed Moon Lord, 2 = Downed Pumking, 4 = Downed Mourning Wood, 8 = Downed Ice Queen, 16 = Downed Santank, 32 = Downed Everscream, 64 = Downed Golem, 128 = Birthday Party
-    /// BitFlags[4]: 1 = Downed Pirates, 2 = Downed Frost Legion, 4 = Downed Goblins, 8 = Sandstorm, 16 = DD2 Event, 32 = Downed DD2 Tier 1, 64 = Downed DD2 Tier 2, 128 = Downed DD2 Tier 3
-    /// BitFlags[5]: 1 = Combat Book Used, 2 = Manual Lanterns, 4 = Downed Solar Tower, 8 = Downed Vortex Tower, 16 = Downed Tower Nebula, 32 = Downed Stardust Tower, 64 = Force Halloween (day), 128 = Force XMas (day)
-    /// BitFlags[6]: 1 = Bought Cat, 2 = Bought Dog, 4 = Bought Bunny, 8 = Free Cake, 16 = Drunk World, 32 = Downed Empress of Light, 64 = Downed Queen Slime
-    pub event_info: [u8; 7],
+    // bitflags {
+    pub shadow_orb_smashed: bool,
+    pub downed_boss_1: bool,
+    pub downed_boss_2: bool,
+    pub downed_boss_3: bool,
+    pub hard_mode: bool,
+    pub downed_clown: bool,
+    pub server_side_character: bool,
+    pub downed_plant_boss: bool,
+    pub mech_boss_downed: bool,
+    pub mech_boss_downed_2: bool,
+    pub mech_boss_downed_3: bool,
+    pub mech_boss_any_downed: bool,
+    pub cloud_bg: bool,
+    pub crimson: bool,
+    pub pumpkin_moon: bool,
+    pub snow_moon: bool,
+    pub expert_mode: bool,
+    pub fastforwardtime: bool,
+    pub slime_rain: bool,
+    pub downed_slime_king: bool,
+    pub downed_queen_bee: bool,
+    pub downed_fishron: bool,
+    pub downed_martians: bool,
+    pub downed_ancient_cultist: bool,
+    pub downed_moon_lord: bool,
+    pub downed_pumking: bool,
+    pub downed_mourning_wood: bool,
+    pub downed_ice_queen: bool,
+    pub downed_santank: bool,
+    pub downed_everscream: bool,
+    pub downed_golem: bool,
+    pub birthday_party: bool,
+    pub downed_pirates: bool,
+    pub downed_frost_legion: bool,
+    pub downed_goblins: bool,
+    pub sandstorm: bool,
+    pub dd2_event: bool,
+    pub downed_dd2_tier_1: bool,
+    pub downed_dd2_tier_2: bool,
+    pub downed_dd2_tier_3: bool,
+    pub combat_book_used: bool,
+    pub manual_lanterns: bool,
+    pub downed_solar_tower: bool,
+    pub downed_vortex_tower: bool,
+    pub downed_tower_nebula: bool,
+    pub downed_stardust_tower: bool,
+    pub force_halloween_day: bool,
+    pub force_xmas_day: bool,
+    pub bought_cat: bool,
+    pub bought_dog: bool,
+    pub bought_bunny: bool,
+    pub free_cake: bool,
+    pub drunk_world: bool,
+    pub downed_empress_of_light: bool,
+    pub downed_queen_slime: bool,
+    // }
     /// The respective tier indices, names and possible tile IDs are:
     ///
     /// * Tier 0: Copper (tile ID 7 or 166)
@@ -98,253 +126,24 @@ pub struct WorldInfo {
     pub sandstorm_severity: i32, /* single */
 }
 
-impl WorldInfo {
-    pub fn day_time(&self) -> bool {
-        self.day_and_moon_info & 0x01 != 0
-    }
-
-    pub fn blood_moon(&self) -> bool {
-        self.day_and_moon_info & 0x02 != 0
-    }
-
-    pub fn eclipse(&self) -> bool {
-        self.day_and_moon_info & 0x04 != 0
-    }
-
-    pub fn shadow_orb_smashed(&self) -> bool {
-        self.event_info[0] & 0x01 != 0
-    }
-
-    pub fn downed_boss_1(&self) -> bool {
-        self.event_info[0] & 0x02 != 0
-    }
-
-    pub fn downed_boss_2(&self) -> bool {
-        self.event_info[0] & 0x04 != 0
-    }
-
-    pub fn downed_boss_3(&self) -> bool {
-        self.event_info[0] & 0x08 != 0
-    }
-
-    pub fn hard_mode(&self) -> bool {
-        self.event_info[0] & 0x10 != 0
-    }
-
-    pub fn downed_clown(&self) -> bool {
-        self.event_info[0] & 0x20 != 0
-    }
-
-    pub fn server_side_character(&self) -> bool {
-        self.event_info[0] & 0x40 != 0
-    }
-
-    pub fn downed_plant_boss(&self) -> bool {
-        self.event_info[0] & 0x80 != 0
-    }
-
-    pub fn downed_mech_boss(&self) -> bool {
-        self.event_info[1] & 0x01 != 0
-    }
-
-    pub fn downed_mech_boss_2(&self) -> bool {
-        self.event_info[1] & 0x02 != 0
-    }
-
-    pub fn downed_mech_boss_3(&self) -> bool {
-        self.event_info[1] & 0x04 != 0
-    }
-
-    pub fn downed_mech_boss_any(&self) -> bool {
-        self.event_info[1] & 0x08 != 0
-    }
-
-    pub fn cloud_bg(&self) -> bool {
-        self.event_info[1] & 0x10 != 0
-    }
-
-    pub fn crimson(&self) -> bool {
-        self.event_info[1] & 0x20 != 0
-    }
-
-    pub fn pumpkin_moon(&self) -> bool {
-        self.event_info[1] & 0x40 != 0
-    }
-
-    pub fn snow_moon(&self) -> bool {
-        self.event_info[1] & 0x80 != 0
-    }
-
-    pub fn expert_mode(&self) -> bool {
-        self.event_info[2] & 0x01 != 0
-    }
-
-    pub fn fast_forward_time(&self) -> bool {
-        self.event_info[2] & 0x02 != 0
-    }
-
-    pub fn slime_rain(&self) -> bool {
-        self.event_info[2] & 0x04 != 0
-    }
-
-    pub fn downed_king_slime(&self) -> bool {
-        self.event_info[2] & 0x08 != 0
-    }
-
-    pub fn downed_queen_bee(&self) -> bool {
-        self.event_info[2] & 0x10 != 0
-    }
-
-    pub fn downed_fishron(&self) -> bool {
-        self.event_info[2] & 0x20 != 0
-    }
-
-    pub fn downed_martians(&self) -> bool {
-        self.event_info[2] & 0x40 != 0
-    }
-
-    pub fn downed_ancient_cultist(&self) -> bool {
-        self.event_info[2] & 0x80 != 0
-    }
-
-    pub fn downed_moon_lord(&self) -> bool {
-        self.event_info[3] & 0x01 != 0
-    }
-
-    pub fn downed_pumking(&self) -> bool {
-        self.event_info[3] & 0x02 != 0
-    }
-
-    pub fn downed_mourning_wood(&self) -> bool {
-        self.event_info[3] & 0x04 != 0
-    }
-
-    pub fn downed_ice_queen(&self) -> bool {
-        self.event_info[3] & 0x08 != 0
-    }
-
-    pub fn downed_santank(&self) -> bool {
-        self.event_info[3] & 0x10 != 0
-    }
-
-    pub fn downed_everscream(&self) -> bool {
-        self.event_info[3] & 0x20 != 0
-    }
-
-    pub fn downed_golem(&self) -> bool {
-        self.event_info[3] & 0x40 != 0
-    }
-
-    pub fn birthday_party(&self) -> bool {
-        self.event_info[3] & 0x80 != 0
-    }
-
-    pub fn downed_pirates(&self) -> bool {
-        self.event_info[4] & 0x01 != 0
-    }
-
-    pub fn downed_frost_legion(&self) -> bool {
-        self.event_info[4] & 0x02 != 0
-    }
-
-    pub fn downed_goblins(&self) -> bool {
-        self.event_info[4] & 0x04 != 0
-    }
-
-    pub fn sandstorm(&self) -> bool {
-        self.event_info[4] & 0x08 != 0
-    }
-
-    pub fn dd2_event(&self) -> bool {
-        self.event_info[4] & 0x10 != 0
-    }
-
-    pub fn downed_dd2_tier_1(&self) -> bool {
-        self.event_info[4] & 0x20 != 0
-    }
-
-    pub fn downed_dd2_tier_2(&self) -> bool {
-        self.event_info[4] & 0x40 != 0
-    }
-
-    pub fn downed_dd2_tier_3(&self) -> bool {
-        self.event_info[4] & 0x80 != 0
-    }
-
-    pub fn combat_book_used(&self) -> bool {
-        self.event_info[5] & 0x01 != 0
-    }
-
-    pub fn manual_lanterns(&self) -> bool {
-        self.event_info[5] & 0x02 != 0
-    }
-
-    pub fn downed_solar_tower(&self) -> bool {
-        self.event_info[5] & 0x04 != 0
-    }
-
-    pub fn downed_vortex_tower(&self) -> bool {
-        self.event_info[5] & 0x08 != 0
-    }
-
-    pub fn downed_nebula_tower(&self) -> bool {
-        self.event_info[5] & 0x10 != 0
-    }
-
-    pub fn downed_stardust_tower(&self) -> bool {
-        self.event_info[5] & 0x20 != 0
-    }
-
-    pub fn force_halloween(&self) -> bool {
-        self.event_info[5] & 0x40 != 0
-    }
-
-    pub fn force_xmas(&self) -> bool {
-        self.event_info[5] & 0x80 != 0
-    }
-
-    pub fn bought_cat(&self) -> bool {
-        self.event_info[6] & 0x01 != 0
-    }
-
-    pub fn bought_dog(&self) -> bool {
-        self.event_info[6] & 0x02 != 0
-    }
-
-    pub fn bought_bunny(&self) -> bool {
-        self.event_info[6] & 0x04 != 0
-    }
-
-    pub fn free_cake(&self) -> bool {
-        self.event_info[6] & 0x08 != 0
-    }
-
-    pub fn drunk_world(&self) -> bool {
-        self.event_info[6] & 0x10 != 0
-    }
-
-    pub fn downed_empress_of_light(&self) -> bool {
-        self.event_info[6] & 0x20 != 0
-    }
-
-    pub fn downed_queen_slime(&self) -> bool {
-        self.event_info[6] & 0x40 != 0
-    }
-}
-
 impl PacketBody for WorldInfo {
     const TAG: u8 = 7;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.time);
-        cursor.write(&self.day_and_moon_info);
+        cursor.write(
+            &(0 // day and moon info
+            | if self.day_time { 0x01 } else { 0 }
+            | if self.blood_moon { 0x02 } else { 0 }
+            | if self.eclipse { 0x04 } else { 0 }),
+        );
         cursor.write(&self.moon_phase);
         cursor.write(&self.max_tiles_x);
         cursor.write(&self.max_tiles_y);
         cursor.write(&self.spawn_x);
         cursor.write(&self.spawn_y);
-        cursor.write(&self.worldsurface);
-        cursor.write(&self.rocklayer);
+        cursor.write(&self.world_surface);
+        cursor.write(&self.rock_layer);
         cursor.write(&self.world_id);
         cursor.write(&self.world_name);
         cursor.write(&self.game_mode);
@@ -359,34 +158,19 @@ impl PacketBody for WorldInfo {
         cursor.write(&self.crimson_background);
         cursor.write(&self.desert_background);
         cursor.write(&self.ocean_background);
-        cursor.write(&self.a_background);
-        cursor.write(&self.b_background);
-        cursor.write(&self.c_background);
-        cursor.write(&self.d_background);
-        cursor.write(&self.e_background);
+        self.unknown_background.iter().for_each(|x| cursor.write(x));
         cursor.write(&self.ice_back_style);
         cursor.write(&self.jungle_back_style);
         cursor.write(&self.hell_back_style);
         cursor.write(&self.wind_speed_set);
         cursor.write(&self.cloud_number);
-        cursor.write(&self.tree_1);
-        cursor.write(&self.tree_2);
-        cursor.write(&self.tree_3);
-        cursor.write(&self.tree_style_1);
-        cursor.write(&self.tree_style_2);
-        cursor.write(&self.tree_style_3);
-        cursor.write(&self.tree_style_4);
-        cursor.write(&self.cave_back_1);
-        cursor.write(&self.cave_back_2);
-        cursor.write(&self.cave_back_3);
-        cursor.write(&self.cave_back_style_1);
-        cursor.write(&self.cave_back_style_2);
-        cursor.write(&self.cave_back_style_3);
-        cursor.write(&self.cave_back_style_4);
-        cursor.write(&self.forest_1_tree_top_style);
-        cursor.write(&self.forest_2_tree_top_style);
-        cursor.write(&self.forest_3_tree_top_style);
-        cursor.write(&self.forest_4_tree_top_style);
+        self.trees.iter().for_each(|x| cursor.write(x));
+        self.tree_styles.iter().for_each(|x| cursor.write(x));
+        self.cave_backs.iter().for_each(|x| cursor.write(x));
+        self.cave_back_styles.iter().for_each(|x| cursor.write(x));
+        self.forest_tree_top_styles
+            .iter()
+            .for_each(|x| cursor.write(x));
         cursor.write(&self.corruption_tree_top_style);
         cursor.write(&self.jungle_tree_top_style);
         cursor.write(&self.snow_tree_top_style);
@@ -397,7 +181,82 @@ impl PacketBody for WorldInfo {
         cursor.write(&self.glowing_mushroom_tree_top_style);
         cursor.write(&self.underworld_tree_top_style);
         cursor.write(&self.rain);
-        self.event_info.iter().for_each(|i| cursor.write(i));
+        cursor.write(
+            &(0 // event info[0]
+            | if self.shadow_orb_smashed { 0x01 } else { 0 }
+            | if self.downed_boss_1 { 0x02 } else { 0 }
+            | if self.downed_boss_2 { 0x04 } else { 0 }
+            | if self.downed_boss_3 { 0x08 } else { 0 }
+            | if self.hard_mode { 0x10 } else { 0 }
+            | if self.downed_clown { 0x20 } else { 0 }
+            | if self.server_side_character { 0x40 } else { 0 }
+            | if self.downed_plant_boss { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[1]
+            | if self.mech_boss_downed { 0x01 } else { 0 }
+            | if self.mech_boss_downed_2 { 0x02 } else { 0 }
+            | if self.mech_boss_downed_3 { 0x04 } else { 0 }
+            | if self.mech_boss_any_downed { 0x08 } else { 0 }
+            | if self.cloud_bg { 0x10 } else { 0 }
+            | if self.crimson { 0x20 } else { 0 }
+            | if self.pumpkin_moon { 0x40 } else { 0 }
+            | if self.snow_moon { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[2]
+            | if self.expert_mode { 0x01 } else { 0 }
+            | if self.fastforwardtime { 0x02 } else { 0 }
+            | if self.slime_rain { 0x04 } else { 0 }
+            | if self.downed_slime_king { 0x08 } else { 0 }
+            | if self.downed_queen_bee { 0x10 } else { 0 }
+            | if self.downed_fishron { 0x20 } else { 0 }
+            | if self.downed_martians { 0x40 } else { 0 }
+            | if self.downed_ancient_cultist { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[3]
+            | if self.downed_moon_lord { 0x01 } else { 0 }
+            | if self.downed_pumking { 0x02 } else { 0 }
+            | if self.downed_mourning_wood { 0x04 } else { 0 }
+            | if self.downed_ice_queen { 0x08 } else { 0 }
+            | if self.downed_santank { 0x10 } else { 0 }
+            | if self.downed_everscream { 0x20 } else { 0 }
+            | if self.downed_golem { 0x40 } else { 0 }
+            | if self.birthday_party { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[4]
+            | if self.downed_pirates { 0x01 } else { 0 }
+            | if self.downed_frost_legion { 0x02 } else { 0 }
+            | if self.downed_goblins { 0x04 } else { 0 }
+            | if self.sandstorm { 0x08 } else { 0 }
+            | if self.dd2_event { 0x10 } else { 0 }
+            | if self.downed_dd2_tier_1 { 0x20 } else { 0 }
+            | if self.downed_dd2_tier_2 { 0x40 } else { 0 }
+            | if self.downed_dd2_tier_3 { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[5]
+            | if self.combat_book_used { 0x01 } else { 0 }
+            | if self.manual_lanterns { 0x02 } else { 0 }
+            | if self.downed_solar_tower { 0x04 } else { 0 }
+            | if self.downed_vortex_tower { 0x08 } else { 0 }
+            | if self.downed_tower_nebula { 0x10 } else { 0 }
+            | if self.downed_stardust_tower { 0x20 } else { 0 }
+            | if self.force_halloween_day { 0x40 } else { 0 }
+            | if self.force_xmas_day { 0x80 } else { 0 }),
+        );
+        cursor.write(
+            &(0 // event info[6]
+            | if self.bought_cat { 0x01 } else { 0 }
+            | if self.bought_dog { 0x02 } else { 0 }
+            | if self.bought_bunny { 0x04 } else { 0 }
+            | if self.free_cake { 0x08 } else { 0 }
+            | if self.drunk_world { 0x10 } else { 0 }
+            | if self.downed_empress_of_light { 0x20 } else { 0 }
+            | if self.downed_queen_slime { 0x40 } else { 0 }),
+        );
         self.ore_tiers_tiles.iter().for_each(|t| cursor.write(t));
         cursor.write(&self.invasion_type);
         cursor.write(&self.lobby_id);
@@ -405,89 +264,184 @@ impl PacketBody for WorldInfo {
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
+        let time = cursor.read();
+        let day_and_moon_info = cursor.read::<u8>();
+        let moon_phase = cursor.read();
+        let max_tiles_x = cursor.read();
+        let max_tiles_y = cursor.read();
+        let spawn_x = cursor.read();
+        let spawn_y = cursor.read();
+        let world_surface = cursor.read();
+        let rock_layer = cursor.read();
+        let world_id = cursor.read();
+        let world_name = cursor.read();
+        let game_mode = cursor.read();
+        let world_unique_id = cursor.read();
+        let world_generator_version = cursor.read();
+        let moon_type = cursor.read();
+        let tree_background = cursor.read();
+        let corruption_background = cursor.read();
+        let jungle_background = cursor.read();
+        let snow_background = cursor.read();
+        let hallow_background = cursor.read();
+        let crimson_background = cursor.read();
+        let desert_background = cursor.read();
+        let ocean_background = cursor.read();
+        let unknown_background = [
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+        ];
+        let ice_back_style = cursor.read();
+        let jungle_back_style = cursor.read();
+        let hell_back_style = cursor.read();
+        let wind_speed_set = cursor.read();
+        let cloud_number = cursor.read();
+        let trees = [cursor.read(), cursor.read(), cursor.read()];
+        let tree_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
+        let cave_backs = [cursor.read(), cursor.read(), cursor.read()];
+        let cave_back_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
+        let forest_tree_top_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
+        let corruption_tree_top_style = cursor.read();
+        let jungle_tree_top_style = cursor.read();
+        let snow_tree_top_style = cursor.read();
+        let hallow_tree_top_style = cursor.read();
+        let crimson_tree_top_style = cursor.read();
+        let desert_tree_top_style = cursor.read();
+        let ocean_tree_top_style = cursor.read();
+        let glowing_mushroom_tree_top_style = cursor.read();
+        let underworld_tree_top_style = cursor.read();
+        let rain = cursor.read();
+        let event_info: [u8; 7] = [
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+        ];
+        let ore_tiers_tiles = [
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+            cursor.read(),
+        ];
+        let invasion_type = cursor.read();
+        let lobby_id = cursor.read();
+        let sandstorm_severity = cursor.read();
+
         Self {
-            time: cursor.read(),
-            day_and_moon_info: cursor.read(),
-            moon_phase: cursor.read(),
-            max_tiles_x: cursor.read(),
-            max_tiles_y: cursor.read(),
-            spawn_x: cursor.read(),
-            spawn_y: cursor.read(),
-            worldsurface: cursor.read(),
-            rocklayer: cursor.read(),
-            world_id: cursor.read(),
-            world_name: cursor.read(),
-            game_mode: cursor.read(),
-            world_unique_id: cursor.read(),
-            world_generator_version: cursor.read(),
-            moon_type: cursor.read(),
-            tree_background: cursor.read(),
-            corruption_background: cursor.read(),
-            jungle_background: cursor.read(),
-            snow_background: cursor.read(),
-            hallow_background: cursor.read(),
-            crimson_background: cursor.read(),
-            desert_background: cursor.read(),
-            ocean_background: cursor.read(),
-            a_background: cursor.read(),
-            b_background: cursor.read(),
-            c_background: cursor.read(),
-            d_background: cursor.read(),
-            e_background: cursor.read(),
-            ice_back_style: cursor.read(),
-            jungle_back_style: cursor.read(),
-            hell_back_style: cursor.read(),
-            wind_speed_set: cursor.read(),
-            cloud_number: cursor.read(),
-            tree_1: cursor.read(),
-            tree_2: cursor.read(),
-            tree_3: cursor.read(),
-            tree_style_1: cursor.read(),
-            tree_style_2: cursor.read(),
-            tree_style_3: cursor.read(),
-            tree_style_4: cursor.read(),
-            cave_back_1: cursor.read(),
-            cave_back_2: cursor.read(),
-            cave_back_3: cursor.read(),
-            cave_back_style_1: cursor.read(),
-            cave_back_style_2: cursor.read(),
-            cave_back_style_3: cursor.read(),
-            cave_back_style_4: cursor.read(),
-            forest_1_tree_top_style: cursor.read(),
-            forest_2_tree_top_style: cursor.read(),
-            forest_3_tree_top_style: cursor.read(),
-            forest_4_tree_top_style: cursor.read(),
-            corruption_tree_top_style: cursor.read(),
-            jungle_tree_top_style: cursor.read(),
-            snow_tree_top_style: cursor.read(),
-            hallow_tree_top_style: cursor.read(),
-            crimson_tree_top_style: cursor.read(),
-            desert_tree_top_style: cursor.read(),
-            ocean_tree_top_style: cursor.read(),
-            glowing_mushroom_tree_top_style: cursor.read(),
-            underworld_tree_top_style: cursor.read(),
-            rain: cursor.read(),
-            event_info: [
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-            ],
-            ore_tiers_tiles: [
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-                cursor.read(),
-            ],
-            invasion_type: cursor.read(),
-            lobby_id: cursor.read(),
-            sandstorm_severity: cursor.read(),
+            time,
+            day_time: day_and_moon_info & 0x01 != 0,
+            blood_moon: day_and_moon_info & 0x02 != 0,
+            eclipse: day_and_moon_info & 0x04 != 0,
+            moon_phase,
+            max_tiles_x,
+            max_tiles_y,
+            spawn_x,
+            spawn_y,
+            world_surface,
+            rock_layer,
+            world_id,
+            world_name,
+            game_mode,
+            world_unique_id,
+            world_generator_version,
+            moon_type,
+            tree_background,
+            corruption_background,
+            jungle_background,
+            snow_background,
+            hallow_background,
+            crimson_background,
+            desert_background,
+            ocean_background,
+            unknown_background,
+            ice_back_style,
+            jungle_back_style,
+            hell_back_style,
+            wind_speed_set,
+            cloud_number,
+            trees,
+            tree_styles,
+            cave_backs,
+            cave_back_styles,
+            forest_tree_top_styles,
+            corruption_tree_top_style,
+            jungle_tree_top_style,
+            snow_tree_top_style,
+            hallow_tree_top_style,
+            crimson_tree_top_style,
+            desert_tree_top_style,
+            ocean_tree_top_style,
+            glowing_mushroom_tree_top_style,
+            underworld_tree_top_style,
+            rain,
+            shadow_orb_smashed: event_info[0] & 0x01 != 0,
+            downed_boss_1: event_info[0] & 0x02 != 0,
+            downed_boss_2: event_info[0] & 0x04 != 0,
+            downed_boss_3: event_info[0] & 0x08 != 0,
+            hard_mode: event_info[0] & 0x10 != 0,
+            downed_clown: event_info[0] & 0x20 != 0,
+            server_side_character: event_info[0] & 0x40 != 0,
+            downed_plant_boss: event_info[0] & 0x80 != 0,
+            mech_boss_downed: event_info[1] & 0x01 != 0,
+            mech_boss_downed_2: event_info[1] & 0x02 != 0,
+            mech_boss_downed_3: event_info[1] & 0x04 != 0,
+            mech_boss_any_downed: event_info[1] & 0x08 != 0,
+            cloud_bg: event_info[1] & 0x10 != 0,
+            crimson: event_info[1] & 0x20 != 0,
+            pumpkin_moon: event_info[1] & 0x40 != 0,
+            snow_moon: event_info[1] & 0x80 != 0,
+            expert_mode: event_info[2] & 0x01 != 0,
+            fastforwardtime: event_info[2] & 0x02 != 0,
+            slime_rain: event_info[2] & 0x04 != 0,
+            downed_slime_king: event_info[2] & 0x08 != 0,
+            downed_queen_bee: event_info[2] & 0x10 != 0,
+            downed_fishron: event_info[2] & 0x20 != 0,
+            downed_martians: event_info[2] & 0x40 != 0,
+            downed_ancient_cultist: event_info[2] & 0x80 != 0,
+            downed_moon_lord: event_info[3] & 0x01 != 0,
+            downed_pumking: event_info[3] & 0x02 != 0,
+            downed_mourning_wood: event_info[3] & 0x04 != 0,
+            downed_ice_queen: event_info[3] & 0x08 != 0,
+            downed_santank: event_info[3] & 0x10 != 0,
+            downed_everscream: event_info[3] & 0x20 != 0,
+            downed_golem: event_info[3] & 0x40 != 0,
+            birthday_party: event_info[3] & 0x80 != 0,
+            downed_pirates: event_info[4] & 0x01 != 0,
+            downed_frost_legion: event_info[4] & 0x02 != 0,
+            downed_goblins: event_info[4] & 0x04 != 0,
+            sandstorm: event_info[4] & 0x08 != 0,
+            dd2_event: event_info[4] & 0x10 != 0,
+            downed_dd2_tier_1: event_info[4] & 0x20 != 0,
+            downed_dd2_tier_2: event_info[4] & 0x40 != 0,
+            downed_dd2_tier_3: event_info[4] & 0x80 != 0,
+            combat_book_used: event_info[5] & 0x01 != 0,
+            manual_lanterns: event_info[5] & 0x02 != 0,
+            downed_solar_tower: event_info[5] & 0x04 != 0,
+            downed_vortex_tower: event_info[5] & 0x08 != 0,
+            downed_tower_nebula: event_info[5] & 0x10 != 0,
+            downed_stardust_tower: event_info[5] & 0x20 != 0,
+            force_halloween_day: event_info[5] & 0x40 != 0,
+            force_xmas_day: event_info[5] & 0x80 != 0,
+            bought_cat: event_info[6] & 0x01 != 0,
+            bought_dog: event_info[6] & 0x02 != 0,
+            bought_bunny: event_info[6] & 0x04 != 0,
+            free_cake: event_info[6] & 0x08 != 0,
+            drunk_world: event_info[6] & 0x10 != 0,
+            downed_empress_of_light: event_info[6] & 0x20 != 0,
+            downed_queen_slime: event_info[6] & 0x40 != 0,
+            ore_tiers_tiles,
+            invasion_type,
+            lobby_id,
+            sandstorm_severity,
         }
     }
 }

@@ -264,7 +264,7 @@ pub use update_shield_strengths::UpdateShieldStrengths;
 pub use update_sign::UpdateSign;
 pub use update_tile_entity::UpdateTileEntity;
 pub use wired_cannon_shot::WiredCannonShot;
-pub use world_info::{WorldInfo, DayInfo};
+pub use world_info::WorldInfo;
 
 use crate::SliceCursor;
 use std::convert::TryInto;

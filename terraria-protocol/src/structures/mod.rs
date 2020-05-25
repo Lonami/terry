@@ -1,4 +1,3 @@
-pub(crate) mod bitflags;
 mod chest;
 mod core;
 mod net_string;
