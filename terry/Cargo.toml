@@ -1,0 +1,8 @@
+[package]
+name = "terraria-client-bot"
+version = "0.1.0"
+authors = ["Lonami Exo <totufals@hotmail.com>"]
+edition = "2018"
+
+[dependencies]
+terraria-protocol = { path = "../terraria-protocol" }
