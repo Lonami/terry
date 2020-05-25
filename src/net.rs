@@ -3,7 +3,7 @@ use crate::serialization::SliceCursor;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 
-const PROTOCOL_MAGIC: &str = "Terraria228";
+const PROTOCOL_VERSION: &str = "Terraria228";
 
 // TODO don't use constants for these
 const PLAYER_NAME: &str = "terry";
@@ -36,8 +36,8 @@ impl Terraria {
         };
 
         // handshake
-        this.send_packet(&packets::Magic {
-            magic: PROTOCOL_MAGIC.to_string(),
+        this.send_packet(&packets::Connect {
+            version: PROTOCOL_VERSION.to_string(),
         })?;
 
         this.send_packet(&packets::PlayerInfo::default())?;

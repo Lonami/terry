@@ -1,11 +1,13 @@
 use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Packet 6 is used during login.
+/// Asks the server to send the data about the world.
+///
+/// Direction: Client to Server.
 #[derive(Debug)]
-pub struct Packet6 {}
+pub struct RequestWorldData {}
 
-impl PacketBody for Packet6 {
+impl PacketBody for RequestWorldData {
     const TAG: u8 = 6;
 
     fn write_body(&self, _cursor: &mut SliceCursor) {}

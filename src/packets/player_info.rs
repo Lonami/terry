@@ -2,6 +2,8 @@ use crate::packets::{PacketBody, RGB};
 use crate::serialization::SliceCursor;
 
 /// Player information, sent on login or when the player looks change.
+///
+/// Direction: Bidirectional.
 #[derive(Debug)]
 pub struct PlayerInfo {
     pub player: u8,
@@ -9,7 +11,7 @@ pub struct PlayerInfo {
     pub hair_variant: u8,
     pub name: String,
     pub hair_dye: u8,
-    pub visible_accesories_flags: u16,
+    pub hide_visuals_flags: u16,
     pub hide_misc: bool,
     pub hair_color: RGB,
     pub skin_color: RGB,
@@ -29,7 +31,7 @@ impl Default for PlayerInfo {
             hair_variant: 0,
             name: "terry".to_string(),
             hair_dye: 0,
-            visible_accesories_flags: 0,
+            hide_visuals_flags: 0,
             hide_misc: false,
             hair_color: RGB {
                 r: 215,
@@ -77,10 +79,14 @@ impl PacketBody for PlayerInfo {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.player);
         cursor.write(&self.skin_variant);
-        cursor.write(&self.hair_variant);
+        if self.hair_variant > 162 {
+            cursor.write(&self.hair_variant);
+        } else {
+            cursor.write(&0u8);
+        }
         cursor.write(&self.name);
         cursor.write(&self.hair_dye);
-        cursor.write(&self.visible_accesories_flags);
+        cursor.write(&self.hide_visuals_flags);
         cursor.write(&self.hide_misc);
         cursor.write(&self.hair_color);
         cursor.write(&self.skin_color);
@@ -99,7 +105,7 @@ impl PacketBody for PlayerInfo {
             hair_variant: cursor.read(),
             name: cursor.read(),
             hair_dye: cursor.read(),
-            visible_accesories_flags: cursor.read(),
+            hide_visuals_flags: cursor.read(),
             hide_misc: cursor.read(),
             hair_color: cursor.read(),
             skin_color: cursor.read(),
