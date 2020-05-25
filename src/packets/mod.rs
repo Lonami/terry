@@ -266,6 +266,28 @@ pub use request_npc_debuff::RequestNpcDebuff;
 pub use client_synced_inventory::ClientSyncedInventory;
 pub use set_as_host::SetAsHost;
 
+use crate::serialization::{Deserializable, Serializable, SliceCursor};
+use std::convert::TryInto;
+
+pub trait PacketBody: Sized {
+    const TAG: u8;
+
+    fn write_body(&self, cursor: &mut SliceCursor);
+
+    fn from_body(cursor: &mut SliceCursor) -> Self;
+
+    // TODO player should probably go inside the packets
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        let length_pos = cursor.pos();
+        cursor.write(&0u16); // length
+        cursor.write(&Self::TAG);
+        self.write_body(cursor);
+        let length: u16 = (cursor.pos() - length_pos)
+            .try_into()
+            .expect("packet too long");
+        cursor.rewrite(length_pos, &length);
+    }
+}
 
 enum Packet {
     ConnectRequest(ConnectRequest), // 1
@@ -401,4 +423,489 @@ enum Packet {
     RequestNpcDebuff(RequestNpcDebuff), // 137
     ClientSyncedInventory(ClientSyncedInventory), // 138
     SetAsHost(SetAsHost), // 139
+}
+
+impl Packet {
+    pub fn from_slice(slice: &mut [u8]) -> Self {
+        let mut cursor = SliceCursor::new(slice);
+        let tag = cursor.read::<u8>();
+        // TODO too bad packet body is not serializable
+        match tag {
+            ConnectRequest::TAG => Packet::ConnectRequest(ConnectRequest::from_body(&mut cursor)),
+            Disconnect::TAG => Packet::Disconnect(Disconnect::from_body(&mut cursor)),
+            SetUserSlot::TAG => Packet::SetUserSlot(SetUserSlot::from_body(&mut cursor)),
+            PlayerInfo::TAG => Packet::PlayerInfo(PlayerInfo::from_body(&mut cursor)),
+            PlayerInventorySlot::TAG => Packet::PlayerInventorySlot(PlayerInventorySlot::from_body(&mut cursor)),
+            RequestWorldData::TAG => Packet::RequestWorldData(RequestWorldData::from_body(&mut cursor)),
+            WorldInfo::TAG => Packet::WorldInfo(WorldInfo::from_body(&mut cursor)),
+            RequestEssentialTiles::TAG => Packet::RequestEssentialTiles(RequestEssentialTiles::from_body(&mut cursor)),
+            Status::TAG => Packet::Status(Status::from_body(&mut cursor)),
+            SendSection::TAG => Packet::SendSection(SendSection::from_body(&mut cursor)),
+            SectionTileFrame::TAG => Packet::SectionTileFrame(SectionTileFrame::from_body(&mut cursor)),
+            SpawnPlayer::TAG => Packet::SpawnPlayer(SpawnPlayer::from_body(&mut cursor)),
+            UpdatePlayer::TAG => Packet::UpdatePlayer(UpdatePlayer::from_body(&mut cursor)),
+            PlayerActive::TAG => Packet::PlayerActive(PlayerActive::from_body(&mut cursor)),
+            PlayerHP::TAG => Packet::PlayerHP(PlayerHP::from_body(&mut cursor)),
+            ModifyTile::TAG => Packet::ModifyTile(ModifyTile::from_body(&mut cursor)),
+            Time::TAG => Packet::Time(Time::from_body(&mut cursor)),
+            DoorToggle::TAG => Packet::DoorToggle(DoorToggle::from_body(&mut cursor)),
+            SendTileSquare::TAG => Packet::SendTileSquare(SendTileSquare::from_body(&mut cursor)),
+            21 => panic!("tag 21 was replaced by tag 90"),
+            UpdateItemOwner::TAG => Packet::UpdateItemOwner(UpdateItemOwner::from_body(&mut cursor)),
+            NpcUpdate::TAG => Packet::NpcUpdate(NpcUpdate::from_body(&mut cursor)),
+            StrikeNpc::TAG => Packet::StrikeNpc(StrikeNpc::from_body(&mut cursor)),
+            25 => panic!("tag 25 is the null packet"),
+            26 => panic!("tag 26 is the null packet"),
+            ProjectileUpdate::TAG => Packet::ProjectileUpdate(ProjectileUpdate::from_body(&mut cursor)),
+            NpcStrike::TAG => Packet::NpcStrike(NpcStrike::from_body(&mut cursor)),
+            DestroyProjectile::TAG => Packet::DestroyProjectile(DestroyProjectile::from_body(&mut cursor)),
+            TogglePVP::TAG => Packet::TogglePVP(TogglePVP::from_body(&mut cursor)),
+            OpenChest::TAG => Packet::OpenChest(OpenChest::from_body(&mut cursor)),
+            UpdateChestItem::TAG => Packet::UpdateChestItem(UpdateChestItem::from_body(&mut cursor)),
+            SyncActiveChest::TAG => Packet::SyncActiveChest(SyncActiveChest::from_body(&mut cursor)),
+            PlaceChest::TAG => Packet::PlaceChest(PlaceChest::from_body(&mut cursor)),
+            HealEffect::TAG => Packet::HealEffect(HealEffect::from_body(&mut cursor)),
+            PlayerZone::TAG => Packet::PlayerZone(PlayerZone::from_body(&mut cursor)),
+            RequestPassword::TAG => Packet::RequestPassword(RequestPassword::from_body(&mut cursor)),
+            SendPassword::TAG => Packet::SendPassword(SendPassword::from_body(&mut cursor)),
+            RemoveItemOwner::TAG => Packet::RemoveItemOwner(RemoveItemOwner::from_body(&mut cursor)),
+            SetActiveNpc::TAG => Packet::SetActiveNpc(SetActiveNpc::from_body(&mut cursor)),
+            PlayerItemAnimation::TAG => Packet::PlayerItemAnimation(PlayerItemAnimation::from_body(&mut cursor)),
+            PlayerMana::TAG => Packet::PlayerMana(PlayerMana::from_body(&mut cursor)),
+            ManaEffect::TAG => Packet::ManaEffect(ManaEffect::from_body(&mut cursor)),
+            44 => panic!("tag 44 is the null packet"),
+            PlayerTeam::TAG => Packet::PlayerTeam(PlayerTeam::from_body(&mut cursor)),
+            RequestSign::TAG => Packet::RequestSign(RequestSign::from_body(&mut cursor)),
+            UpdateSign::TAG => Packet::UpdateSign(UpdateSign::from_body(&mut cursor)),
+            SetLiquid::TAG => Packet::SetLiquid(SetLiquid::from_body(&mut cursor)),
+            CompleteConnectionAndSpawn::TAG => Packet::CompleteConnectionAndSpawn(CompleteConnectionAndSpawn::from_body(&mut cursor)),
+            UpdatePlayerBuff::TAG => Packet::UpdatePlayerBuff(UpdatePlayerBuff::from_body(&mut cursor)),
+            SpecialNpcEffect::TAG => Packet::SpecialNpcEffect(SpecialNpcEffect::from_body(&mut cursor)),
+            Unlock::TAG => Packet::Unlock(Unlock::from_body(&mut cursor)),
+            AddNpcBuff::TAG => Packet::AddNpcBuff(AddNpcBuff::from_body(&mut cursor)),
+            UpdateNpcBuff::TAG => Packet::UpdateNpcBuff(UpdateNpcBuff::from_body(&mut cursor)),
+            AddPlayerBuff::TAG => Packet::AddPlayerBuff(AddPlayerBuff::from_body(&mut cursor)),
+            UpdateNpcName::TAG => Packet::UpdateNpcName(UpdateNpcName::from_body(&mut cursor)),
+            UpdateGoodEvil::TAG => Packet::UpdateGoodEvil(UpdateGoodEvil::from_body(&mut cursor)),
+            PlayMusicItem::TAG => Packet::PlayMusicItem(PlayMusicItem::from_body(&mut cursor)),
+            HitSwitch::TAG => Packet::HitSwitch(HitSwitch::from_body(&mut cursor)),
+            SetNpcHome::TAG => Packet::SetNpcHome(SetNpcHome::from_body(&mut cursor)),
+            SpawnBossInvasion::TAG => Packet::SpawnBossInvasion(SpawnBossInvasion::from_body(&mut cursor)),
+            PlayerDodge::TAG => Packet::PlayerDodge(PlayerDodge::from_body(&mut cursor)),
+            PaintTile::TAG => Packet::PaintTile(PaintTile::from_body(&mut cursor)),
+            PaintWall::TAG => Packet::PaintWall(PaintWall::from_body(&mut cursor)),
+            PlayerNpcTeleport::TAG => Packet::PlayerNpcTeleport(PlayerNpcTeleport::from_body(&mut cursor)),
+            HealOtherPlayer::TAG => Packet::HealOtherPlayer(HealOtherPlayer::from_body(&mut cursor)),
+            Placeholder::TAG => Packet::Placeholder(Placeholder::from_body(&mut cursor)),
+            ClientUUID::TAG => Packet::ClientUUID(ClientUUID::from_body(&mut cursor)),
+            GetChestName::TAG => Packet::GetChestName(GetChestName::from_body(&mut cursor)),
+            CatchNpc::TAG => Packet::CatchNpc(CatchNpc::from_body(&mut cursor)),
+            ReleaseNpc::TAG => Packet::ReleaseNpc(ReleaseNpc::from_body(&mut cursor)),
+            TravellingMerchantInventory::TAG => Packet::TravellingMerchantInventory(TravellingMerchantInventory::from_body(&mut cursor)),
+            TeleportationPotion::TAG => Packet::TeleportationPotion(TeleportationPotion::from_body(&mut cursor)),
+            AnglerQuest::TAG => Packet::AnglerQuest(AnglerQuest::from_body(&mut cursor)),
+            CompleteAnglerQuest::TAG => Packet::CompleteAnglerQuest(CompleteAnglerQuest::from_body(&mut cursor)),
+            AnglerQuests::TAG => Packet::AnglerQuests(AnglerQuests::from_body(&mut cursor)),
+            CreateTemporaryAnimation::TAG => Packet::CreateTemporaryAnimation(CreateTemporaryAnimation::from_body(&mut cursor)),
+            InvasionProgress::TAG => Packet::InvasionProgress(InvasionProgress::from_body(&mut cursor)),
+            PlaceObject::TAG => Packet::PlaceObject(PlaceObject::from_body(&mut cursor)),
+            SyncPlayerChestIndex::TAG => Packet::SyncPlayerChestIndex(SyncPlayerChestIndex::from_body(&mut cursor)),
+            CreateCombatText::TAG => Packet::CreateCombatText(CreateCombatText::from_body(&mut cursor)),
+            LoadNetModule::TAG => Packet::LoadNetModule(LoadNetModule::from_body(&mut cursor)),
+            SetNpcKillCount::TAG => Packet::SetNpcKillCount(SetNpcKillCount::from_body(&mut cursor)),
+            SetPlayerStealth::TAG => Packet::SetPlayerStealth(SetPlayerStealth::from_body(&mut cursor)),
+            QuickStash::TAG => Packet::QuickStash(QuickStash::from_body(&mut cursor)),
+            UpdateTileEntity::TAG => Packet::UpdateTileEntity(UpdateTileEntity::from_body(&mut cursor)),
+            PlaceTileEntity::TAG => Packet::PlaceTileEntity(PlaceTileEntity::from_body(&mut cursor)),
+            TweakItem::TAG => Packet::TweakItem(TweakItem::from_body(&mut cursor)),
+            PlaceItemFrame::TAG => Packet::PlaceItemFrame(PlaceItemFrame::from_body(&mut cursor)),
+            UpdateItemDrop2::TAG => Packet::UpdateItemDrop2(UpdateItemDrop2::from_body(&mut cursor)),
+            SyncEmoteBubble::TAG => Packet::SyncEmoteBubble(SyncEmoteBubble::from_body(&mut cursor)),
+            SyncExtraValue::TAG => Packet::SyncExtraValue(SyncExtraValue::from_body(&mut cursor)),
+            SocialHandshake::TAG => Packet::SocialHandshake(SocialHandshake::from_body(&mut cursor)),
+            94 => panic!("deprecated"),
+            KillPortal::TAG => Packet::KillPortal(KillPortal::from_body(&mut cursor)),
+            PlayerTeleportPortal::TAG => Packet::PlayerTeleportPortal(PlayerTeleportPortal::from_body(&mut cursor)),
+            PlayerNpcKilled::TAG => Packet::PlayerNpcKilled(PlayerNpcKilled::from_body(&mut cursor)),
+            SetEvent::TAG => Packet::SetEvent(SetEvent::from_body(&mut cursor)),
+            UpdateMinionTarget::TAG => Packet::UpdateMinionTarget(UpdateMinionTarget::from_body(&mut cursor)),
+            NpcTeleportPortal::TAG => Packet::NpcTeleportPortal(NpcTeleportPortal::from_body(&mut cursor)),
+            UpdateShieldStrengths::TAG => Packet::UpdateShieldStrengths(UpdateShieldStrengths::from_body(&mut cursor)),
+            NebulaLevelUp::TAG => Packet::NebulaLevelUp(NebulaLevelUp::from_body(&mut cursor)),
+            MoonLordCountdown::TAG => Packet::MoonLordCountdown(MoonLordCountdown::from_body(&mut cursor)),
+            NpcShopItem::TAG => Packet::NpcShopItem(NpcShopItem::from_body(&mut cursor)),
+            GemLockToggle::TAG => Packet::GemLockToggle(GemLockToggle::from_body(&mut cursor)),
+            PoofofSmoke::TAG => Packet::PoofofSmoke(PoofofSmoke::from_body(&mut cursor)),
+            SmartTextMessage::TAG => Packet::SmartTextMessage(SmartTextMessage::from_body(&mut cursor)),
+            WiredCannonShot::TAG => Packet::WiredCannonShot(WiredCannonShot::from_body(&mut cursor)),
+            MassWire::TAG => Packet::MassWire(MassWire::from_body(&mut cursor)),
+            MassConsumeWire::TAG => Packet::MassConsumeWire(MassConsumeWire::from_body(&mut cursor)),
+            ToggleBirthdayParty::TAG => Packet::ToggleBirthdayParty(ToggleBirthdayParty::from_body(&mut cursor)),
+            GrowFx::TAG => Packet::GrowFx(GrowFx::from_body(&mut cursor)),
+            CrystalInvasionStart::TAG => Packet::CrystalInvasionStart(CrystalInvasionStart::from_body(&mut cursor)),
+            CrystalInvasionWipe::TAG => Packet::CrystalInvasionWipe(CrystalInvasionWipe::from_body(&mut cursor)),
+            SetMinionTarget::TAG => Packet::SetMinionTarget(SetMinionTarget::from_body(&mut cursor)),
+            CrystalInvasionWait::TAG => Packet::CrystalInvasionWait(CrystalInvasionWait::from_body(&mut cursor)),
+            PlayerHurt::TAG => Packet::PlayerHurt(PlayerHurt::from_body(&mut cursor)),
+            PlayerDeath::TAG => Packet::PlayerDeath(PlayerDeath::from_body(&mut cursor)),
+            CombatText::TAG => Packet::CombatText(CombatText::from_body(&mut cursor)),
+            Emoji::TAG => Packet::Emoji(Emoji::from_body(&mut cursor)),
+            DollSync::TAG => Packet::DollSync(DollSync::from_body(&mut cursor)),
+            InteractTileEntity::TAG => Packet::InteractTileEntity(InteractTileEntity::from_body(&mut cursor)),
+            PlaceWeaponRack::TAG => Packet::PlaceWeaponRack(PlaceWeaponRack::from_body(&mut cursor)),
+            HatRackSync::TAG => Packet::HatRackSync(HatRackSync::from_body(&mut cursor)),
+            SyncTilePicking::TAG => Packet::SyncTilePicking(SyncTilePicking::from_body(&mut cursor)),
+            SyncRevenge::TAG => Packet::SyncRevenge(SyncRevenge::from_body(&mut cursor)),
+            RemoveRevenge::TAG => Packet::RemoveRevenge(RemoveRevenge::from_body(&mut cursor)),
+            LandGolfBall::TAG => Packet::LandGolfBall(LandGolfBall::from_body(&mut cursor)),
+            ConnectionComplete::TAG => Packet::ConnectionComplete(ConnectionComplete::from_body(&mut cursor)),
+            FishOutNpc::TAG => Packet::FishOutNpc(FishOutNpc::from_body(&mut cursor)),
+            TamperWithNpc::TAG => Packet::TamperWithNpc(TamperWithNpc::from_body(&mut cursor)),
+            PlayLegacySound::TAG => Packet::PlayLegacySound(PlayLegacySound::from_body(&mut cursor)),
+            PlaceFood::TAG => Packet::PlaceFood(PlaceFood::from_body(&mut cursor)),
+            UpdatePlayerLuck::TAG => Packet::UpdatePlayerLuck(UpdatePlayerLuck::from_body(&mut cursor)),
+            DeadPlayer::TAG => Packet::DeadPlayer(DeadPlayer::from_body(&mut cursor)),
+            SyncMonsterType::TAG => Packet::SyncMonsterType(SyncMonsterType::from_body(&mut cursor)),
+            RequestNpcDebuff::TAG => Packet::RequestNpcDebuff(RequestNpcDebuff::from_body(&mut cursor)),
+            ClientSyncedInventory::TAG => Packet::ClientSyncedInventory(ClientSyncedInventory::from_body(&mut cursor)),
+            SetAsHost::TAG => Packet::SetAsHost(SetAsHost::from_body(&mut cursor)),
+
+            tag => panic!(format!("unknown tag {}", tag)),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct RGB {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+impl RGB {
+    pub fn new() -> Self {
+        RGB { r: 0, g: 0, b: 0 }
+    }
+}
+
+impl Serializable for RGB {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.r);
+        cursor.write(&self.g);
+        cursor.write(&self.b);
+    }
+}
+
+impl Deserializable for RGB {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self {
+            r: cursor.read(),
+            g: cursor.read(),
+            b: cursor.read(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Tile {
+    pub flags: [u8; 2],
+    pub color: Option<u8>,
+    pub wall_color: Option<u8>,
+    pub ty: Option<u16>,
+    pub frame_x: Option<u16>,
+    pub frame_y: Option<u16>,
+    pub wall: Option<u16>,
+    pub liquid: Option<u8>,
+    pub liquid_type: Option<u8>,
+}
+
+impl Tile {
+    fn active(&self) -> bool { self.flags[0] & 0x01 != 0 }
+    fn lighted(&self) -> bool { self.flags[0] & 0x02 != 0 }
+    fn has_wall(&self) -> bool { self.flags[0] & 0x04 != 0 }
+    fn has_liquid(&self) -> bool { self.flags[0] & 0x08 != 0 }
+    fn wire1(&self) -> bool { self.flags[0] & 0x10 != 0 }
+    fn half_brick(&self) -> bool { self.flags[0] & 0x20 != 0 }
+    fn actuator(&self) -> bool { self.flags[0] & 0x40 != 0 }
+    fn inactive(&self) -> bool { self.flags[0] & 0x80 != 0 }
+
+    fn wire2(&self) -> bool { self.flags[1] & 0x01 != 0 }
+    fn wire3(&self) -> bool { self.flags[1] & 0x02 != 0 }
+    fn has_color(&self) -> bool { self.flags[1] & 0x04 != 0 }
+    fn has_wall_color(&self) -> bool { self.flags[1] & 0x08 != 0 }
+    fn slope1(&self) -> bool { self.flags[1] & 0x10 != 0 }
+    fn slope2(&self) -> bool { self.flags[1] & 0x20 != 0 }
+    fn slope3(&self) -> bool { self.flags[1] & 0x40 != 0 }
+    fn wire4(&self) -> bool { self.flags[1] & 0x80 != 0 }
+}
+
+impl Serializable for Tile {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        // TODO yes we need a better way to deal with bitflags and options
+        self.flags.iter().for_each(|f| cursor.write(f));
+        if self.has_color() {
+            cursor.write(&self.color.unwrap());
+        }
+        if self.has_wall_color() {
+            cursor.write(&self.wall_color.unwrap());
+        }
+        if self.active() {
+            cursor.write(&self.ty.unwrap());
+        }
+        let tile_frame_important = true; // ???
+        if self.active() && tile_frame_important {
+            cursor.write(&self.frame_x.unwrap());
+            cursor.write(&self.frame_y.unwrap());
+        }
+        if self.has_wall() {
+            cursor.write(&self.wall.unwrap());
+        }
+        if self.has_liquid() {
+            cursor.write(&self.liquid.unwrap());
+            cursor.write(&self.liquid_type.unwrap());
+        }
+    }
+}
+
+impl Deserializable for Tile {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        todo!()
+    }
+}
+
+#[derive(Debug)]
+pub struct Chest {
+    pub index: u16,
+    pub x: u16,
+    pub y: u16,
+    pub name: String,
+}
+
+impl Serializable for Chest {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.index);
+        cursor.write(&self.x);
+        cursor.write(&self.y);
+        cursor.write(&self.name);
+    }
+}
+
+impl Deserializable for Chest {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self {
+            index: cursor.read(),
+            x: cursor.read(),
+            y: cursor.read(),
+            name: cursor.read(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Sign {
+    pub index: u16,
+    pub x: u16,
+    pub y: u16,
+    pub text: String,
+}
+
+impl Serializable for Sign {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.index);
+        cursor.write(&self.x);
+        cursor.write(&self.y);
+        cursor.write(&self.text);
+    }
+}
+
+impl Deserializable for Sign {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self {
+            index: cursor.read(),
+            x: cursor.read(),
+            y: cursor.read(),
+            text: cursor.read(),
+        }
+    }
+}
+
+enum TileEntity {
+    TrainingDummy {
+        id: i32,
+        x: u16,
+        y: u16,
+        npc_index: u16,
+    },
+    ItemFrame {
+        id: i32,
+        x: u16,
+        y: u16,
+        item_type: u16,
+        item_prefix: u8,
+        item_stack: u16,
+    },
+    LogicSensor {
+        id: i32,
+        x: u16,
+        y: u16,
+        logic_check_type: u8,
+        on: bool,
+    },
+    DisplayDoll {
+        id: i32,
+        x: u16,
+        y: u16,
+        flags: [u8; 2], // TODO read body
+    },
+    WeaponRack {
+        id: i32,
+        x: u16,
+        y: u16,
+        item_type: u16,
+        item_prefix: u8,
+        item_stack: u16,
+    },
+    HatRack {
+        id: i32,
+        x: u16,
+        y: u16,
+        flags: u8, // TODO read body
+    },
+    FloodPlatter {
+        id: i32,
+        x: u16,
+        y: u16,
+        item_type: u16,
+        item_prefix: u8,
+        item_stack: u16,
+    },
+    Pylon {
+        id: i32,
+        x: u16,
+        y: u16,
+    },
+}
+
+impl Serializable for TileEntity {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        todo!()
+    }
+}
+
+impl Deserializable for TileEntity {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        todo!()
+    }
+}
+
+
+#[repr(u8)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum NetStringMode {
+    Literal = 0,
+    Formattable = 1,
+    LocalizationKey = 2,
+}
+
+impl Serializable for NetStringMode {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&(*self as u8));
+    }
+}
+
+impl Deserializable for NetStringMode {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        match cursor.read::<u8>() {
+            0 => NetStringMode::Literal,
+            1 => NetStringMode::Formattable,
+            2 => NetStringMode::LocalizationKey,
+            n => panic!(format!("invalid net string mode {}", n)),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct NetString {
+    mode: NetStringMode,
+    text: String,
+    substitutions: Vec<NetString>,
+}
+
+impl Serializable for NetString {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.mode);
+        cursor.write(&self.text);
+        if self.mode != NetStringMode::Literal {
+            let len: u8 = self
+                .substitutions
+                .len()
+                .try_into()
+                .expect("too many substitutions");
+            cursor.write(&len);
+            self.substitutions.iter().for_each(|s| cursor.write(s));
+        }
+    }
+}
+
+impl Deserializable for NetString {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        let mode = cursor.read();
+        let text = cursor.read();
+        let mut substitutions = Vec::new();
+        if mode != NetStringMode::Literal {
+            let len = cursor.read::<u8>() as usize;
+            substitutions.reserve(len);
+            (0..len).for_each(|_| substitutions.push(cursor.read()));
+        }
+        Self {
+            mode,
+            text,
+            substitutions,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Serializable for Vec2 {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.x);
+        cursor.write(&self.y);
+    }
+}
+
+impl Deserializable for Vec2 {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self {
+            x: cursor.read(),
+            y: cursor.read(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_good_packet_serialization() {
+        let mut buffer = vec![0; 64];
+        let mut cursor = SliceCursor::new(buffer.as_mut_slice());
+        Connect {
+            magic: "Terraria228".to_string(),
+        }
+        .serialize(None, &mut cursor);
+        let pos = cursor.finish();
+        assert_eq!(
+            &buffer[..pos],
+            &[
+                0x0f, 0x00, 0x01, 0x0b, 0x54, 0x65, 0x72, 0x72, 0x61, 0x72, 0x69, 0x61, 0x32, 0x32,
+                0x38
+            ]
+        );
+    }
 }
