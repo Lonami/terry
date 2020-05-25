@@ -1,676 +1,406 @@
-mod compressed_tile_block;
-mod connect;
+mod connect_request;
 mod disconnect;
-mod item_moved;
-mod kill_count;
-mod npc_info;
-mod packet100;
-mod packet101;
-mod packet102;
-mod packet103;
-mod packet104;
-mod packet105;
-mod packet106;
-mod packet107;
-mod packet108;
-mod packet109;
-mod packet11;
-mod packet110;
-mod packet111;
-mod packet112;
-mod packet113;
-mod packet114;
-mod packet115;
-mod packet116;
-mod packet117;
-mod packet118;
-mod packet119;
-mod packet120;
-mod packet121;
-mod packet122;
-mod packet123;
-mod packet124;
-mod packet125;
-mod packet126;
-mod packet127;
-mod packet128;
-mod packet129;
-mod packet130;
-mod packet131;
-mod packet132;
-mod packet133;
-mod packet134;
-mod packet135;
-mod packet136;
-mod packet137;
-mod packet138;
-mod packet139;
-mod packet14;
-mod packet15;
-mod packet17;
-mod packet18;
-mod packet19;
-mod packet20;
-mod packet22;
-mod packet24;
-mod packet25;
-mod packet26;
-mod packet27;
-mod packet28;
-mod packet29;
-mod packet30;
-mod packet31;
-mod packet32;
-mod packet33;
-mod packet34;
-mod packet35;
-mod packet36;
-mod packet37;
-mod packet38;
-mod packet39;
-mod packet40;
-mod packet41;
-mod packet43;
-mod packet44;
-mod packet45;
-mod packet46;
-mod packet47;
-mod packet48;
-mod packet49;
-mod packet51;
-mod packet52;
-mod packet53;
-mod packet54;
-mod packet55;
-mod packet56;
-mod packet57;
-mod packet58;
-mod packet59;
-mod packet6;
-mod packet60;
-mod packet61;
-mod packet62;
-mod packet63;
-mod packet64;
-mod packet65;
-mod packet66;
-mod packet67;
-mod packet69;
-mod packet7;
-mod packet70;
-mod packet71;
-mod packet72;
-mod packet73;
-mod packet74;
-mod packet75;
-mod packet76;
-mod packet77;
-mod packet78;
-mod packet79;
-mod packet8;
-mod packet80;
-mod packet81;
-mod packet82;
-mod packet84;
-mod packet85;
-mod packet86;
-mod packet87;
-mod packet88;
-mod packet89;
-mod packet9;
-mod packet90;
-mod packet91;
-mod packet92;
-mod packet93;
-mod packet94;
-mod packet95;
-mod packet96;
-mod packet97;
-mod packet98;
-mod packet99;
-mod player_buffs;
+mod set_user_slot;
 mod player_info;
-mod player_inventory;
-mod player_life;
+mod player_inventory_slot;
+mod request_world_data;
+mod world_info;
+mod request_essential_tiles;
+mod status;
+mod send_section;
+mod section_tile_frame;
+mod spawn_player;
+mod update_player;
+mod player_active;
+mod player_hp;
+mod modify_tile;
+mod time;
+mod door_toggle;
+mod send_tile_square;
+mod update_item_owner;
+mod npc_update;
+mod strike_npcwith_held_item;
+mod projectile_update;
+mod npc_strike;
+mod destroy_projectile;
+mod toggle_p_v_p;
+mod open_chest;
+mod update_chest_item;
+mod sync_active_chest;
+mod placechest;
+mod heal_effect;
+mod player_zone;
+mod request_password;
+mod send_password;
+mod remove_item_owner;
+mod set_active_npc;
+mod player_item_animation;
 mod player_mana;
-mod player_move;
-mod player_uuid;
-mod set_player_slot;
-mod to_spawn;
+mod mana_effect;
+mod player_team;
+mod request_sign;
+mod update_sign;
+mod set_liquid;
+mod complete_connection_and_spawn;
+mod update_player_buff;
+mod special_npc_effect;
+mod unlock;
+mod add_npc_buff;
+mod update_npc_buff;
+mod add_player_buff;
+mod update_npc_name;
+mod update_good_evil;
+mod play_music_item;
+mod hit_switch;
+mod npc_home_update;
+mod spawn_boss_invasion;
+mod player_dodge;
+mod paint_tile;
+mod paint_wall;
+mod player_npc_teleport;
+mod heal_other_player;
+mod placeholder;
+mod client_uuid;
+mod get_chest_name;
+mod catch_npc;
+mod release_npc;
+mod travelling_merchant_inventory;
+mod teleportation_potion;
+mod angler_quest;
+mod complete_angler_quest_today;
+mod number_of_angler_quests_completed;
+mod create_temporary_animation;
+mod report_invasion_progress;
+mod place_object;
+mod sync_player_chest_index;
+mod create_combat_text;
+mod load_net_module;
+mod set_npc_kill_count;
+mod set_player_stealth;
+mod force_item_into_nearest_chest;
+mod update_tile_entity;
+mod place_tile_entity;
+mod tweak_item_(fka._alter_item_drop);
+mod place_item_frame;
+mod update_item_drop_2;
+mod sync_emote_bubble;
+mod sync_extra_value;
+mod social_handshake;
+mod deprecated;
+mod kill_portal;
+mod player_teleport_portal;
+mod notify_player_npc_killed;
+mod notify_player_of_event;
+mod update_minion_target;
+mod npc_teleport_portal;
+mod update_shield_strengths;
+mod nebula_level_up;
+mod moon_lord_countdown;
+mod npc_shop_item;
+mod gem_lock_toggle;
+mod poof_of_smoke;
+mod smart_text_message_(fka._chat_message_v2);
+mod wired_cannon_shot;
+mod mass_wire_operation;
+mod mass_wire_operation_consume;
+mod toggle_birthday_party;
+mod growfx;
+mod crystalinvasionstart;
+mod crystalinvasionwipeall;
+mod minionattacktargetupdate;
+mod crystalinvasionsendwaittime;
+mod playerhurtv2;
+mod playerdeathv2;
+mod combattextstring;
+mod emoji;
+mod tedisplaydollitemsync;
+mod requesttileentityinteraction;
+mod weaponsracktryplacing;
+mod tehatrackitemsync;
+mod synctilepicking;
+mod syncrevengemarker;
+mod removerevengemarker;
+mod landgolfballincup;
+mod finishedconnectingtoserver;
+mod fishoutnpc;
+mod tamperwithnpc;
+mod playlegacysound;
+mod foodplattertryplacing;
+mod updateplayerluckfactors;
+mod deadplayer;
+mod synccavernmonstertype;
+mod requestnpcbuffremoval;
+mod clientfinishedinventorychangesonthistick_(formerly_clientsyncedinventory);
+mod setcountsashostforgameplay;
 
-pub use compressed_tile_block::CompressedTileBlock;
-pub use connect::Connect;
+pub use connect_request::ConnectRequest;
 pub use disconnect::Disconnect;
-pub use item_moved::ItemMoved;
-pub use kill_count::KillCount;
-pub use npc_info::NpcInfo;
-pub use packet100::Packet100;
-pub use packet101::Packet101;
-pub use packet102::Packet102;
-pub use packet103::Packet103;
-pub use packet104::Packet104;
-pub use packet105::Packet105;
-pub use packet106::Packet106;
-pub use packet107::Packet107;
-pub use packet108::Packet108;
-pub use packet109::Packet109;
-pub use packet11::Packet11;
-pub use packet110::Packet110;
-pub use packet111::Packet111;
-pub use packet112::Packet112;
-pub use packet113::Packet113;
-pub use packet114::Packet114;
-pub use packet115::Packet115;
-pub use packet116::Packet116;
-pub use packet117::Packet117;
-pub use packet118::Packet118;
-pub use packet119::Packet119;
-pub use packet120::Packet120;
-pub use packet121::Packet121;
-pub use packet122::Packet122;
-pub use packet123::Packet123;
-pub use packet124::Packet124;
-pub use packet125::Packet125;
-pub use packet126::Packet126;
-pub use packet127::Packet127;
-pub use packet128::Packet128;
-pub use packet129::Packet129;
-pub use packet130::Packet130;
-pub use packet131::Packet131;
-pub use packet132::Packet132;
-pub use packet133::Packet133;
-pub use packet134::Packet134;
-pub use packet135::Packet135;
-pub use packet136::Packet136;
-pub use packet137::Packet137;
-pub use packet138::Packet138;
-pub use packet139::Packet139;
-pub use packet14::Packet14;
-pub use packet15::Packet15;
-pub use packet17::Packet17;
-pub use packet18::Packet18;
-pub use packet19::Packet19;
-pub use packet20::Packet20;
-pub use packet22::Packet22;
-pub use packet24::Packet24;
-pub use packet25::Packet25;
-pub use packet26::Packet26;
-pub use packet27::Packet27;
-pub use packet28::Packet28;
-pub use packet29::Packet29;
-pub use packet30::Packet30;
-pub use packet31::Packet31;
-pub use packet32::Packet32;
-pub use packet33::Packet33;
-pub use packet34::Packet34;
-pub use packet35::Packet35;
-pub use packet36::Packet36;
-pub use packet37::Packet37;
-pub use packet38::Packet38;
-pub use packet39::Packet39;
-pub use packet40::Packet40;
-pub use packet41::Packet41;
-pub use packet43::Packet43;
-pub use packet44::Packet44;
-pub use packet45::Packet45;
-pub use packet46::Packet46;
-pub use packet47::Packet47;
-pub use packet48::Packet48;
-pub use packet49::Packet49;
-pub use packet51::Packet51;
-pub use packet52::Packet52;
-pub use packet53::Packet53;
-pub use packet54::Packet54;
-pub use packet55::Packet55;
-pub use packet56::Packet56;
-pub use packet57::Packet57;
-pub use packet58::Packet58;
-pub use packet59::Packet59;
-pub use packet6::Packet6;
-pub use packet60::Packet60;
-pub use packet61::Packet61;
-pub use packet62::Packet62;
-pub use packet63::Packet63;
-pub use packet64::Packet64;
-pub use packet65::Packet65;
-pub use packet66::Packet66;
-pub use packet67::Packet67;
-pub use packet69::Packet69;
-pub use packet7::Packet7;
-pub use packet70::Packet70;
-pub use packet71::Packet71;
-pub use packet72::Packet72;
-pub use packet73::Packet73;
-pub use packet74::Packet74;
-pub use packet75::Packet75;
-pub use packet76::Packet76;
-pub use packet77::Packet77;
-pub use packet78::Packet78;
-pub use packet79::Packet79;
-pub use packet8::Packet8;
-pub use packet80::Packet80;
-pub use packet81::Packet81;
-pub use packet82::Packet82;
-pub use packet84::Packet84;
-pub use packet85::Packet85;
-pub use packet86::Packet86;
-pub use packet87::Packet87;
-pub use packet88::Packet88;
-pub use packet89::Packet89;
-pub use packet9::Packet9;
-pub use packet90::Packet90;
-pub use packet91::Packet91;
-pub use packet92::Packet92;
-pub use packet93::Packet93;
-pub use packet94::Packet94;
-pub use packet95::Packet95;
-pub use packet96::Packet96;
-pub use packet97::Packet97;
-pub use packet98::Packet98;
-pub use packet99::Packet99;
-pub use player_buffs::PlayerBuffs;
+pub use set_user_slot::SetUserSlot;
 pub use player_info::PlayerInfo;
-pub use player_inventory::PlayerInventory;
-pub use player_life::PlayerLife;
+pub use player_inventory_slot::PlayerInventorySlot;
+pub use request_world_data::RequestWorldData;
+pub use world_info::WorldInfo;
+pub use request_essential_tiles::RequestEssentialTiles;
+pub use status::Status;
+pub use send_section::SendSection;
+pub use section_tile_frame::SectionTileFrame;
+pub use spawn_player::SpawnPlayer;
+pub use update_player::UpdatePlayer;
+pub use player_active::PlayerActive;
+pub use player_hp::PlayerHP;
+pub use modify_tile::ModifyTile;
+pub use time::Time;
+pub use door_toggle::DoorToggle;
+pub use send_tile_square::SendTileSquare;
+pub use update_item_owner::UpdateItemOwner;
+pub use npc_update::NPCUpdate;
+pub use strike_npcwith_held_item::StrikeNPCwithHeldItem;
+pub use projectile_update::ProjectileUpdate;
+pub use npc_strike::NPCStrike;
+pub use destroy_projectile::DestroyProjectile;
+pub use toggle_p_v_p::TogglePVP;
+pub use open_chest::OpenChest;
+pub use update_chest_item::UpdateChestItem;
+pub use sync_active_chest::SyncActiveChest;
+pub use placechest::PlaceChest;
+pub use heal_effect::HealEffect;
+pub use player_zone::PlayerZone;
+pub use request_password::RequestPassword;
+pub use send_password::SendPassword;
+pub use remove_item_owner::RemoveItemOwner;
+pub use set_active_npc::SetActiveNPC;
+pub use player_item_animation::PlayerItemAnimation;
 pub use player_mana::PlayerMana;
-pub use player_move::PlayerMove;
-pub use player_uuid::PlayerUuid;
-pub use set_player_slot::SetPlayerSlot;
-pub use to_spawn::ToSpawn;
+pub use mana_effect::ManaEffect;
+pub use player_team::PlayerTeam;
+pub use request_sign::RequestSign;
+pub use update_sign::UpdateSign;
+pub use set_liquid::SetLiquid;
+pub use complete_connection_and_spawn::CompleteConnectionandSpawn;
+pub use update_player_buff::UpdatePlayerBuff;
+pub use special_npc_effect::SpecialNPCEffect;
+pub use unlock::Unlock;
+pub use add_npc_buff::AddNPCBuff;
+pub use update_npc_buff::UpdateNPCBuff;
+pub use add_player_buff::AddPlayerBuff;
+pub use update_npc_name::UpdateNPCName;
+pub use update_good_evil::UpdateGoodEvil;
+pub use play_music_item::PlayMusicItem;
+pub use hit_switch::HitSwitch;
+pub use npc_home_update::NPCHomeUpdate;
+pub use spawn_boss_invasion::SpawnBossInvasion;
+pub use player_dodge::PlayerDodge;
+pub use paint_tile::PaintTile;
+pub use paint_wall::PaintWall;
+pub use player_npc_teleport::PlayerNPCTeleport;
+pub use heal_other_player::HealOtherPlayer;
+pub use placeholder::Placeholder;
+pub use client_uuid::ClientUUID;
+pub use get_chest_name::GetChestName;
+pub use catch_npc::CatchNPC;
+pub use release_npc::ReleaseNPC;
+pub use travelling_merchant_inventory::TravellingMerchantInventory;
+pub use teleportation_potion::TeleportationPotion;
+pub use angler_quest::AnglerQuest;
+pub use complete_angler_quest_today::CompleteAnglerQuestToday;
+pub use number_of_angler_quests_completed::NumberOfAnglerQuestsCompleted;
+pub use create_temporary_animation::CreateTemporaryAnimation;
+pub use report_invasion_progress::ReportInvasionProgress;
+pub use place_object::PlaceObject;
+pub use sync_player_chest_index::SyncPlayerChestIndex;
+pub use create_combat_text::CreateCombatText;
+pub use load_net_module::LoadNetModule;
+pub use set_npc_kill_count::SetNPCKillCount;
+pub use set_player_stealth::SetPlayerStealth;
+pub use force_item_into_nearest_chest::ForceItemIntoNearestChest;
+pub use update_tile_entity::UpdateTileEntity;
+pub use place_tile_entity::PlaceTileEntity;
+pub use tweak_item_(fka._alter_item_drop)::TweakItem(FKA.AlterItemDrop);
+pub use place_item_frame::PlaceItemFrame;
+pub use update_item_drop_2::UpdateItemDrop2;
+pub use sync_emote_bubble::SyncEmoteBubble;
+pub use sync_extra_value::SyncExtraValue;
+pub use social_handshake::SocialHandshake;
+pub use deprecated::Deprecated;
+pub use kill_portal::KillPortal;
+pub use player_teleport_portal::PlayerTeleportPortal;
+pub use notify_player_npc_killed::NotifyPlayerNPCKilled;
+pub use notify_player_of_event::NotifyPlayerOfEvent;
+pub use update_minion_target::UpdateMinionTarget;
+pub use npc_teleport_portal::NPCTeleportPortal;
+pub use update_shield_strengths::UpdateShieldStrengths;
+pub use nebula_level_up::NebulaLevelUp;
+pub use moon_lord_countdown::MoonLordCountdown;
+pub use npc_shop_item::NPCShopItem;
+pub use gem_lock_toggle::GemLockToggle;
+pub use poof_of_smoke::PoofofSmoke;
+pub use smart_text_message_(fka._chat_message_v2)::SmartTextMessage(FKA.ChatMessagev2);
+pub use wired_cannon_shot::WiredCannonShot;
+pub use mass_wire_operation::MassWireOperation;
+pub use mass_wire_operation_consume::MassWireOperationConsume;
+pub use toggle_birthday_party::ToggleBirthdayParty;
+pub use growfx::GrowFX;
+pub use crystalinvasionstart::CrystalInvasionStart;
+pub use crystalinvasionwipeall::CrystalInvasionWipeAll;
+pub use minionattacktargetupdate::MinionAttackTargetUpdate;
+pub use crystalinvasionsendwaittime::CrystalInvasionSendWaitTime;
+pub use playerhurtv2::PlayerHurtV2;
+pub use playerdeathv2::PlayerDeathV2;
+pub use combattextstring::CombatTextString;
+pub use emoji::Emoji;
+pub use tedisplaydollitemsync::TEDisplayDollItemSync;
+pub use requesttileentityinteraction::RequestTileEntityInteraction;
+pub use weaponsracktryplacing::WeaponsRackTryPlacing;
+pub use tehatrackitemsync::TEHatRackItemSync;
+pub use synctilepicking::SyncTilePicking;
+pub use syncrevengemarker::SyncRevengeMarker;
+pub use removerevengemarker::RemoveRevengeMarker;
+pub use landgolfballincup::LandGolfBallInCup;
+pub use finishedconnectingtoserver::FinishedConnectingToServer;
+pub use fishoutnpc::FishOutNPC;
+pub use tamperwithnpc::TamperWithNPC;
+pub use playlegacysound::PlayLegacySound;
+pub use foodplattertryplacing::FoodPlatterTryPlacing;
+pub use updateplayerluckfactors::UpdatePlayerLuckFactors;
+pub use deadplayer::DeadPlayer;
+pub use synccavernmonstertype::SyncCavernMonsterType;
+pub use requestnpcbuffremoval::RequestNPCBuffRemoval;
+pub use clientfinishedinventorychangesonthistick_(formerly_clientsyncedinventory)::ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory);
+pub use setcountsashostforgameplay::SetCountsAsHostForGameplay;
 
-use crate::serialization::{Deserializable, Serializable, SliceCursor};
-use std::convert::TryInto;
-
-pub trait PacketBody: Sized {
-    const TAG: u8;
-
-    fn write_body(&self, cursor: &mut SliceCursor);
-
-    fn from_body(cursor: &mut SliceCursor) -> Self;
-
-    // TODO player should probably go inside the packets
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        let length_pos = cursor.pos();
-        cursor.write(&0u16); // length
-        cursor.write(&Self::TAG);
-        self.write_body(cursor);
-        let length: u16 = (cursor.pos() - length_pos)
-            .try_into()
-            .expect("packet too long");
-        cursor.rewrite(length_pos, &length);
-    }
-}
-
-#[derive(Debug)]
-pub enum Packet {
-    Connect(Connect),                         // 1
-    Disconnect(Disconnect),                   // 2
-    SetPlayerSlot(SetPlayerSlot),             // 3
-    PlayerInfo(PlayerInfo),                   // 4
-    PlayerInventory(PlayerInventory),         // 5
-    Packet6(Packet6),                         // 6
-    Packet7(Packet7),                         // 7
-    Packet8(Packet8),                         // 8
-    Packet9(Packet9),                         // 9
-    CompressedTileBlock(CompressedTileBlock), // 10
-    Packet11(Packet11),                       // 11
-    ToSpawn(ToSpawn),                         // 12
-    PlayerMove(PlayerMove),                   // 13
-    PlayerLife(PlayerLife),                   // 16
-    ItemMoved(ItemMoved),                     // 21
-    Packet22(Packet22),                       // 22
-    NpcInfo(NpcInfo),                         // 23
-    PlayerMana(PlayerMana),                   // 42
-    Packet49(Packet49),                       // 42
-    PlayerBuffs(PlayerBuffs),                 // 50
-    Packet57(Packet57),                       // 57
-    PlayerUuid(PlayerUuid),                   // 68
-    Packet82(Packet82),                       // 82
-    KillCount(KillCount),                     // 83
-}
-
-impl Packet {
-    pub fn from_slice(slice: &mut [u8]) -> Self {
-        let mut cursor = SliceCursor::new(slice);
-        let tag = cursor.read::<u8>();
-        // TODO too bad packet body is not serializable
-        match tag {
-            tag => panic!(format!("unknown tag {}", tag)),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct RGB {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
-}
-
-impl RGB {
-    pub fn new() -> Self {
-        RGB { r: 0, g: 0, b: 0 }
-    }
-}
-
-impl Serializable for RGB {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.r);
-        cursor.write(&self.g);
-        cursor.write(&self.b);
-    }
-}
-
-impl Deserializable for RGB {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self {
-            r: cursor.read(),
-            g: cursor.read(),
-            b: cursor.read(),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct Tile {
-    pub flags: [u8; 2],
-    pub color: Option<u8>,
-    pub wall_color: Option<u8>,
-    pub ty: Option<u16>,
-    pub frame_x: Option<u16>,
-    pub frame_y: Option<u16>,
-    pub wall: Option<u16>,
-    pub liquid: Option<u8>,
-    pub liquid_type: Option<u8>,
-}
-
-impl Tile {
-    fn active(&self) -> bool { self.flags[0] & 0x01 != 0 }
-    fn lighted(&self) -> bool { self.flags[0] & 0x02 != 0 }
-    fn has_wall(&self) -> bool { self.flags[0] & 0x04 != 0 }
-    fn has_liquid(&self) -> bool { self.flags[0] & 0x08 != 0 }
-    fn wire1(&self) -> bool { self.flags[0] & 0x10 != 0 }
-    fn half_brick(&self) -> bool { self.flags[0] & 0x20 != 0 }
-    fn actuator(&self) -> bool { self.flags[0] & 0x40 != 0 }
-    fn inactive(&self) -> bool { self.flags[0] & 0x80 != 0 }
-
-    fn wire2(&self) -> bool { self.flags[1] & 0x01 != 0 }
-    fn wire3(&self) -> bool { self.flags[1] & 0x02 != 0 }
-    fn has_color(&self) -> bool { self.flags[1] & 0x04 != 0 }
-    fn has_wall_color(&self) -> bool { self.flags[1] & 0x08 != 0 }
-    fn slope1(&self) -> bool { self.flags[1] & 0x10 != 0 }
-    fn slope2(&self) -> bool { self.flags[1] & 0x20 != 0 }
-    fn slope3(&self) -> bool { self.flags[1] & 0x40 != 0 }
-    fn wire4(&self) -> bool { self.flags[1] & 0x80 != 0 }
-}
-
-impl Serializable for Tile {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        // TODO yes we need a better way to deal with bitflags and options
-        self.flags.iter().for_each(|f| cursor.write(f));
-        if self.has_color() {
-            cursor.write(&self.color.unwrap());
-        }
-        if self.has_wall_color() {
-            cursor.write(&self.wall_color.unwrap());
-        }
-        if self.active() {
-            cursor.write(&self.ty.unwrap());
-        }
-        let tile_frame_important = true; // ???
-        if self.active() && tile_frame_important {
-            cursor.write(&self.frame_x.unwrap());
-            cursor.write(&self.frame_y.unwrap());
-        }
-        if self.has_wall() {
-            cursor.write(&self.wall.unwrap());
-        }
-        if self.has_liquid() {
-            cursor.write(&self.liquid.unwrap());
-            cursor.write(&self.liquid_type.unwrap());
-        }
-    }
-}
-
-impl Deserializable for Tile {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        todo!()
-    }
-}
-
-#[derive(Debug)]
-pub struct Chest {
-    pub index: u16,
-    pub x: u16,
-    pub y: u16,
-    pub name: String,
-}
-
-impl Serializable for Chest {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.index);
-        cursor.write(&self.x);
-        cursor.write(&self.y);
-        cursor.write(&self.name);
-    }
-}
-
-impl Deserializable for Chest {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self {
-            index: cursor.read(),
-            x: cursor.read(),
-            y: cursor.read(),
-            name: cursor.read(),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct Sign {
-    pub index: u16,
-    pub x: u16,
-    pub y: u16,
-    pub text: String,
-}
-
-impl Serializable for Sign {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.index);
-        cursor.write(&self.x);
-        cursor.write(&self.y);
-        cursor.write(&self.text);
-    }
-}
-
-impl Deserializable for Sign {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self {
-            index: cursor.read(),
-            x: cursor.read(),
-            y: cursor.read(),
-            text: cursor.read(),
-        }
-    }
-}
-
-enum TileEntity {
-    TrainingDummy {
-        id: i32,
-        x: u16,
-        y: u16,
-        npc_index: u16,
-    },
-    ItemFrame {
-        id: i32,
-        x: u16,
-        y: u16,
-        item_type: u16,
-        item_prefix: u8,
-        item_stack: u16,
-    },
-    LogicSensor {
-        id: i32,
-        x: u16,
-        y: u16,
-        logic_check_type: u8,
-        on: bool,
-    },
-    DisplayDoll {
-        id: i32,
-        x: u16,
-        y: u16,
-        flags: [u8; 2], // TODO read body
-    },
-    WeaponRack {
-        id: i32,
-        x: u16,
-        y: u16,
-        item_type: u16,
-        item_prefix: u8,
-        item_stack: u16,
-    },
-    HatRack {
-        id: i32,
-        x: u16,
-        y: u16,
-        flags: u8, // TODO read body
-    },
-    FloodPlatter {
-        id: i32,
-        x: u16,
-        y: u16,
-        item_type: u16,
-        item_prefix: u8,
-        item_stack: u16,
-    },
-    Pylon {
-        id: i32,
-        x: u16,
-        y: u16,
-    },
-}
-
-impl Serializable for TileEntity {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        todo!()
-    }
-}
-
-impl Deserializable for TileEntity {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        todo!()
-    }
-}
-
-
-#[repr(u8)]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum NetStringMode {
-    Literal = 0,
-    Formattable = 1,
-    LocalizationKey = 2,
-}
-
-impl Serializable for NetStringMode {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&(*self as u8));
-    }
-}
-
-impl Deserializable for NetStringMode {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        match cursor.read::<u8>() {
-            0 => NetStringMode::Literal,
-            1 => NetStringMode::Formattable,
-            2 => NetStringMode::LocalizationKey,
-            n => panic!(format!("invalid net string mode {}", n)),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct NetString {
-    mode: NetStringMode,
-    text: String,
-    substitutions: Vec<NetString>,
-}
-
-impl Serializable for NetString {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.mode);
-        cursor.write(&self.text);
-        if self.mode != NetStringMode::Literal {
-            let len: u8 = self
-                .substitutions
-                .len()
-                .try_into()
-                .expect("too many substitutions");
-            cursor.write(&len);
-            self.substitutions.iter().for_each(|s| cursor.write(s));
-        }
-    }
-}
-
-impl Deserializable for NetString {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        let mode = cursor.read();
-        let text = cursor.read();
-        let mut substitutions = Vec::new();
-        if mode != NetStringMode::Literal {
-            let len = cursor.read::<u8>() as usize;
-            substitutions.reserve(len);
-            (0..len).for_each(|_| substitutions.push(cursor.read()));
-        }
-        Self {
-            mode,
-            text,
-            substitutions,
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct Vec2 {
-    pub x: f32,
-    pub y: f32,
-}
-
-impl Serializable for Vec2 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.x);
-        cursor.write(&self.y);
-    }
-}
-
-impl Deserializable for Vec2 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self {
-            x: cursor.read(),
-            y: cursor.read(),
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn check_good_packet_serialization() {
-        let mut buffer = vec![0; 64];
-        let mut cursor = SliceCursor::new(buffer.as_mut_slice());
-        Connect {
-            magic: "Terraria228".to_string(),
-        }
-        .serialize(None, &mut cursor);
-        let pos = cursor.finish();
-        assert_eq!(
-            &buffer[..pos],
-            &[
-                0x0f, 0x00, 0x01, 0x0b, 0x54, 0x65, 0x72, 0x72, 0x61, 0x72, 0x69, 0x61, 0x32, 0x32,
-                0x38
-            ]
-        );
-    }
+enum Packet {
+    ConnectRequest(ConnectRequest), // 1
+    Disconnect(Disconnect), // 2
+    SetUserSlot(SetUserSlot), // 3
+    PlayerInfo(PlayerInfo), // 4
+    PlayerInventorySlot(PlayerInventorySlot), // 5
+    RequestWorldData(RequestWorldData), // 6
+    WorldInfo(WorldInfo), // 7
+    RequestEssentialTiles(RequestEssentialTiles), // 8
+    Status(Status), // 9
+    SendSection(SendSection), // 10
+    SectionTileFrame(SectionTileFrame), // 11
+    SpawnPlayer(SpawnPlayer), // 12
+    UpdatePlayer(UpdatePlayer), // 13
+    PlayerActive(PlayerActive), // 14
+    PlayerHP(PlayerHP), // 16
+    ModifyTile(ModifyTile), // 17
+    Time(Time), // 18
+    DoorToggle(DoorToggle), // 19
+    SendTileSquare(SendTileSquare), // 20
+    UpdateItemOwner(UpdateItemOwner), // 22
+    NPCUpdate(NPCUpdate), // 23
+    StrikeNPCwithHeldItem(StrikeNPCwithHeldItem), // 24
+    ProjectileUpdate(ProjectileUpdate), // 27
+    NPCStrike(NPCStrike), // 28
+    DestroyProjectile(DestroyProjectile), // 29
+    TogglePVP(TogglePVP), // 30
+    OpenChest(OpenChest), // 31
+    UpdateChestItem(UpdateChestItem), // 32
+    SyncActiveChest(SyncActiveChest), // 33
+    PlaceChest(PlaceChest), // 34
+    HealEffect(HealEffect), // 35
+    PlayerZone(PlayerZone), // 36
+    RequestPassword(RequestPassword), // 37
+    SendPassword(SendPassword), // 38
+    RemoveItemOwner(RemoveItemOwner), // 39
+    SetActiveNPC(SetActiveNPC), // 40
+    PlayerItemAnimation(PlayerItemAnimation), // 41
+    PlayerMana(PlayerMana), // 42
+    ManaEffect(ManaEffect), // 43
+    PlayerTeam(PlayerTeam), // 45
+    RequestSign(RequestSign), // 46
+    UpdateSign(UpdateSign), // 47
+    SetLiquid(SetLiquid), // 48
+    CompleteConnectionandSpawn(CompleteConnectionandSpawn), // 49
+    UpdatePlayerBuff(UpdatePlayerBuff), // 50
+    SpecialNPCEffect(SpecialNPCEffect), // 51
+    Unlock(Unlock), // 52
+    AddNPCBuff(AddNPCBuff), // 53
+    UpdateNPCBuff(UpdateNPCBuff), // 54
+    AddPlayerBuff(AddPlayerBuff), // 55
+    UpdateNPCName(UpdateNPCName), // 56
+    UpdateGoodEvil(UpdateGoodEvil), // 57
+    PlayMusicItem(PlayMusicItem), // 58
+    HitSwitch(HitSwitch), // 59
+    NPCHomeUpdate(NPCHomeUpdate), // 60
+    SpawnBossInvasion(SpawnBossInvasion), // 61
+    PlayerDodge(PlayerDodge), // 62
+    PaintTile(PaintTile), // 63
+    PaintWall(PaintWall), // 64
+    PlayerNPCTeleport(PlayerNPCTeleport), // 65
+    HealOtherPlayer(HealOtherPlayer), // 66
+    Placeholder(Placeholder), // 67
+    ClientUUID(ClientUUID), // 68
+    GetChestName(GetChestName), // 69
+    CatchNPC(CatchNPC), // 70
+    ReleaseNPC(ReleaseNPC), // 71
+    TravellingMerchantInventory(TravellingMerchantInventory), // 72
+    TeleportationPotion(TeleportationPotion), // 73
+    AnglerQuest(AnglerQuest), // 74
+    CompleteAnglerQuestToday(CompleteAnglerQuestToday), // 75
+    NumberOfAnglerQuestsCompleted(NumberOfAnglerQuestsCompleted), // 76
+    CreateTemporaryAnimation(CreateTemporaryAnimation), // 77
+    ReportInvasionProgress(ReportInvasionProgress), // 78
+    PlaceObject(PlaceObject), // 79
+    SyncPlayerChestIndex(SyncPlayerChestIndex), // 80
+    CreateCombatText(CreateCombatText), // 81
+    LoadNetModule(LoadNetModule), // 82
+    SetNPCKillCount(SetNPCKillCount), // 83
+    SetPlayerStealth(SetPlayerStealth), // 84
+    ForceItemIntoNearestChest(ForceItemIntoNearestChest), // 85
+    UpdateTileEntity(UpdateTileEntity), // 86
+    PlaceTileEntity(PlaceTileEntity), // 87
+    TweakItem(FKA.AlterItemDrop)(TweakItem(FKA.AlterItemDrop)), // 88
+    PlaceItemFrame(PlaceItemFrame), // 89
+    UpdateItemDrop2(UpdateItemDrop2), // 90
+    SyncEmoteBubble(SyncEmoteBubble), // 91
+    SyncExtraValue(SyncExtraValue), // 92
+    SocialHandshake(SocialHandshake), // 93
+    Deprecated(Deprecated), // 94
+    KillPortal(KillPortal), // 95
+    PlayerTeleportPortal(PlayerTeleportPortal), // 96
+    NotifyPlayerNPCKilled(NotifyPlayerNPCKilled), // 97
+    NotifyPlayerOfEvent(NotifyPlayerOfEvent), // 98
+    UpdateMinionTarget(UpdateMinionTarget), // 99
+    NPCTeleportPortal(NPCTeleportPortal), // 100
+    UpdateShieldStrengths(UpdateShieldStrengths), // 101
+    NebulaLevelUp(NebulaLevelUp), // 102
+    MoonLordCountdown(MoonLordCountdown), // 103
+    NPCShopItem(NPCShopItem), // 104
+    GemLockToggle(GemLockToggle), // 105
+    PoofofSmoke(PoofofSmoke), // 106
+    SmartTextMessage(FKA.ChatMessagev2)(SmartTextMessage(FKA.ChatMessagev2)), // 107
+    WiredCannonShot(WiredCannonShot), // 108
+    MassWireOperation(MassWireOperation), // 109
+    MassWireOperationConsume(MassWireOperationConsume), // 110
+    ToggleBirthdayParty(ToggleBirthdayParty), // 111
+    GrowFX(GrowFX), // 112
+    CrystalInvasionStart(CrystalInvasionStart), // 113
+    CrystalInvasionWipeAll(CrystalInvasionWipeAll), // 114
+    MinionAttackTargetUpdate(MinionAttackTargetUpdate), // 115
+    CrystalInvasionSendWaitTime(CrystalInvasionSendWaitTime), // 116
+    PlayerHurtV2(PlayerHurtV2), // 117
+    PlayerDeathV2(PlayerDeathV2), // 118
+    CombatTextString(CombatTextString), // 119
+    Emoji(Emoji), // 120
+    TEDisplayDollItemSync(TEDisplayDollItemSync), // 121
+    RequestTileEntityInteraction(RequestTileEntityInteraction), // 122
+    WeaponsRackTryPlacing(WeaponsRackTryPlacing), // 123
+    TEHatRackItemSync(TEHatRackItemSync), // 124
+    SyncTilePicking(SyncTilePicking), // 125
+    SyncRevengeMarker(SyncRevengeMarker), // 126
+    RemoveRevengeMarker(RemoveRevengeMarker), // 127
+    LandGolfBallInCup(LandGolfBallInCup), // 128
+    FinishedConnectingToServer(FinishedConnectingToServer), // 129
+    FishOutNPC(FishOutNPC), // 130
+    TamperWithNPC(TamperWithNPC), // 131
+    PlayLegacySound(PlayLegacySound), // 132
+    FoodPlatterTryPlacing(FoodPlatterTryPlacing), // 133
+    UpdatePlayerLuckFactors(UpdatePlayerLuckFactors), // 134
+    DeadPlayer(DeadPlayer), // 135
+    SyncCavernMonsterType(SyncCavernMonsterType), // 136
+    RequestNPCBuffRemoval(RequestNPCBuffRemoval), // 137
+    ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory)(ClientFinishedInventoryChangesOnThisTick(formerlyClientSyncedInventory)), // 138
+    SetCountsAsHostForGameplay(SetCountsAsHostForGameplay), // 139
 }

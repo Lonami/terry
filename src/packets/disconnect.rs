@@ -1,12 +1,12 @@
-use crate::packets::{NetString, PacketBody};
+use crate::packets::PacketBody;
 use crate::serialization::SliceCursor;
 
-/// Disconnect, sent prior to closing the connection.
+/// Disconnect.
 ///
-/// Direction: Server to Client.
+/// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct Disconnect {
-    reason: NetString,
+    pub reason: NetString,
 }
 
 impl PacketBody for Disconnect {
