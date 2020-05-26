@@ -7,10 +7,8 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct TamperWithNpc {
     pub npc_id: u16,
-    pub setnpcimmunity: u8,
-    /// Only sent if SetNPCImmunity flag is true
-    pub immunity_time: i32,
-    /// Set to -1 for immunity from all players
+    pub immunity_time: Option<i32>,
+    /// Set to -1 for immunity from all players.
     pub immunity_player_id: i16,
 }
 
@@ -19,16 +17,21 @@ impl PacketBody for TamperWithNpc {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.npc_id);
-        cursor.write(&self.setnpcimmunity);
-        cursor.write(&self.immunity_time);
+        cursor.write(&self.immunity_time.is_some());
+        if let Some(time) = self.immunity_time {
+            cursor.write(&time);
+        }
         cursor.write(&self.immunity_player_id);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
             npc_id: cursor.read(),
-            setnpcimmunity: cursor.read(),
-            immunity_time: cursor.read(),
+            immunity_time: if cursor.read::<bool>() {
+                Some(cursor.read())
+            } else {
+                None
+            },
             immunity_player_id: cursor.read(),
         }
     }

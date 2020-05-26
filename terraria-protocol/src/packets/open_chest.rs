@@ -1,7 +1,10 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
 
-/// Open a chest.
+/// Used to "open" a world chest (that is, an item container placed in the
+/// world). When this packet is received the server will send the chest's
+/// contents and sync the active chest ID to the player using packet 33
+/// `SyncActiveChest`.
 ///
 /// Direction: Client -> Server.
 #[derive(Debug)]

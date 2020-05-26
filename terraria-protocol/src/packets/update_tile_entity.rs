@@ -6,35 +6,31 @@ use crate::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct UpdateTileEntity {
-    pub tileentityid: i32,
-    /// If UpdateTileFlag is false, TileEntity is removed
-    pub updatetileflag: bool,
-    /// Only sent if UpdateTileFlag is false
-    pub tileentity_type: u8,
-    /// Only sent if UpdateTileFlag is false
-    pub x: i16,
-    /// Only sent if UpdateTileFlag is false
-    pub y: i16,
+    pub id: i32,
+    /// If it should be removed, indicate the type and ``(x, y)`` coordinates.
+    pub remove: Option<(u8, i16, i16)>,
 }
 
 impl PacketBody for UpdateTileEntity {
     const TAG: u8 = 86;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.tileentityid);
-        cursor.write(&self.updatetileflag);
-        cursor.write(&self.tileentity_type);
-        cursor.write(&self.x);
-        cursor.write(&self.y);
+        cursor.write(&self.id);
+        cursor.write(&self.remove.is_some());
+        if let Some((ty, x, y)) = self.remove {
+            cursor.write(&ty);
+            cursor.write(&x);
+            cursor.write(&y);
+        }
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            tileentityid: cursor.read(),
-            updatetileflag: cursor.read(),
-            tileentity_type: cursor.read(),
-            x: cursor.read(),
-            y: cursor.read(),
-        }
+        let id = cursor.read();
+        let remove = if !cursor.read::<bool>() {
+            Some((cursor.read(), cursor.read(), cursor.read()))
+        } else {
+            None
+        };
+        Self { id, remove }
     }
 }

@@ -153,7 +153,7 @@ pub use dead_player::DeadPlayer;
 pub use destroy_projectile::DestroyProjectile;
 pub use disconnect::Disconnect;
 pub use doll_sync::DollSync;
-pub use door_toggle::DoorToggle;
+pub use door_toggle::{DoorAction, DoorToggle};
 pub use emoji::Emoji;
 pub use fish_out_npc::FishOutNpc;
 pub use gem_lock_toggle::GemLockToggle;
@@ -171,7 +171,7 @@ pub use load_net_module::LoadNetModule;
 pub use mana_effect::ManaEffect;
 pub use mass_consume_wire::MassConsumeWire;
 pub use mass_wire::MassWire;
-pub use modify_tile::ModifyTile;
+pub use modify_tile::{ModifyTile, TileAction};
 pub use moon_lord_countdown::MoonLordCountdown;
 pub use nebula_level_up::NebulaLevelUp;
 pub use npc_shop_item::NpcShopItem;
@@ -307,126 +307,145 @@ pub enum Packet {
     UpdatePlayer(UpdatePlayer),         // 13
     PlayerActive(PlayerActive),         // 14
     // 15 (null)
-    PlayerHP(PlayerHP), // 16
+    PlayerHP(PlayerHP),             // 16
+    ModifyTile(ModifyTile),         // 17
+    Time(Time),                     // 18
+    DoorToggle(DoorToggle),         // 19
+    SendTileSquare(SendTileSquare), // 20
+    // 21 (replaced by 90)
+    UpdateItemOwner(UpdateItemOwner), // 22
     // TODO all below need to be reviewed still:
-    ModifyTile(ModifyTile),                                   // 17
-    Time(Time),                                               // 18
-    DoorToggle(DoorToggle),                                   // 19
-    SendTileSquare(SendTileSquare),                           // 20
-    UpdateItemOwner(UpdateItemOwner),                         // 22
-    NpcUpdate(NpcUpdate),                                     // 23
-    StrikeNpc(StrikeNpc),                                     // 24
-    ProjectileUpdate(ProjectileUpdate),                       // 27
-    NpcStrike(NpcStrike),                                     // 28
-    DestroyProjectile(DestroyProjectile),                     // 29
-    TogglePvp(TogglePvp),                                     // 30
-    OpenChest(OpenChest),                                     // 31
-    UpdateChestItem(UpdateChestItem),                         // 32
-    SyncActiveChest(SyncActiveChest),                         // 33
-    PlaceChest(PlaceChest),                                   // 34
-    HealEffect(HealEffect),                                   // 35
-    PlayerZone(PlayerZone),                                   // 36
-    RequestPassword(RequestPassword),                         // 37
-    SendPassword(SendPassword),                               // 38
-    RemoveItemOwner(RemoveItemOwner),                         // 39
-    SetActiveNpc(SetActiveNpc),                               // 40
-    PlayerItemAnimation(PlayerItemAnimation),                 // 41
-    PlayerMana(PlayerMana),                                   // 42
-    ManaEffect(ManaEffect),                                   // 43
-    PlayerTeam(PlayerTeam),                                   // 45
-    RequestSign(RequestSign),                                 // 46
-    UpdateSign(UpdateSign),                                   // 47
-    SetLiquid(SetLiquid),                                     // 48
-    CompleteConnectionAndSpawn(CompleteConnectionAndSpawn),   // 49
-    UpdatePlayerBuff(UpdatePlayerBuff),                       // 50
-    SpecialNpcEffect(SpecialNpcEffect),                       // 51
-    Unlock(Unlock),                                           // 52
-    AddNpcBuff(AddNpcBuff),                                   // 53
-    UpdateNpcBuff(UpdateNpcBuff),                             // 54
-    AddPlayerBuff(AddPlayerBuff),                             // 55
-    UpdateNpcName(UpdateNpcName),                             // 56
-    UpdateGoodEvil(UpdateGoodEvil),                           // 57
-    PlayMusicItem(PlayMusicItem),                             // 58
-    HitSwitch(HitSwitch),                                     // 59
-    SetNpcHome(SetNpcHome),                                   // 60
-    SpawnBossInvasion(SpawnBossInvasion),                     // 61
-    PlayerDodge(PlayerDodge),                                 // 62
-    PaintTile(PaintTile),                                     // 63
-    PaintWall(PaintWall),                                     // 64
-    PlayerNpcTeleport(PlayerNpcTeleport),                     // 65
-    HealOtherPlayer(HealOtherPlayer),                         // 66
-    Placeholder(Placeholder),                                 // 67
-    ClientUuid(ClientUuid),                                   // 68
-    GetChestName(GetChestName),                               // 69
-    CatchNpc(CatchNpc),                                       // 70
-    ReleaseNpc(ReleaseNpc),                                   // 71
+    NpcUpdate(NpcUpdate), // 23
+    StrikeNpc(StrikeNpc), // 24
+    // 25 (null)
+    // 26 (null)
+    ProjectileUpdate(ProjectileUpdate),   // 27
+    NpcStrike(NpcStrike),                 // 28
+    DestroyProjectile(DestroyProjectile), // 29
+    TogglePvp(TogglePvp),                 // 30
+    OpenChest(OpenChest),                 // 31
+    UpdateChestItem(UpdateChestItem),     // 32
+    SyncActiveChest(SyncActiveChest),     // 33
+    PlaceChest(PlaceChest),               // 34
+    HealEffect(HealEffect),               // 35
+    // TODO so many flags
+    PlayerZone(PlayerZone),                   // 36
+    RequestPassword(RequestPassword),         // 37
+    SendPassword(SendPassword),               // 38
+    RemoveItemOwner(RemoveItemOwner),         // 39
+    SetActiveNpc(SetActiveNpc),               // 40
+    PlayerItemAnimation(PlayerItemAnimation), // 41
+    PlayerMana(PlayerMana),                   // 42
+    ManaEffect(ManaEffect),                   // 43
+    // 44 (null)
+    PlayerTeam(PlayerTeam),                                 // 45
+    RequestSign(RequestSign),                               // 46
+    UpdateSign(UpdateSign),                                 // 47
+    SetLiquid(SetLiquid),                                   // 48
+    CompleteConnectionAndSpawn(CompleteConnectionAndSpawn), // 49
+    UpdatePlayerBuff(UpdatePlayerBuff),                     // 50
+    // TODO more enums
+    SpecialNpcEffect(SpecialNpcEffect), // 51
+    // TODO more enums
+    Unlock(Unlock),                 // 52
+    AddNpcBuff(AddNpcBuff),         // 53
+    UpdateNpcBuff(UpdateNpcBuff),   // 54
+    AddPlayerBuff(AddPlayerBuff),   // 55
+    UpdateNpcName(UpdateNpcName),   // 56
+    UpdateGoodEvil(UpdateGoodEvil), // 57
+    PlayMusicItem(PlayMusicItem),   // 58
+    HitSwitch(HitSwitch),           // 59
+    SetNpcHome(SetNpcHome),         // 60
+    // TODO more enums
+    SpawnBossInvasion(SpawnBossInvasion), // 61
+    // TODO more enums
+    PlayerDodge(PlayerDodge), // 62
+    PaintTile(PaintTile),     // 63
+    PaintWall(PaintWall),     // 64
+    // TODO more flags
+    PlayerNpcTeleport(PlayerNpcTeleport), // 65
+    HealOtherPlayer(HealOtherPlayer),     // 66
+    Placeholder(Placeholder),             // 67
+    ClientUuid(ClientUuid),               // 68
+    GetChestName(GetChestName),           // 69
+    CatchNpc(CatchNpc),                   // 70
+    ReleaseNpc(ReleaseNpc),               // 71
     TravellingMerchantInventory(TravellingMerchantInventory), // 72
-    TeleportationPotion(TeleportationPotion),                 // 73
-    AnglerQuest(AnglerQuest),                                 // 74
-    CompleteAnglerQuest(CompleteAnglerQuest),                 // 75
-    AnglerQuests(AnglerQuests),                               // 76
-    CreateTemporaryAnimation(CreateTemporaryAnimation),       // 77
-    InvasionProgress(InvasionProgress),                       // 78
-    PlaceObject(PlaceObject),                                 // 79
-    SyncPlayerChestIndex(SyncPlayerChestIndex),               // 80
-    CreateCombatText(CreateCombatText),                       // 81
-    LoadNetModule(LoadNetModule),                             // 82
-    SetNpcKillCount(SetNpcKillCount),                         // 83
-    SetPlayerStealth(SetPlayerStealth),                       // 84
-    QuickStash(QuickStash),                                   // 85
-    UpdateTileEntity(UpdateTileEntity),                       // 86
-    PlaceTileEntity(PlaceTileEntity),                         // 87
-    TweakItem(TweakItem),                                     // 88
-    PlaceItemFrame(PlaceItemFrame),                           // 89
-    UpdateItemDrop2(UpdateItemDrop2),                         // 90
-    SyncEmoteBubble(SyncEmoteBubble),                         // 91
-    SyncExtraValue(SyncExtraValue),                           // 92
-    SocialHandshake(SocialHandshake),                         // 93
-    KillPortal(KillPortal),                                   // 95
-    PlayerTeleportPortal(PlayerTeleportPortal),               // 96
-    PlayerNpcKilled(PlayerNpcKilled),                         // 97
-    SetEvent(SetEvent),                                       // 98
-    UpdateMinionTarget(UpdateMinionTarget),                   // 99
-    NpcTeleportPortal(NpcTeleportPortal),                     // 100
-    UpdateShieldStrengths(UpdateShieldStrengths),             // 101
-    NebulaLevelUp(NebulaLevelUp),                             // 102
-    MoonLordCountdown(MoonLordCountdown),                     // 103
-    NpcShopItem(NpcShopItem),                                 // 104
-    GemLockToggle(GemLockToggle),                             // 105
-    PoofOfSmoke(PoofOfSmoke),                                 // 106
-    SmartTextMessage(SmartTextMessage),                       // 107
-    WiredCannonShot(WiredCannonShot),                         // 108
-    MassWire(MassWire),                                       // 109
-    MassConsumeWire(MassConsumeWire),                         // 110
-    ToggleBirthdayParty(ToggleBirthdayParty),                 // 111
-    GrowFx(GrowFx),                                           // 112
-    CrystalInvasionStart(CrystalInvasionStart),               // 113
-    CrystalInvasionWipe(CrystalInvasionWipe),                 // 114
-    SetMinionTarget(SetMinionTarget),                         // 115
-    CrystalInvasionWait(CrystalInvasionWait),                 // 116
-    PlayerHurt(PlayerHurt),                                   // 117
-    PlayerDeath(PlayerDeath),                                 // 118
-    CombatText(CombatText),                                   // 119
-    Emoji(Emoji),                                             // 120
-    DollSync(DollSync),                                       // 121
-    InteractTileEntity(InteractTileEntity),                   // 122
-    PlaceWeaponRack(PlaceWeaponRack),                         // 123
-    HatRackSync(HatRackSync),                                 // 124
-    SyncTilePicking(SyncTilePicking),                         // 125
-    SyncRevenge(SyncRevenge),                                 // 126
-    RemoveRevenge(RemoveRevenge),                             // 127
-    LandGolfBall(LandGolfBall),                               // 128
-    ConnectionComplete(ConnectionComplete),                   // 129
-    FishOutNpc(FishOutNpc),                                   // 130
-    TamperWithNpc(TamperWithNpc),                             // 131
-    PlayLegacySound(PlayLegacySound),                         // 132
-    PlaceFood(PlaceFood),                                     // 133
-    UpdatePlayerLuck(UpdatePlayerLuck),                       // 134
-    DeadPlayer(DeadPlayer),                                   // 135
-    SyncMonsterType(SyncMonsterType),                         // 136
-    RequestNpcDebuff(RequestNpcDebuff),                       // 137
-    ClientSyncedInventory(ClientSyncedInventory),             // 138
-    SetAsHost(SetAsHost),                                     // 139
+    // TODO enum
+    TeleportationPotion(TeleportationPotion),           // 73
+    AnglerQuest(AnglerQuest),                           // 74
+    CompleteAnglerQuest(CompleteAnglerQuest),           // 75
+    AnglerQuests(AnglerQuests),                         // 76
+    CreateTemporaryAnimation(CreateTemporaryAnimation), // 77
+    InvasionProgress(InvasionProgress),                 // 78
+    PlaceObject(PlaceObject),                           // 79
+    SyncPlayerChestIndex(SyncPlayerChestIndex),         // 80
+    CreateCombatText(CreateCombatText),                 // 81
+    LoadNetModule(LoadNetModule),                       // 82
+    SetNpcKillCount(SetNpcKillCount),                   // 83
+    SetPlayerStealth(SetPlayerStealth),                 // 84
+    QuickStash(QuickStash),                             // 85
+    UpdateTileEntity(UpdateTileEntity),                 // 86
+    // TODO enum
+    PlaceTileEntity(PlaceTileEntity), // 87
+    // TODO flags
+    TweakItem(TweakItem),             // 88
+    PlaceItemFrame(PlaceItemFrame),   // 89
+    UpdateItemDrop2(UpdateItemDrop2), // 90
+    // TODO fancy enum
+    SyncEmoteBubble(SyncEmoteBubble), // 91
+    SyncExtraValue(SyncExtraValue),   // 92
+    SocialHandshake(SocialHandshake), // 93
+    // 94 (deprecated)
+    KillPortal(KillPortal),                       // 95
+    PlayerTeleportPortal(PlayerTeleportPortal),   // 96
+    PlayerNpcKilled(PlayerNpcKilled),             // 97
+    SetEvent(SetEvent),                           // 98
+    UpdateMinionTarget(UpdateMinionTarget),       // 99
+    NpcTeleportPortal(NpcTeleportPortal),         // 100
+    UpdateShieldStrengths(UpdateShieldStrengths), // 101
+    NebulaLevelUp(NebulaLevelUp),                 // 102
+    MoonLordCountdown(MoonLordCountdown),         // 103
+    NpcShopItem(NpcShopItem),                     // 104
+    GemLockToggle(GemLockToggle),                 // 105
+    PoofOfSmoke(PoofOfSmoke),                     // 106
+    SmartTextMessage(SmartTextMessage),           // 107
+    WiredCannonShot(WiredCannonShot),             // 108
+    // TODO bitflags
+    MassWire(MassWire),                       // 109
+    MassConsumeWire(MassConsumeWire),         // 110
+    ToggleBirthdayParty(ToggleBirthdayParty), // 111
+    // TODO bitflags
+    GrowFx(GrowFx),                             // 112
+    CrystalInvasionStart(CrystalInvasionStart), // 113
+    CrystalInvasionWipe(CrystalInvasionWipe),   // 114
+    SetMinionTarget(SetMinionTarget),           // 115
+    CrystalInvasionWait(CrystalInvasionWait),   // 116
+    // TODO bitflags
+    PlayerHurt(PlayerHurt),                 // 117
+    PlayerDeath(PlayerDeath),               // 118
+    CombatText(CombatText),                 // 119
+    Emoji(Emoji),                           // 120
+    DollSync(DollSync),                     // 121
+    InteractTileEntity(InteractTileEntity), // 122
+    PlaceWeaponRack(PlaceWeaponRack),       // 123
+    HatRackSync(HatRackSync),               // 124
+    SyncTilePicking(SyncTilePicking),       // 125
+    SyncRevenge(SyncRevenge),               // 126
+    RemoveRevenge(RemoveRevenge),           // 127
+    LandGolfBall(LandGolfBall),             // 128
+    ConnectionComplete(ConnectionComplete), // 129
+    FishOutNpc(FishOutNpc),                 // 130
+    TamperWithNpc(TamperWithNpc),           // 131
+    // TODO enum
+    PlayLegacySound(PlayLegacySound),             // 132
+    PlaceFood(PlaceFood),                         // 133
+    UpdatePlayerLuck(UpdatePlayerLuck),           // 134
+    DeadPlayer(DeadPlayer),                       // 135
+    SyncMonsterType(SyncMonsterType),             // 136
+    RequestNpcDebuff(RequestNpcDebuff),           // 137
+    ClientSyncedInventory(ClientSyncedInventory), // 138
+    SetAsHost(SetAsHost),                         // 139
 }
 
 impl Packet {

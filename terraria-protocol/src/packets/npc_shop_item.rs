@@ -11,8 +11,7 @@ pub struct NpcShopItem {
     pub stack: i16,
     pub prefix: u8,
     pub value: i32,
-    /// BitFlags: 1 = BuyOnce
-    pub flags: u8,
+    pub buy_once: bool,
 }
 
 impl PacketBody for NpcShopItem {
@@ -24,7 +23,7 @@ impl PacketBody for NpcShopItem {
         cursor.write(&self.stack);
         cursor.write(&self.prefix);
         cursor.write(&self.value);
-        cursor.write(&self.flags);
+        cursor.write(&self.buy_once);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
@@ -34,7 +33,7 @@ impl PacketBody for NpcShopItem {
             stack: cursor.read(),
             prefix: cursor.read(),
             value: cursor.read(),
-            flags: cursor.read(),
+            buy_once: cursor.read(),
         }
     }
 }

@@ -7,6 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct LoadNetModule {
     pub module_id: u16,
+    // TODO unknown payload follows
 }
 
 impl PacketBody for LoadNetModule {

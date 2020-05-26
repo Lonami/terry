@@ -1,17 +1,48 @@
 use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::{Deserializable, Serializable, SliceCursor};
+
+#[repr(u8)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub enum DoorAction {
+    OpenDoor = 0,
+    CloseDoor = 1,
+    OpenTrapdoor = 2,
+    CloseTrapdoor = 3,
+    OpenTallGate = 4,
+    CloseTallGate = 5,
+}
+
+impl Serializable for DoorAction {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&(*self as u8));
+    }
+}
+
+impl Deserializable for DoorAction {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        match cursor.read::<u8>() {
+            0 => DoorAction::OpenDoor,
+            1 => DoorAction::CloseDoor,
+            2 => DoorAction::OpenTrapdoor,
+            3 => DoorAction::CloseTrapdoor,
+            4 => DoorAction::OpenTallGate,
+            5 => DoorAction::CloseTallGate,
+            n => panic!(format!("invalid door action {}", n)),
+        }
+    }
+}
 
 /// Door Toggle.
 ///
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
 pub struct DoorToggle {
-    /// 0 = Open Door, 1 = Close Door, 2 = Open Trapdoor, 3 = Close Trapdoor, 4 = Open Tall Gate, 5 = Close Tall Gate
-    pub action: u8,
+    pub action: DoorAction,
     pub tile_x: i16,
     pub tile_y: i16,
-    /// If (Action == 0) then (if (Direction == -1) then OpenToLeft else OpenToRight) if (Action == 2) then (if (Direction == 1) then PlayerIsAboveTrapdoor) if (Action == 3) then (if (Direction == 1) then PlayerIsAboveTrapdoor)
-    pub direction: u8,
+    /// When opening a door, a negative direction means to the left, else to the right.
+    /// When opening or closing a trapdoor, a positive direction means the player is above.
+    pub direction: i8,
 }
 
 impl PacketBody for DoorToggle {

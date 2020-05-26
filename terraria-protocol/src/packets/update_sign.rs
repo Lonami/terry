@@ -1,9 +1,9 @@
 use crate::packets::PacketBody;
 use crate::SliceCursor;
 
-/// Update Sign.
+/// Update sign if sent from client otherwise displays sign to client.
 ///
-/// Direction: Updates sign if sent from client otherwise displays sign to client..
+/// Direction: Client <-> Server.
 #[derive(Debug)]
 pub struct UpdateSign {
     pub sign_id: i16,
@@ -12,7 +12,7 @@ pub struct UpdateSign {
     pub text: String,
     pub player_id: u8,
     /// BitFlags: 1 = TBD
-    pub signflags: u8,
+    pub sign_flags: u8,
 }
 
 impl PacketBody for UpdateSign {
@@ -24,7 +24,7 @@ impl PacketBody for UpdateSign {
         cursor.write(&self.y);
         cursor.write(&self.text);
         cursor.write(&self.player_id);
-        cursor.write(&self.signflags);
+        cursor.write(&self.sign_flags);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
@@ -34,7 +34,7 @@ impl PacketBody for UpdateSign {
             y: cursor.read(),
             text: cursor.read(),
             player_id: cursor.read(),
-            signflags: cursor.read(),
+            sign_flags: cursor.read(),
         }
     }
 }

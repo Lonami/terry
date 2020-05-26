@@ -11,8 +11,7 @@ pub struct PlayerDeath {
     pub player_death_reason: PlayerDeathReason,
     pub damage: i16,
     pub hit_direction: u8,
-    /// BitFlags: 1 = PvP
-    pub flags: u8,
+    pub pvp: bool,
 }
 
 impl PacketBody for PlayerDeath {
@@ -23,7 +22,7 @@ impl PacketBody for PlayerDeath {
         cursor.write(&self.player_death_reason);
         cursor.write(&self.damage);
         cursor.write(&self.hit_direction);
-        cursor.write(&self.flags);
+        cursor.write(&self.pvp);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
@@ -32,7 +31,7 @@ impl PacketBody for PlayerDeath {
             player_death_reason: cursor.read(),
             damage: cursor.read(),
             hit_direction: cursor.read(),
-            flags: cursor.read(),
+            pvp: cursor.read(),
         }
     }
 }

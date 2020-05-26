@@ -6,20 +6,22 @@ use crate::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct PoofOfSmoke {
-    /// Two Int16's packed into 4 bytes.
-    pub packed_vector: u32,
+    pub x: i16,
+    pub y: i16,
 }
 
 impl PacketBody for PoofOfSmoke {
     const TAG: u8 = 106;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.packed_vector);
+        cursor.write(&self.x);
+        cursor.write(&self.y);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
-            packed_vector: cursor.read(),
+            x: cursor.read(),
+            y: cursor.read(),
         }
     }
 }

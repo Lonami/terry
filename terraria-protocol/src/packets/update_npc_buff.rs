@@ -7,16 +7,8 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct UpdateNpcBuff {
     pub npc_id: i16,
-    pub buff_id_1: u16,
-    pub time_1: i16,
-    pub buff_id_2: u16,
-    pub time_2: i16,
-    pub buff_id_3: u16,
-    pub time_3: i16,
-    pub buff_id_4: u16,
-    pub time_4: i16,
-    pub buff_id_5: u16,
-    pub time_5: i16,
+    /// Tuples of ``(buff id, time)``.
+    pub buff_times: [(u16, i16); 5],
 }
 
 impl PacketBody for UpdateNpcBuff {
@@ -24,31 +16,18 @@ impl PacketBody for UpdateNpcBuff {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.npc_id);
-        cursor.write(&self.buff_id_1);
-        cursor.write(&self.time_1);
-        cursor.write(&self.buff_id_2);
-        cursor.write(&self.time_2);
-        cursor.write(&self.buff_id_3);
-        cursor.write(&self.time_3);
-        cursor.write(&self.buff_id_4);
-        cursor.write(&self.time_4);
-        cursor.write(&self.buff_id_5);
-        cursor.write(&self.time_5);
+        self.buff_times.iter().for_each(|(b, t)| {
+            cursor.write(b);
+            cursor.write(t);
+        })
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            npc_id: cursor.read(),
-            buff_id_1: cursor.read(),
-            time_1: cursor.read(),
-            buff_id_2: cursor.read(),
-            time_2: cursor.read(),
-            buff_id_3: cursor.read(),
-            time_3: cursor.read(),
-            buff_id_4: cursor.read(),
-            time_4: cursor.read(),
-            buff_id_5: cursor.read(),
-            time_5: cursor.read(),
-        }
+        let npc_id = cursor.read();
+        let mut buff_times = [(0, 0); 5];
+        buff_times
+            .iter_mut()
+            .for_each(|tuple| *tuple = (cursor.read(), cursor.read()));
+        Self { npc_id, buff_times }
     }
 }

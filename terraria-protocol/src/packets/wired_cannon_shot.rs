@@ -12,7 +12,7 @@ pub struct WiredCannonShot {
     pub y: i16,
     pub angle: i16,
     pub ammo: i16,
-    /// Shooter's Player ID
+    /// Shooter's Player ID.
     pub player_id: u8,
 }
 

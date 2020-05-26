@@ -7,14 +7,15 @@ use crate::SliceCursor;
 /// Direction: Server <-> Client (Sync).
 #[derive(Debug)]
 pub struct UpdateItemDrop2 {
-    /// If below 400 and NetID 0 Then Set NullIf ItemID is 400 Then New Item
+    /// Should set to null ``if item_id < 400 && item_net_id == 0`.
+    /// Otherwise, ``if item_id = 400`` it's a new item.
     pub item_id: i16,
     pub pos: Vec2,
     pub vel: Vec2,
     pub stack_size: i16,
     pub prefix: u8,
-    /// If 0 then ownIgnore = 0 and ownTime = 100
-    pub nodelay: u8,
+    /// If 0, set ``own_ignore = 0`` and ``own_time = 100``.
+    pub no_delay: u8,
     pub item_net_id: i16,
 }
 
@@ -27,7 +28,7 @@ impl PacketBody for UpdateItemDrop2 {
         cursor.write(&self.vel);
         cursor.write(&self.stack_size);
         cursor.write(&self.prefix);
-        cursor.write(&self.nodelay);
+        cursor.write(&self.no_delay);
         cursor.write(&self.item_net_id);
     }
 
@@ -38,7 +39,7 @@ impl PacketBody for UpdateItemDrop2 {
             vel: cursor.read(),
             stack_size: cursor.read(),
             prefix: cursor.read(),
-            nodelay: cursor.read(),
+            no_delay: cursor.read(),
             item_net_id: cursor.read(),
         }
     }

@@ -33,6 +33,12 @@ pub struct NetString {
     substitutions: Vec<NetString>,
 }
 
+impl NetString {
+    pub fn len(&self) -> usize {
+        self.text.len()
+    }
+}
+
 impl Serializable for NetString {
     fn serialize(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.mode);

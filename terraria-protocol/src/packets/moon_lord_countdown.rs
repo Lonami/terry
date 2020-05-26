@@ -6,19 +6,19 @@ use crate::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct MoonLordCountdown {
-    pub moon_lord_countdown: i32,
+    pub countdown: i32,
 }
 
 impl PacketBody for MoonLordCountdown {
     const TAG: u8 = 103;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.moon_lord_countdown);
+        cursor.write(&self.countdown);
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         Self {
-            moon_lord_countdown: cursor.read(),
+            countdown: cursor.read(),
         }
     }
 }

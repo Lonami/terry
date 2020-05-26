@@ -7,7 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct DestroyProjectile {
     pub projectile_id: i16,
-    /// Player ID
+    /// Player ID.
     pub owner: u8,
 }
 

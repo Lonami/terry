@@ -6,7 +6,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 const PROTOCOL_VERSION: &str = "Terraria228";
 
 // TODO don't use constants for this
-//const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
+const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 pub struct Terraria {
     out_buffer: Vec<u8>,
@@ -39,11 +39,11 @@ impl Terraria {
             version: PROTOCOL_VERSION.to_string(),
         })?;
 
-        // TODO
-        //this.send_packet(&packets::PlayerInfo::default())?;
+        this.send_packet(&packets::PlayerInfo::default())?;
 
-        // TODO
-        this.send_packet(&packets::ClientUuid {})?;
+        this.send_packet(&packets::ClientUuid {
+            uuid4: PLAYER_UUID.to_string(),
+        })?;
 
         // TODO rename to Health?
         this.send_packet(&packets::PlayerHP {
@@ -61,7 +61,7 @@ impl Terraria {
         // TODO bad name
         this.send_packet(&packets::UpdatePlayerBuff {
             player_id: 0,
-            bufftype: [0u16; 22],
+            buffs: [0u16; 22],
         })?;
 
         for i in 0..260 {
@@ -86,7 +86,7 @@ impl Terraria {
             spawn_x: -1,
             spawn_y: -1,
             respawn_time_remaining: 0,
-            player_spawn_context: 1,
+            player_spawn_context: packets::SpawnContext::SpawningIntoWorld,
         })?;
 
         // some more stuff to send at this point

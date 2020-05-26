@@ -9,7 +9,7 @@ pub struct ReleaseNpc {
     pub x: i32,
     pub y: i32,
     pub npc_type: i16,
-    /// Sent to NPC AI
+    /// Sent to NPC AI[2].
     pub style: u8,
 }
 
