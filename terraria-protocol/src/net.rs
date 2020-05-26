@@ -16,7 +16,6 @@ pub struct Terraria {
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
 
 fn as_hex(buf: &[u8]) -> String {
-    let buf = &buf[..buf.len().min(80)];
     let mut bytes = Vec::with_capacity(buf.len() * 2);
     buf.into_iter().for_each(|b| {
         bytes.push(HEX_DIGITS[(b >> 4) as usize]);
@@ -89,30 +88,27 @@ impl Terraria {
             player_spawn_context: packets::SpawnContext::SpawningIntoWorld,
         })?;
 
-        // some more stuff to send at this point
-        // > 82 : 0c005206000e00000000003f
-        // > 56 : 0500380100
-        // > 36 : 0800240000004200
+        this.send_packet(&packets::LoadNetModule {
+            module_id: 6,
+            arguments: vec![0, 0, 0, 0, 0x3f],
+        })?;
 
-        /*
-        let (mut x, y) = (33534.0f32, 4582.0f32);
+        this.send_packet(&packets::UpdateNpcName { npc_id: 1 })?;
+
+        this.send_packet(&packets::PlayerZone {
+            player_id: 0,
+            zoneflags1: 0,
+            zoneflags2: 0,
+            zoneflags3: 0,
+            zoneflags4: 0,
+        })?;
+
+        //let (mut x, y) = (33534.0f32, 4582.0f32);
         loop {
             this.try_recv_packets()?;
 
-            x -= 0.5;
-            this.send_packet(&packets::PlayerMove {
-                id: 0,
-                flags: 0,
-                speed_flags: 0,
-                c: 0,
-                d: 0,
-                hotbar: 0,
-                pos: Vec2 { x, y },
-                vel: None,
-            })?;
+            // TODO Update player
         }
-        */
-        Ok(this)
     }
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {

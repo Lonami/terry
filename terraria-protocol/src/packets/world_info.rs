@@ -22,8 +22,32 @@ pub struct WorldInfo {
     pub world_id: i32,
     pub world_name: String,
     pub game_mode: u8,
-    pub world_unique_id: u8,
-    pub world_generator_version: u64,
+    pub world_unique_id: [u8; 16],
+    /*
+    a400 len
+    07 tag
+    412e0000 time
+    00 flags
+    02 moon
+    6810 max x
+    b004 max y
+    3008 spawn x
+    2101 spawn y
+    5001 world surface
+    c801 rock layer
+    24efc317 world id
+    08626f74776f726c64 world name
+    00 game mode
+    ffbf0f5127de8240a1a34e03f2eb6105 uuid
+    01000000e3000000 world gen version
+    */
+    /// Major and minor version
+    pub world_generator_version: [i32; 2],
+    pub tbd1: [u8; 32],
+    pub tbd2: [u8; 32],
+    pub tbd3: [u8; 3],
+    // 0133090703020506010103010301000002365e3abf65c30500006810000068100000040300003c0b000068100000681000000007030704030000020506010103010301
+    /*
     pub moon_type: u8,
     pub tree_background: u8,
     pub corruption_background: u8,
@@ -53,7 +77,20 @@ pub struct WorldInfo {
     pub ocean_tree_top_style: i32,
     pub glowing_mushroom_tree_top_style: i32,
     pub underworld_tree_top_style: i32,
+    */
     pub rain: f32,
+
+    /*
+
+
+    00000000 rain
+    00000000000000 # presumably event flags
+    07000600a800a900 prehardmode ores
+    ffffffffffff hardmode ores
+    00 invasion type
+    0000000000000000 lobby
+    bac38d3e sandstorm
+    */
     // bitflags {
     pub shadow_orb_smashed: bool,
     pub downed_boss_1: bool,
@@ -117,10 +154,10 @@ pub struct WorldInfo {
     /// * Tier 1: Iron (tile ID 6 or 167)
     /// * Tier 2: Silver (tile ID 9 or 168)
     /// * Tier 3: Gold (tile ID 8 or 169)
-    /// * Tier 4: Cobalt (tile ID 107 or 221)
-    /// * Tier 5: Mythril (tile ID 108 or 222)
-    /// * Tier 6: Adamantite (tile ID 111 or 223)
-    pub ore_tiers_tiles: [u16; 7],
+    /// * Tier 4: Cobalt (tile ID 107 or 221, -1 if not decided)
+    /// * Tier 5: Mythril (tile ID 108 or 222, -1 if not decided)
+    /// * Tier 6: Adamantite (tile ID 111 or 223, -1 if not decided)
+    pub ore_tiers_tiles: [i16; 7],
     pub invasion_type: i8,
     pub lobby_id: u64,
     pub sandstorm_severity: f32,
@@ -147,39 +184,13 @@ impl PacketBody for WorldInfo {
         cursor.write(&self.world_id);
         cursor.write(&self.world_name);
         cursor.write(&self.game_mode);
-        cursor.write(&self.world_unique_id);
-        cursor.write(&self.world_generator_version);
-        cursor.write(&self.moon_type);
-        cursor.write(&self.tree_background);
-        cursor.write(&self.corruption_background);
-        cursor.write(&self.jungle_background);
-        cursor.write(&self.snow_background);
-        cursor.write(&self.hallow_background);
-        cursor.write(&self.crimson_background);
-        cursor.write(&self.desert_background);
-        cursor.write(&self.ocean_background);
-        self.unknown_background.iter().for_each(|x| cursor.write(x));
-        cursor.write(&self.ice_back_style);
-        cursor.write(&self.jungle_back_style);
-        cursor.write(&self.hell_back_style);
-        cursor.write(&self.wind_speed_set);
-        cursor.write(&self.cloud_number);
-        self.trees.iter().for_each(|x| cursor.write(x));
-        self.tree_styles.iter().for_each(|x| cursor.write(x));
-        self.cave_backs.iter().for_each(|x| cursor.write(x));
-        self.cave_back_styles.iter().for_each(|x| cursor.write(x));
-        self.forest_tree_top_styles
+        self.world_unique_id.iter().for_each(|i| cursor.write(i));
+        self.world_generator_version
             .iter()
             .for_each(|x| cursor.write(x));
-        cursor.write(&self.corruption_tree_top_style);
-        cursor.write(&self.jungle_tree_top_style);
-        cursor.write(&self.snow_tree_top_style);
-        cursor.write(&self.hallow_tree_top_style);
-        cursor.write(&self.crimson_tree_top_style);
-        cursor.write(&self.desert_tree_top_style);
-        cursor.write(&self.ocean_tree_top_style);
-        cursor.write(&self.glowing_mushroom_tree_top_style);
-        cursor.write(&self.underworld_tree_top_style);
+        self.tbd1.iter().for_each(|x| cursor.write(x));
+        self.tbd2.iter().for_each(|x| cursor.write(x));
+        self.tbd3.iter().for_each(|x| cursor.write(x));
         cursor.write(&self.rain);
         cursor.write(
             &(0 // event info[0]
@@ -276,43 +287,15 @@ impl PacketBody for WorldInfo {
         let world_id = cursor.read();
         let world_name = cursor.read();
         let game_mode = cursor.read();
-        let world_unique_id = cursor.read();
-        let world_generator_version = cursor.read();
-        let moon_type = cursor.read();
-        let tree_background = cursor.read();
-        let corruption_background = cursor.read();
-        let jungle_background = cursor.read();
-        let snow_background = cursor.read();
-        let hallow_background = cursor.read();
-        let crimson_background = cursor.read();
-        let desert_background = cursor.read();
-        let ocean_background = cursor.read();
-        let unknown_background = [
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-        ];
-        let ice_back_style = cursor.read();
-        let jungle_back_style = cursor.read();
-        let hell_back_style = cursor.read();
-        let wind_speed_set = cursor.read();
-        let cloud_number = cursor.read();
-        let trees = [cursor.read(), cursor.read(), cursor.read()];
-        let tree_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let cave_backs = [cursor.read(), cursor.read(), cursor.read()];
-        let cave_back_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let forest_tree_top_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let corruption_tree_top_style = cursor.read();
-        let jungle_tree_top_style = cursor.read();
-        let snow_tree_top_style = cursor.read();
-        let hallow_tree_top_style = cursor.read();
-        let crimson_tree_top_style = cursor.read();
-        let desert_tree_top_style = cursor.read();
-        let ocean_tree_top_style = cursor.read();
-        let glowing_mushroom_tree_top_style = cursor.read();
-        let underworld_tree_top_style = cursor.read();
+        let mut world_unique_id = [0; 16];
+        world_unique_id.iter_mut().for_each(|i| *i = cursor.read());
+        let world_generator_version = [cursor.read(), cursor.read()];
+        let mut tbd1 = [0; 32];
+        tbd1.iter_mut().for_each(|x| *x = cursor.read());
+        let mut tbd2 = [0; 32];
+        tbd2.iter_mut().for_each(|x| *x = cursor.read());
+        let mut tbd3 = [0; 3];
+        tbd3.iter_mut().for_each(|x| *x = cursor.read());
         let rain = cursor.read();
         let event_info: [u8; 7] = [
             cursor.read(),
@@ -353,35 +336,9 @@ impl PacketBody for WorldInfo {
             game_mode,
             world_unique_id,
             world_generator_version,
-            moon_type,
-            tree_background,
-            corruption_background,
-            jungle_background,
-            snow_background,
-            hallow_background,
-            crimson_background,
-            desert_background,
-            ocean_background,
-            unknown_background,
-            ice_back_style,
-            jungle_back_style,
-            hell_back_style,
-            wind_speed_set,
-            cloud_number,
-            trees,
-            tree_styles,
-            cave_backs,
-            cave_back_styles,
-            forest_tree_top_styles,
-            corruption_tree_top_style,
-            jungle_tree_top_style,
-            snow_tree_top_style,
-            hallow_tree_top_style,
-            crimson_tree_top_style,
-            desert_tree_top_style,
-            ocean_tree_top_style,
-            glowing_mushroom_tree_top_style,
-            underworld_tree_top_style,
+            tbd1,
+            tbd2,
+            tbd3,
             rain,
             shadow_orb_smashed: event_info[0] & 0x01 != 0,
             downed_boss_1: event_info[0] & 0x02 != 0,
@@ -443,5 +400,18 @@ impl PacketBody for WorldInfo {
             lobby_id,
             sandstorm_severity,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn load_new_small_world_works() {
+        let mut data = b"A.\x00\x00\x00\x02h\x10\xb0\x040\x08!\x01P\x01\xc8\x01$\xef\xc3\x17\x08botworld\x00\xff\xbf\x0fQ'\xde\x82@\xa1\xa3N\x03\xf2\xeba\x05\x01\x00\x00\x00\xe3\x00\x00\x00\x013\t\x07\x03\x02\x05\x06\x01\x01\x03\x01\x03\x01\x00\x00\x026^:\xbfe\xc3\x05\x00\x00h\x10\x00\x00h\x10\x00\x00\x04\x03\x00\x00<\x0b\x00\x00h\x10\x00\x00h\x10\x00\x00\x00\x07\x03\x07\x04\x03\x00\x00\x02\x05\x06\x01\x01\x03\x01\x03\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x06\x00\xa8\x00\xa9\x00\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\xba\xc3\x8d>".to_vec();
+        let mut cursor = SliceCursor::new(data.as_mut_slice());
+        dbg!(WorldInfo::from_body(&mut cursor));
+        panic!();
     }
 }

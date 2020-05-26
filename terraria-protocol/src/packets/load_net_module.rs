@@ -7,7 +7,7 @@ use crate::SliceCursor;
 #[derive(Debug)]
 pub struct LoadNetModule {
     pub module_id: u16,
-    // TODO unknown payload follows
+    pub arguments: Vec<u8>,
 }
 
 impl PacketBody for LoadNetModule {
@@ -15,11 +15,15 @@ impl PacketBody for LoadNetModule {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.module_id);
+        self.arguments.iter().for_each(|b| cursor.write(b));
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
+        let module_id = cursor.read();
+        // TODO no idea how to read arguments, we don't have a len
         Self {
-            module_id: cursor.read(),
+            module_id,
+            arguments: Vec::new(),
         }
     }
 }
