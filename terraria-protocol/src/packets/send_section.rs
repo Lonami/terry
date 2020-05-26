@@ -32,9 +32,9 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     tiles = Vec::with_capacity((width * height) as usize);
 
     let mut tile = Tile::default();
-    let mut num1 = 0;
-    for index1 in y_start..y_start + height as i32 {
-        for index2 in x_start..x_start + width as i32 {
+    let mut num1 = 0i16;
+    for _ in y_start..y_start + height as i32 {
+        for _ in x_start..x_start + width as i32 {
             if num1 != 0 {
                 num1 -= 1;
                 tiles.push(tile.clone());
@@ -50,97 +50,90 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
                     }
                 }
 
-                let flag = true; // tile active
                 if num4 & 0x02 != 0 {
                     // set tile active true
-                    let ty = 0; // tile ty
-                    let mut index3 = 0i32;
                     if num4 & 0x20 != 0 {
                         let num5 = cursor.read::<u8>();
-                        index3 = ((cursor.read::<u8>() as i32) << 8) | (num5 as i32);
+                        tile.ty = ((cursor.read::<u8>() as u16) << 8) | (num5 as u16);
                     } else {
-                        index3 = cursor.read::<u8>() as i32;
+                        tile.ty = cursor.read::<u8>() as u16;
                     }
 
-                    ty = index3 as u16;
-                    if tile_important(index3) {
-                        let frame_x = cursor.read::<i16>();
-                        let frame_y = cursor.read::<i16>();
+                    if tile.is_important() {
+                        tile.frame = (cursor.read::<i16>(), cursor.read::<i16>());
                     } else {
-                        let frame_x = -1i16;
-                        let frame_y = -1i16;
+                        tile.frame = (-1, -1);
                     }
 
                     if num2 & 0x08 != 0 {
-                        let color = cursor.read::<u8>();
+                        tile.tile_color = cursor.read::<u8>();
                     }
                 }
 
                 if num4 & 0x04 != 0 {
-                    let wall = cursor.read::<u8>() as u16;
+                    tile.wall = cursor.read::<u8>() as u16;
                     if num2 & 0x10 != 0 {
-                        let wall_color = cursor.read::<u8>();
+                        tile.wall_color = cursor.read::<u8>();
                     }
                 }
 
                 let num6 = (num4 & 24) >> 3;
                 if num6 != 0 {
-                    let liquid = cursor.read::<u8>();
+                    tile.liquid = cursor.read::<u8>();
                     if num6 > 1 {
                         if num6 == 2 {
-                            let lava = true;
+                            tile.lava = true;
                         } else {
-                            let honey = true;
+                            tile.honey = true;
                         }
                     }
                 }
 
                 if num3 > 1 {
                     if num3 & 0x02 != 0 {
-                        let wire = true;
+                        tile.wire[0] = true;
                     }
                     if num3 & 0x04 != 0 {
-                        let wire2 = true;
+                        tile.wire[1] = true;
                     }
                     if num3 & 0x08 != 0 {
-                        let wire3 = true;
+                        tile.wire[2] = true;
                     }
                     let num5 = (num3 & 112) >> 4;
-                    if num5 != 0 && tile_solid(ty) {
+                    if num5 != 0 && tile.is_solid() {
                         if num5 == 1 {
-                            let half_brick = true;
+                            tile.half_brick = true;
                         } else {
-                            let slope = num5 - 1;
+                            tile.slope = num5 - 1;
                         }
                     }
                 }
 
                 if num2 > 0 {
                     if num2 & 0x02 != 0 {
-                        let actuator = true;
+                        tile.actuator = true;
                     }
                     if num2 & 0x04 != 0 {
-                        let inactive = true;
+                        tile.inactive = true;
                     }
                     if num2 & 0x20 != 0 {
-                        let wire4 = true;
+                        tile.wire[3] = true;
                     }
                     if num2 & 0x40 != 0 {
                         let num5 = cursor.read::<u8>();
-                        let wall = ((num5 as u16) << 8) | wall;
+                        tile.wall = ((num5 as u16) << 8) | tile.wall;
                     }
                 }
 
                 match (num4 & 192) >> 6 {
                     0 => num1 = 0,
-                    1 => num1 = cursor.read::<u8>(),
+                    1 => num1 = cursor.read::<u8>() as i16,
                     _ => num1 = cursor.read::<i16>(),
                 }
             }
         }
     }
 
-    (0..tiles.capacity()).for_each(|_| tiles.push(dbg!(cursor.read())));
     chests = Vec::with_capacity(cursor.read::<u16>() as usize);
     (0..chests.capacity()).for_each(|_| chests.push(cursor.read()));
     signs = Vec::with_capacity(cursor.read::<u16>() as usize);

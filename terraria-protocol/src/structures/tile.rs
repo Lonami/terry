@@ -7,17 +7,29 @@ const TILE_FRAME_IMPORTANT: [bool; 623] = [
 
 #[derive(Debug, Default, Clone)]
 pub struct Tile {
-    pub wires: [bool; 4],
-    pub slopes: [bool; 3],
-    pub tile_color: Option<u8>,
-    pub wall_color: Option<u8>,
-    pub ty: Option<u16>,
-    pub frame: Option<(u16, u16)>,
-    pub wall: Option<u8>,
-    pub liquid: Option<(u8, u8)>,
-    pub is_half: bool,
-    pub is_actuator: bool,
+    pub wire: [bool; 4],
+    pub tile_color: u8,
+    pub wall_color: u8,
+    pub ty: u16,
+    pub frame: (i16, i16),
+    pub wall: u16,
+    pub liquid: u8,
+    pub lava: bool,
+    pub honey: bool,
+    pub half_brick: bool,
+    pub slope: u8,
+    pub actuator: bool,
     pub inactive: bool,
+}
+
+impl Tile {
+    pub fn is_important(&self) -> bool {
+        TILE_FRAME_IMPORTANT[self.ty as usize]
+    }
+
+    pub fn is_solid(&self) -> bool {
+        todo!()
+    }
 }
 
 impl Serializable for Tile {
@@ -28,6 +40,8 @@ impl Serializable for Tile {
 
 impl Deserializable for Tile {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
+        todo!()
+        /*
         let flags: [u8; 2] = [cursor.read(), cursor.read()];
         let wires: [bool; 4] = [
             flags[0] & 0x10 != 0,
@@ -93,5 +107,6 @@ impl Deserializable for Tile {
             is_actuator,
             inactive,
         })
+        */
     }
 }
