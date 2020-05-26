@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{Chest, Sign, Tile, TileEntity};
+use crate::structures::{Chest, Sign, Tile, Liquid, TileEntity};
 use crate::SliceCursor;
 use inflate;
 
@@ -32,29 +32,27 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     tiles = Vec::with_capacity((width * height) as usize);
 
     let mut tile = Tile::default();
-    let mut num1 = 0i16;
+    let mut rle = 0i16; // kind of a run-length encoding
     for _ in y_start..y_start + height as i32 {
         for _ in x_start..x_start + width as i32 {
-            if num1 != 0 {
-                num1 -= 1;
+            if rle != 0 {
+                rle -= 1;
                 tiles.push(tile.clone());
             } else {
-                let mut num2 = 0u8;
-                let mut num3 = 0u8;
                 tile = Tile::default();
-                let num4 = cursor.read::<u8>();
-                if num4 & 0x01 != 0 {
-                    num3 = cursor.read();
-                    if num3 & 0x01 != 0 {
-                        num2 = cursor.read();
+
+                let mut flags: [u8; 3] = [cursor.read(), 0, 0];
+                if flags[0] & 0x01 != 0 {
+                    flags[1] = cursor.read();
+                    if flags[1] & 0x01 != 0 {
+                        flags[2] = cursor.read();
                     }
                 }
+                let flags = flags;
 
-                if num4 & 0x02 != 0 {
-                    // set tile active true
-                    if num4 & 0x20 != 0 {
-                        let num5 = cursor.read::<u8>();
-                        tile.ty = ((cursor.read::<u8>() as u16) << 8) | (num5 as u16);
+                if flags[0] & 0x02 != 0 {
+                    if flags[0] & 0x20 != 0 {
+                        tile.ty = cursor.read::<u16>();
                     } else {
                         tile.ty = cursor.read::<u8>() as u16;
                     }
@@ -65,70 +63,49 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
                         tile.frame = (-1, -1);
                     }
 
-                    if num2 & 0x08 != 0 {
+                    if flags[2] & 0x08 != 0 {
                         tile.tile_color = cursor.read::<u8>();
                     }
                 }
 
-                if num4 & 0x04 != 0 {
+                if flags[0] & 0x04 != 0 {
                     tile.wall = cursor.read::<u8>() as u16;
-                    if num2 & 0x10 != 0 {
+                    if flags[2] & 0x10 != 0 {
                         tile.wall_color = cursor.read::<u8>();
                     }
                 }
 
-                let num6 = (num4 & 24) >> 3;
-                if num6 != 0 {
-                    tile.liquid = cursor.read::<u8>();
-                    if num6 > 1 {
-                        if num6 == 2 {
-                            tile.lava = true;
-                        } else {
-                            tile.honey = true;
-                        }
-                    }
+                tile.liquid = match (flags[0] & 0x18) >> 3 {
+                    1 => Some(Liquid::Water),
+                    2 => Some(Liquid::Lava),
+                    3 => Some(Liquid::Honey),
+                    _ => None
+                };
+
+                tile.wire = [
+                    flags[1] & 0x02 != 0,
+                    flags[1] & 0x04 != 0,
+                    flags[1] & 0x08 != 0,
+                    flags[2] & 0x20 != 0,
+                ];
+                match flags[1] & 0x70 >> 4 {
+                    0 => {},
+                    1 => tile.half_brick = true,
+                    n => tile.slope = n - 1,
                 }
 
-                if num3 > 1 {
-                    if num3 & 0x02 != 0 {
-                        tile.wire[0] = true;
-                    }
-                    if num3 & 0x04 != 0 {
-                        tile.wire[1] = true;
-                    }
-                    if num3 & 0x08 != 0 {
-                        tile.wire[2] = true;
-                    }
-                    let num5 = (num3 & 112) >> 4;
-                    if num5 != 0 && tile.is_solid() {
-                        if num5 == 1 {
-                            tile.half_brick = true;
-                        } else {
-                            tile.slope = num5 - 1;
-                        }
-                    }
+                tile.actuator = flags[2] & 0x02 != 0;
+                tile.inactive = flags[2] & 0x04 != 0;
+                if flags[2] & 0x40 != 0 {
+                    tile.wall |= (cursor.read::<u8>() as u16) << 8;
                 }
 
-                if num2 > 0 {
-                    if num2 & 0x02 != 0 {
-                        tile.actuator = true;
-                    }
-                    if num2 & 0x04 != 0 {
-                        tile.inactive = true;
-                    }
-                    if num2 & 0x20 != 0 {
-                        tile.wire[3] = true;
-                    }
-                    if num2 & 0x40 != 0 {
-                        let num5 = cursor.read::<u8>();
-                        tile.wall = ((num5 as u16) << 8) | tile.wall;
-                    }
-                }
+                tiles.push(tile.clone());
 
-                match (num4 & 192) >> 6 {
-                    0 => num1 = 0,
-                    1 => num1 = cursor.read::<u8>() as i16,
-                    _ => num1 = cursor.read::<i16>(),
+                match (flags[0] & 0xc0) >> 6 {
+                    0 => rle = 0,
+                    1 => rle = cursor.read::<u8>() as i16,
+                    _ => rle = cursor.read::<i16>(),
                 }
             }
         }

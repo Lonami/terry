@@ -5,6 +5,13 @@ const TILE_FRAME_IMPORTANT: [bool; 623] = [
     false, false, false, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, false, true, true, true, true, false, true, false, true, true, true, true, false, false, false, false, false, true, false, false, false, false, false, false, true, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, true, true, false, true, true, false, false, true, true, true, true, true, true, true, true, false, true, true, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, true, true, true, true, false, false, false, true, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, true, false, true, true, false, true, false, false, true, true, true, true, true, true, false, false, false, false, false, false, true, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, false, true, true, true, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, true, true, false, true, true, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, true, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, true, true, false, false, false, true, true, true, true, true, false, false, false, false, true, true, false, false, true, true, true, false, true, true, true, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, false, false, false, true, false, false, false, true, true, true, true, true, true, true, true, false, true, true, false, false, true, false, true, false, false, false, false, false, true, true, false, false, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, false, false, false, false, true, false, false, false, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, false, true, true, true, false, false, false, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true
 ];
 
+#[derive(Debug, Clone)]
+pub enum Liquid {
+    Water,
+    Honey,
+    Lava,
+}
+
 #[derive(Debug, Default, Clone)]
 pub struct Tile {
     pub wire: [bool; 4],
@@ -13,7 +20,7 @@ pub struct Tile {
     pub ty: u16,
     pub frame: (i16, i16),
     pub wall: u16,
-    pub liquid: u8,
+    pub liquid: Option<Liquid>,
     pub lava: bool,
     pub honey: bool,
     pub half_brick: bool,
@@ -25,10 +32,6 @@ pub struct Tile {
 impl Tile {
     pub fn is_important(&self) -> bool {
         TILE_FRAME_IMPORTANT[self.ty as usize]
-    }
-
-    pub fn is_solid(&self) -> bool {
-        todo!()
     }
 }
 

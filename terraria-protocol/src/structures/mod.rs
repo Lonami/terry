@@ -15,6 +15,6 @@ pub use player_death_reason::PlayerDeathReason;
 pub use rgb::RGB;
 pub(crate) use serialization::{Deserializable, Serializable, SliceCursor};
 pub use sign::Sign;
-pub use tile::Tile;
+pub use tile::{Tile, Liquid};
 pub use tile_entity::TileEntity;
 pub use vec2::Vec2;
