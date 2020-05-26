@@ -1,5 +1,6 @@
 use crate::{Deserializable, Serializable, SliceCursor};
 
+#[derive(Debug)]
 pub enum TileEntity {
     TrainingDummy {
         id: i32,

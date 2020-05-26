@@ -5,3 +5,4 @@ authors = ["Lonami Exo <totufals@hotmail.com>"]
 edition = "2018"
 
 [dependencies]
+inflate = "0.4.5"

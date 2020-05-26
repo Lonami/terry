@@ -89,6 +89,13 @@ impl<'a> SliceCursor<'a> {
         self.slice[pos..pos + slice.len()].copy_from_slice(slice);
         self.pos += slice.len();
     }
+
+    #[inline(always)]
+    pub(crate) fn read_to_end(&mut self) -> &[u8] {
+        let pos = self.pos;
+        self.pos = self.slice.len();
+        &self.slice[pos..]
+    }
 }
 
 pub trait Serializable {
