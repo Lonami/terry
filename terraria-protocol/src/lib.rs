@@ -20,5 +20,6 @@ mod tests {
             packets::Packet::from_slice(&mut data[index + 2..index + packet_len]);
             index += packet_len;
         }
+        panic!("watch log");
     }
 }
