@@ -25,28 +25,17 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     let height = cursor.read();
 
     let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
-
     let mut rle = 0i16; // kind of a run-length encoding
-    for _ in y_start..y_start + height as i32 {
-        for _ in x_start..x_start + width as i32 {
-            if rle != 0 {
-                rle -= 1;
-                tiles.push(tiles[tiles.len() - 1].clone());
-            } else {
-                let tile = cursor.read::<Tile>();
-                rle = tile.rle;
-                tiles.push(tile);
-            }
-        }
-    }
-
-    eprintln!(">>");
-    tiles.iter().for_each(|t| {
-        if t.ty.is_some() {
-            dbg!(t);
+    (0..width * height).for_each(|_| {
+        if rle != 0 {
+            rle -= 1;
+            tiles.push(tiles[tiles.len() - 1].clone());
+        } else {
+            let tile = cursor.read::<Tile>();
+            rle = tile.rle;
+            tiles.push(tile);
         }
     });
-    eprintln!("<<");
 
     let mut chests = Vec::new();
     chests = Vec::with_capacity(cursor.read::<u16>() as usize);
@@ -80,7 +69,6 @@ impl PacketBody for SendSection {
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
-        // compressed?
         if cursor.read::<bool>() {
             let mut decompressed =
                 inflate::inflate_bytes(cursor.read_to_end()).expect("failed to decompress tiles");
@@ -89,7 +77,6 @@ impl PacketBody for SendSection {
             // update cursor to this new borrowed data (even if defined out)
             // would have a different lifetime, and it won't work with that
             // mismatch. So instead we use a separate function.
-            eprintln!("-> decompressed: {:?}", decompressed);
             read_decompressed_section(&mut SliceCursor::new(decompressed.as_mut_slice()))
         } else {
             read_decompressed_section(cursor)
