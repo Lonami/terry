@@ -65,3 +65,4 @@ finally:
     server.close()
     client.close()
     terraria.close()
+    handler.finish()
