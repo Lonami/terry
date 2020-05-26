@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{Chest, Liquid, Sign, Tile, TileEntity};
+use crate::structures::{Chest, Sign, Tile, TileEntity};
 use crate::SliceCursor;
 use inflate;
 
@@ -37,16 +37,13 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
         }
     });
 
-    let mut chests = Vec::new();
-    chests = Vec::with_capacity(cursor.read::<u16>() as usize);
+    let mut chests = Vec::with_capacity(cursor.read::<u16>() as usize);
     (0..chests.capacity()).for_each(|_| chests.push(cursor.read()));
 
-    let mut signs = Vec::new();
-    signs = Vec::with_capacity(cursor.read::<u16>() as usize);
+    let mut signs = Vec::with_capacity(cursor.read::<u16>() as usize);
     (0..signs.capacity()).for_each(|_| signs.push(cursor.read()));
 
-    let mut tile_entities = Vec::new();
-    tile_entities = Vec::with_capacity(cursor.read::<u16>() as usize);
+    let mut tile_entities = Vec::with_capacity(cursor.read::<u16>() as usize);
     (0..tile_entities.capacity()).for_each(|_| tile_entities.push(cursor.read()));
 
     SendSection {
