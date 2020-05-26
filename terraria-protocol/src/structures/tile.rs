@@ -2,7 +2,50 @@ use crate::{Deserializable, Serializable, SliceCursor};
 
 /// Tiles for which the frame is considered "important".
 const TILE_FRAME_IMPORTANT: [bool; 623] = [
-    false, false, false, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, false, true, true, true, true, false, true, false, true, true, true, true, false, false, false, false, false, true, false, false, false, false, false, false, true, true, false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false, true, true, false, true, true, false, false, true, true, true, true, true, true, true, true, false, true, true, true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, true, true, true, true, false, false, false, true, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, true, false, true, true, false, true, false, false, true, true, true, true, true, true, false, false, false, false, false, false, true, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, false, true, true, true, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, true, true, false, true, true, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, true, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, true, true, false, false, false, true, true, true, true, true, false, false, false, false, true, true, false, false, true, true, true, false, true, true, true, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, false, false, false, true, false, false, false, true, true, true, true, true, true, true, true, false, true, true, false, false, true, false, true, false, false, false, false, false, true, true, false, false, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, false, false, false, false, true, false, false, false, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, false, true, true, true, false, false, false, true, true, false, true, true, true, true, true, true, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true
+    false, false, false, true, true, true, false, false, false, false, true, true, true, true,
+    true, true, true, true, true, true, true, true, false, false, true, false, true, true, true,
+    true, false, true, false, true, true, true, true, false, false, false, false, false, true,
+    false, false, false, false, false, false, true, true, false, false, false, false, true, false,
+    false, false, false, false, true, false, false, false, false, false, false, false, false,
+    false, true, true, true, true, false, false, true, true, true, false, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, false, false, false, true, false, false, true, true, false,
+    false, false, false, false, false, false, false, false, false, true, true, false, true, true,
+    false, false, true, true, true, true, true, true, true, true, false, true, true, true, true,
+    false, false, false, false, true, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, true, false, false, false, false, false, true,
+    true, true, true, false, false, false, true, false, false, false, false, false, true, true,
+    true, true, false, false, false, false, false, false, false, false, false, false, false, false,
+    false, true, false, false, false, false, false, true, false, true, true, false, true, false,
+    false, true, true, true, true, true, true, false, false, false, false, false, false, true,
+    true, false, false, true, false, true, false, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, false, false, false, false, false, false, true, false, false,
+    false, false, false, false, false, false, false, false, false, false, false, false, true, true,
+    true, false, false, false, true, true, true, true, true, true, true, true, true, false, true,
+    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, false, false, false, true, false, true,
+    true, true, true, true, false, false, true, true, false, false, false, false, false, false,
+    false, false, false, true, true, false, true, true, true, false, false, false, false, false,
+    false, false, false, false, true, false, false, false, false, true, true, true, false, true,
+    true, true, true, true, true, true, false, false, false, false, false, false, false, true,
+    true, true, true, true, true, true, false, true, false, false, false, false, false, true, true,
+    true, true, true, true, true, true, true, true, false, false, false, false, false, false,
+    false, false, false, true, true, false, false, false, true, true, true, true, true, false,
+    false, false, false, true, true, false, false, true, true, true, false, true, true, true,
+    false, false, false, false, false, false, false, false, false, false, true, true, true, true,
+    true, true, false, false, false, false, false, false, true, true, true, true, true, true,
+    false, false, false, true, true, true, true, true, true, true, true, true, true, true, false,
+    false, false, true, true, false, false, false, true, false, false, false, true, true, true,
+    true, true, true, true, true, false, true, true, false, false, true, false, true, false, false,
+    false, false, false, true, true, false, false, true, true, true, false, false, false, false,
+    false, false, true, true, true, true, true, true, true, true, true, true, false, true, true,
+    true, true, true, false, false, false, false, true, false, false, false, true, true, true,
+    true, false, true, true, true, true, true, true, true, true, true, true, false, true, true,
+    true, false, false, false, true, true, false, true, true, true, true, true, true, true, false,
+    false, false, false, false, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true, false, true, true,
+    true, true,
 ];
 
 #[derive(Debug, Clone)]
@@ -96,7 +139,7 @@ impl Deserializable for Tile {
             1 => Some(Liquid::Water),
             2 => Some(Liquid::Lava),
             3 => Some(Liquid::Honey),
-            _ => None
+            _ => None,
         };
 
         let wire = [

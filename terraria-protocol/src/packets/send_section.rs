@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{Chest, Sign, Tile, Liquid, TileEntity};
+use crate::structures::{Chest, Liquid, Sign, Tile, TileEntity};
 use crate::SliceCursor;
 use inflate;
 
@@ -41,8 +41,10 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     }
 
     eprintln!(">>");
-    tiles.iter().for_each(|t| if t.ty.is_some() {
-        dbg!(t);
+    tiles.iter().for_each(|t| {
+        if t.ty.is_some() {
+            dbg!(t);
+        }
     });
     eprintln!("<<");
 
