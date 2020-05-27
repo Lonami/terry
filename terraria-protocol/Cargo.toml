@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 inflate = "0.4.5"
+log = "0.4.8"

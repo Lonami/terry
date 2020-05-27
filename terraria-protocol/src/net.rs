@@ -8,6 +8,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
+use log::trace;
 
 const PROTOCOL_VERSION: &str = "Terraria228";
 
@@ -24,14 +25,14 @@ pub struct Terraria {
     world_info: Option<packets::WorldInfo>,
 }
 
-const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
-
 fn as_hex(buf: &[u8]) -> String {
+    const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
     let mut bytes = Vec::with_capacity(buf.len() * 2);
     buf.into_iter().for_each(|b| {
         bytes.push(HEX_DIGITS[(b >> 4) as usize]);
         bytes.push(HEX_DIGITS[(b & 15) as usize]);
     });
+    // SAFETY: we're only pushing ASCII characters (i.e. valid UTF-8)
     unsafe { String::from_utf8_unchecked(bytes) }
 }
 
@@ -54,7 +55,7 @@ fn reader_worker(
         }
         reader.read_exact(&mut packet[..len])?;
 
-        eprintln!(
+        trace!(
             "< {} : {}{}",
             packet[0],
             as_hex(&lenbuf),
@@ -206,7 +207,7 @@ impl Terraria {
         let pos = cursor.finish();
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
-        eprintln!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
+        trace!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
 
         // recv during send to see it real time
         drop(self.recv_ready_packets());
