@@ -40,10 +40,6 @@ pub enum LoadNetModule {
         text: NetString,
         color: RGB,
     },
-    Text {
-        command: String,
-        text: String,
-    },
     Ping {
         pos: Vec2,
     },
@@ -91,7 +87,112 @@ impl PacketBody for LoadNetModule {
     const TAG: u8 = 82;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        todo!()
+        match self {
+            LoadNetModule::Liquid {} => {
+                cursor.write(&0u16);
+            }
+            LoadNetModule::ClientText { command, text } => {
+                cursor.write(&1u16);
+                cursor.write(command);
+                cursor.write(text);
+            }
+            LoadNetModule::ServerText {
+                author,
+                text,
+                color,
+            } => {
+                cursor.write(&1u16);
+                cursor.write(author);
+                cursor.write(text);
+                cursor.write(color);
+            }
+            LoadNetModule::Ping { pos } => {
+                cursor.write(&2u16);
+                cursor.write(pos);
+            }
+            LoadNetModule::Ambience { player, num, ty } => {
+                cursor.write(&3u16);
+                cursor.write(player);
+                cursor.write(num);
+                cursor.write(ty);
+            }
+            LoadNetModule::Bestiary(bestiary) => {
+                cursor.write(&4u16);
+                match bestiary {
+                    Bestiary::KillCount {
+                        npc_net_id,
+                        kill_count,
+                    } => {
+                        cursor.write(npc_net_id);
+                        cursor.write(kill_count);
+                    }
+                    Bestiary::Sight { npc_net_id } => {
+                        cursor.write(npc_net_id);
+                    }
+                    Bestiary::Chat { npc_net_id } => {
+                        cursor.write(npc_net_id);
+                    }
+                }
+            }
+            LoadNetModule::CreativeUnlocks {
+                item_id,
+                sacrifice_count,
+            } => {
+                cursor.write(&5u16);
+                cursor.write(item_id);
+                cursor.write(sacrifice_count);
+            }
+            LoadNetModule::CreativePowers { power_id } => {
+                cursor.write(&6u16);
+                cursor.write(power_id);
+            }
+            LoadNetModule::CreativeUnlocksPlayerReport {
+                zero,
+                item_id,
+                amount,
+            } => {
+                cursor.write(&7u16);
+                cursor.write(zero);
+                cursor.write(item_id);
+                cursor.write(amount);
+            }
+            LoadNetModule::TeleportPylon {
+                ty,
+                x,
+                y,
+                pylon_type,
+            } => {
+                cursor.write(&8u16);
+                cursor.write(ty);
+                cursor.write(x);
+                cursor.write(y);
+                cursor.write(pylon_type);
+            }
+            LoadNetModule::Particles {
+                ty,
+                pos,
+                vel,
+                packed_shader_index,
+                player,
+            } => {
+                cursor.write(&9u16);
+                cursor.write(ty);
+                cursor.write(pos);
+                cursor.write(vel);
+                cursor.write(packed_shader_index);
+                cursor.write(player);
+            }
+            LoadNetModule::CreativePowerPermissions {
+                zero,
+                power_id,
+                level,
+            } => {
+                cursor.write(&10u16);
+                cursor.write(zero);
+                cursor.write(power_id);
+                cursor.write(level);
+            }
+        }
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {

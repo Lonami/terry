@@ -152,7 +152,13 @@ impl Terraria {
             zoneflags4: 0,
         })?;
 
-        // TODO send message
+        this.send_packet(&packets::LoadNetModule::ClientText {
+            command: "Say".to_string(),
+            text: format!(
+                "Hi, I'm terry and I sure love to spawn at ({}, {})!",
+                this.world_info.spawn_x, this.world_info.spawn_y
+            ),
+        })?;
 
         while let Ok(()) = this.recv_ready_packets() {
             // TODO Update player
