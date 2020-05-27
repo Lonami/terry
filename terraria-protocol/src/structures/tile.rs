@@ -70,7 +70,7 @@ pub struct Tile {
     pub inactive: bool,
     /// Used only during decoding, to know how many times this tile is
     /// repeated right after.
-    pub rle: i16,
+    pub rle: u16,
 }
 
 impl Tile {
@@ -162,8 +162,8 @@ impl Deserializable for Tile {
 
         let rle = match (flags[0] & 0xc0) >> 6 {
             0 => 0,
-            1 => cursor.read::<u8>() as i16,
-            _ => cursor.read::<i16>(),
+            1 => cursor.read::<u8>() as u16,
+            _ => cursor.read::<u16>(),
         };
 
         Self {

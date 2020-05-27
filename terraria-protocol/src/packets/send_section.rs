@@ -25,7 +25,7 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     let height = cursor.read();
 
     let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
-    let mut rle = 0i16; // kind of a run-length encoding
+    let mut rle = 0; // kind of a run-length encoding
 
     let (x, y, w, h) = (x_start as usize, y_start as usize, width as usize, height as usize);
     eprintln!("{:?}", (x, y, w, h));
@@ -56,14 +56,17 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
         }
     });
 
-    let mut chests = Vec::with_capacity(cursor.read::<u16>() as usize);
-    (0..chests.capacity()).for_each(|_| chests.push(cursor.read()));
+    let n = cursor.read::<u16>() as usize;
+    let mut chests = Vec::with_capacity(n);
+    (0..n).for_each(|_| chests.push(cursor.read()));
 
-    let mut signs = Vec::with_capacity(cursor.read::<u16>() as usize);
-    (0..signs.capacity()).for_each(|_| signs.push(cursor.read()));
+    let n = cursor.read::<u16>() as usize;
+    let mut signs = Vec::with_capacity(n);
+    (0..n).for_each(|_| signs.push(cursor.read()));
 
-    let mut tile_entities = Vec::with_capacity(cursor.read::<u16>() as usize);
-    (0..tile_entities.capacity()).for_each(|_| tile_entities.push(cursor.read()));
+    let n = cursor.read::<u16>() as usize;
+    let mut tile_entities = Vec::with_capacity(n);
+    (0..n).for_each(|_| tile_entities.push(cursor.read()));
 
     SendSection {
         x_start,
