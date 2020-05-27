@@ -1,14 +1,12 @@
 //! Basic, threaded network implementation.
 use crate::packets::{self, Packet, PacketBody};
-use crate::structures::Vec2;
 use crate::SliceCursor;
+use log::trace;
 use std::io::BufReader;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;
-use std::time::Duration;
-use log::trace;
 
 const PROTOCOL_VERSION: &str = "Terraria228";
 
@@ -22,7 +20,6 @@ pub struct Terraria {
     out_buffer: Vec<u8>,
     _reader_thread: thread::JoinHandle<io::Result<()>>,
     packet_rx: mpsc::Receiver<Packet>,
-    world_info: Option<packets::WorldInfo>,
 }
 
 fn as_hex(buf: &[u8]) -> String {
@@ -81,7 +78,6 @@ impl Terraria {
             out_buffer: vec![0; 1024],
             _reader_thread,
             packet_rx,
-            world_info: None,
         };
 
         // handshake
@@ -89,6 +85,7 @@ impl Terraria {
             version: PROTOCOL_VERSION.to_string(),
         })?;
 
+        // TODO this needs to be customizable
         this.send_packet(&packets::PlayerInfo::default())?;
 
         this.send_packet(&packets::ClientUuid {
@@ -139,66 +136,7 @@ impl Terraria {
             player_spawn_context: packets::SpawnContext::SpawningIntoWorld,
         })?;
 
-        /*
-        this.send_packet(&packets::LoadNetModule {
-            module_id: 6,
-            arguments: vec![0, 0, 0, 0, 0x3f],
-        })?;
-        */
-
-        this.send_packet(&packets::UpdateNpcName { npc_id: 1 })?;
-
-        this.send_packet(&packets::PlayerZone {
-            player_id: 0,
-            zoneflags1: 0,
-            zoneflags2: 0,
-            zoneflags3: 0,
-            zoneflags4: 0,
-        })?;
-
-        while this.world_info.is_none() {
-            if this.recv_ready_packets().is_err() {
-                break;
-            };
-        }
-
-        let (mut x, mut y) = (0, 0);
-        if let Some(info) = this.world_info.clone() {
-            x = info.spawn_x;
-            y = info.spawn_y;
-            this.send_packet(&packets::LoadNetModule::ClientText {
-                command: "Say".to_string(),
-                text: format!(
-                    "Hi, I'm terry and I sure love to spawn at ({}, {})!",
-                    info.spawn_x, info.spawn_y
-                ),
-            })?;
-            thread::sleep(Duration::from_secs(4));
-            this.send_packet(&packets::LoadNetModule::ClientText {
-                command: "Say".to_string(),
-                text: format!(
-                    "I love how {} is {}x{} big, so much space!!",
-                    info.world_name, info.max_tiles_x, info.max_tiles_y,
-                ),
-            })?;
-        }
-
-        while let Ok(()) = this.recv_ready_packets() {
-            this.send_packet(&packets::UpdatePlayer {
-                player_id: 1,
-                key_left: true,
-                pos: Vec2::from_tile_pos(x, y),
-                vel: None,
-                ..Default::default()
-            })?;
-            //x -= 1;
-            thread::sleep(Duration::from_secs(10));
-        }
-
-        this._reader_thread
-            .join()
-            .expect("reader thread panicked")?;
-        todo!()
+        Ok(this)
     }
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
@@ -208,30 +146,14 @@ impl Terraria {
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
         trace!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
-
-        // recv during send to see it real time
-        drop(self.recv_ready_packets());
-
         Ok(())
     }
 
-    pub fn recv_ready_packets(&mut self) -> Result<(), ()> {
-        loop {
-            match self.packet_rx.try_recv() {
-                Ok(Packet::WorldInfo(info)) => self.world_info = Some(info),
-                Ok(Packet::UpdatePlayer(player)) => {
-                    dbg!(player);
-                }
-                Ok(_) => continue,
-                Err(mpsc::TryRecvError::Empty) => break Ok(()),
-                Err(_) => break Err(()),
-            }
-        }
-    }
-
-    /*
     pub fn recv_packet(&mut self) -> Result<Packet, mpsc::RecvError> {
         self.packet_rx.recv()
     }
-    */
+
+    pub fn try_recv_packet(&mut self) -> Result<Packet, mpsc::TryRecvError> {
+        self.packet_rx.try_recv()
+    }
 }
