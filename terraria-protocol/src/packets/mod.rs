@@ -1,3 +1,13 @@
+//! This module contains type definitions for **all** the possible packets
+//! in a Terraria vanilla client-server communication.
+//!
+//! All of them own the objects (for example, you need to allocate a `String`
+//! to send chat messages) simply because it makes it a lot easier to work
+//! with. An alternative implementation would of course be possible (read
+//! the fields on demand), but it would also be a lot less ergonomic.
+//!
+//! Unless absolutely needed, most of the packets don't have documentation,
+//! since the field names should suffice.
 mod add_npc_buff;
 mod add_player_buff;
 mod angler_quest;

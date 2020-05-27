@@ -1,3 +1,4 @@
+//! Basic, threaded network implementation.
 use crate::packets::{self, Packet, PacketBody};
 use crate::structures::Vec2;
 use crate::SliceCursor;

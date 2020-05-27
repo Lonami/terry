@@ -1,3 +1,10 @@
+//! This library contains all the packet definitions needed to work with
+//! Terraria's multiplayer network protocol, and it can be used to build
+//! a client, a robot, or even a custom Terraria server.
+//!
+//! Note that the library itself only contains the packets and mechanisms
+//! to serialize and deserialize them, along with basic protocol management.
+//! If you want it to do anything interesting, you should build that yourself.
 pub mod net;
 pub mod packets;
 pub mod structures;

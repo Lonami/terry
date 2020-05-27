@@ -1,3 +1,5 @@
+//! Structures, unlike packets, are separate types commonly used within the
+//! packets, such as position vectors, tiles and so on.
 mod chest;
 mod core;
 mod net_string;
