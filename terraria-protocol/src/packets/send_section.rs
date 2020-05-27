@@ -27,6 +27,12 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
     let mut rle = 0; // kind of a run-length encoding
 
+    use std::fs::File;
+    use std::io::Write;
+
+    let mut file = File::create(format!("map/{}-{}_{}-{}.ppm", x_start, y_start, width, height)).unwrap();
+    file.write_all(format!("P6 {} {} 255\n", width, height).as_bytes()).unwrap();
+
     (0..width * height).for_each(|_| {
         if rle != 0 {
             rle -= 1;
@@ -36,6 +42,13 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
             rle = tile.rle;
             tiles.push(tile);
         }
+
+        if let Some(ty) = tiles[tiles.len() - 1].ty {
+            let rgb = 26200 + (ty as u32) * 26200;
+            file.write_all(&rgb.to_le_bytes()[..3]).unwrap();
+        } else {
+            file.write_all(&[0, 0, 0]).unwrap();
+        };
     });
 
     let n = cursor.read::<u16>() as usize;
