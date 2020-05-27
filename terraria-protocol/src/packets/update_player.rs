@@ -5,7 +5,7 @@ use crate::SliceCursor;
 /// Update Player.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct UpdatePlayer {
     pub player_id: u8,
     // bit flags {
@@ -50,7 +50,7 @@ impl PacketBody for UpdatePlayer {
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.player_id);
         cursor.write(
-            &(0 // control
+            &(0u8 // control
             | if self.key_up { 0x01 } else { 0 }
             | if self.key_down { 0x02 } else { 0 }
             | if self.key_left { 0x04 } else { 0 }
@@ -60,7 +60,7 @@ impl PacketBody for UpdatePlayer {
             | if self.facing_right { 0x40 } else { 0 }),
         );
         cursor.write(
-            &(0 // pulley
+            &(0u8 // pulley
                | if self.pulley { 0x01 } else { 0 }
                | if self.pulley_right { 0x02 } else { 0 }
                | if self.vel.is_some() { 0x04 } else { 0 }
@@ -69,7 +69,7 @@ impl PacketBody for UpdatePlayer {
                | if self.shield_raised { 0x20 } else { 0 }),
         );
         cursor.write(
-            &(0 // misc
+            &(0u8 // misc
                 | if self.hovering_up { 0x01 } else { 0 }
                 | if self.void_vault { 0x02 } else { 0 }
                 | if self.sitting { 0x04 } else { 0 }
@@ -80,7 +80,7 @@ impl PacketBody for UpdatePlayer {
                 | if self.hovering_down { 0x80 } else { 0 }),
         );
         cursor.write(
-            &(0 // sleeping info
+            &(0u8 // sleeping info
                 | if self.sleeping { 0x01 } else { 0 }),
         );
         cursor.write(&self.selected_item);
