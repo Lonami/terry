@@ -1,16 +1,23 @@
 use crate::packets::{self, Packet, PacketBody};
 use crate::SliceCursor;
+use std::io::BufReader;
 use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
+use std::sync::mpsc;
+use std::thread;
 
 const PROTOCOL_VERSION: &str = "Terraria228";
 
 // TODO don't use constants for this
 const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
+const READ_MESSAGE_BUFFER: usize = 16;
+
 pub struct Terraria {
-    out_buffer: Vec<u8>,
     stream: TcpStream,
+    out_buffer: Vec<u8>,
+    _reader_thread: thread::JoinHandle<io::Result<()>>,
+    packet_rx: mpsc::Receiver<Packet>,
 }
 
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
@@ -24,13 +31,51 @@ fn as_hex(buf: &[u8]) -> String {
     unsafe { String::from_utf8_unchecked(bytes) }
 }
 
+fn reader_worker(
+    mut reader: BufReader<TcpStream>,
+    sender: mpsc::SyncSender<Packet>,
+) -> io::Result<()> {
+    let mut lenbuf = [0u8; 2];
+    let mut packet = Vec::new();
+
+    loop {
+        reader.read_exact(&mut lenbuf)?;
+        let mut cursor = SliceCursor::new(&mut lenbuf);
+        let len = cursor.read::<u16>() as usize - 2;
+        cursor.finish();
+
+        packet.reserve(len);
+        while packet.len() < len {
+            packet.push(0);
+        }
+        reader.read_exact(&mut packet[..len])?;
+
+        println!(
+            "< {} : {}{}",
+            packet[0],
+            as_hex(&lenbuf),
+            as_hex(&packet[..len])
+        );
+        if sender.send(Packet::from_slice(&mut packet[..len])).is_err() {
+            break Ok(());
+        }
+    }
+}
+
 impl Terraria {
     pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<Self> {
         // connection
         let stream = TcpStream::connect(addr)?;
+        let reader = BufReader::new(stream.try_clone()?);
+        let (packet_tx, packet_rx) = mpsc::sync_channel(READ_MESSAGE_BUFFER);
+        let _reader_thread = thread::Builder::new()
+            .name("reader thread".to_string())
+            .spawn(move || reader_worker(reader, packet_tx))?;
         let mut this = Self {
-            out_buffer: vec![0; 1024],
             stream,
+            out_buffer: vec![0; 1024],
+            _reader_thread,
+            packet_rx,
         };
 
         // handshake
@@ -104,11 +149,14 @@ impl Terraria {
         })?;
 
         //let (mut x, y) = (33534.0f32, 4582.0f32);
-        loop {
-            this.try_recv_packets()?;
-
+        while let Ok(()) = this.recv_ready_packets() {
             // TODO Update player
         }
+
+        this._reader_thread
+            .join()
+            .expect("reader thread panicked")?;
+        todo!()
     }
 
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
@@ -120,37 +168,22 @@ impl Terraria {
         println!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
 
         // recv during send to see it real time
-        self.try_recv_packets()?;
+        drop(self.recv_ready_packets());
 
         Ok(())
     }
 
-    pub fn try_recv_packets(&mut self) -> io::Result<()> {
-        self.stream
-            .set_read_timeout(Some(std::time::Duration::from_millis(10)))?;
+    pub fn recv_ready_packets(&mut self) -> Result<(), ()> {
         loop {
-            match self.recv_packet() {
+            match self.packet_rx.try_recv() {
                 Ok(_) => continue,
-                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
-                    break Ok(());
-                }
-                e => break e.map(drop),
+                Err(mpsc::TryRecvError::Empty) => break Ok(()),
+                Err(_) => break Err(()),
             }
         }
     }
 
-    pub fn recv_packet(&mut self) -> io::Result<Packet> {
-        // TODO this is very inefficient
-        let mut lenbuf = [0u8; 2];
-        self.stream.read_exact(&mut lenbuf)?;
-        let mut cursor = SliceCursor::new(&mut lenbuf);
-        let len = cursor.read::<u16>() as usize;
-        cursor.finish();
-
-        let mut packet = vec![0u8; len - 2];
-        self.stream.read_exact(&mut packet)?;
-
-        println!("< {} : {}{}", packet[0], as_hex(&lenbuf), as_hex(&packet));
-        Ok(Packet::from_slice(&mut packet))
+    pub fn recv_packet(&mut self) -> Result<Packet, mpsc::RecvError> {
+        self.packet_rx.recv()
     }
 }
