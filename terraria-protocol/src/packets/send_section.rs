@@ -26,6 +26,9 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
 
     let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
     let mut rle = 0i16; // kind of a run-length encoding
+
+    let (x, y, w, h) = (x_start as usize, y_start as usize, width as usize, height as usize);
+    eprintln!("{:?}", (x, y, w, h));
     (0..width * height).for_each(|_| {
         if rle != 0 {
             rle -= 1;
@@ -34,6 +37,22 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
             let tile = cursor.read::<Tile>();
             rle = tile.rle;
             tiles.push(tile);
+        }
+
+        //eprintln!("({}, {}): {}", x + (offset % w), y + (offset / w), id);
+        let offset = tiles.len() - 1;
+        let tile = &tiles[tiles.len() - 1];
+        if offset % w == 0 {
+            eprintln!();
+        }
+        if let Some(id) = tile.ty {
+            if id < 10 {
+                eprint!("{}", id);
+            } else {
+                eprint!("({})", id);
+            }
+        } else {
+            eprint!(".");
         }
     });
 

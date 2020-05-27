@@ -340,7 +340,7 @@ impl PacketBody for WorldInfo {
         let lobby_id = cursor.read();
         let sandstorm_severity = cursor.read();
 
-        Self {
+        dbg!(Self {
             time,
             day_time: day_and_moon_info & 0x01 != 0,
             blood_moon: day_and_moon_info & 0x02 != 0,
@@ -446,7 +446,7 @@ impl PacketBody for WorldInfo {
             invasion_type,
             lobby_id,
             sandstorm_severity,
-        }
+        })
     }
 }
 
