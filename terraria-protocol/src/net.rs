@@ -50,7 +50,7 @@ fn reader_worker(
         }
         reader.read_exact(&mut packet[..len])?;
 
-        println!(
+        eprintln!(
             "< {} : {}{}",
             packet[0],
             as_hex(&lenbuf),
@@ -165,7 +165,7 @@ impl Terraria {
         let pos = cursor.finish();
         self.stream.write_all(&self.out_buffer[..pos])?;
         self.stream.flush()?;
-        println!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
+        eprintln!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
 
         // recv during send to see it real time
         drop(self.recv_ready_packets());

@@ -87,13 +87,10 @@ impl Serializable for Tile {
 
 impl Deserializable for Tile {
     fn deserialize(cursor: &mut SliceCursor) -> Self {
-        println!("read flags[0]");
         let mut flags: [u8; 3] = [cursor.read(), 0, 0];
         if flags[0] & 0x01 != 0 {
-            println!("read flags[1]");
             flags[1] = cursor.read();
             if flags[1] & 0x01 != 0 {
-                println!("read flags[2]");
                 flags[2] = cursor.read();
             }
         }
@@ -104,25 +101,19 @@ impl Deserializable for Tile {
         let tile_color;
         if flags[0] & 0x02 != 0 {
             let ty_val = if flags[0] & 0x20 != 0 {
-                println!("read ty");
-                println!("read ty");
                 cursor.read::<u16>()
             } else {
-                println!("read ty");
                 cursor.read::<u8>() as u16
             };
             ty = Some(ty_val);
 
             frame = if TILE_FRAME_IMPORTANT[ty_val as usize] {
-                println!("read frame x");
-                println!("read frame y");
                 Some((cursor.read::<u16>(), cursor.read::<u16>()))
             } else {
                 None
             };
 
             tile_color = if flags[2] & 0x08 != 0 {
-                println!("read color");
                 Some(cursor.read::<u8>())
             } else {
                 None
@@ -134,10 +125,8 @@ impl Deserializable for Tile {
         }
 
         let mut wall = if flags[0] & 0x04 != 0 {
-            println!("read wall");
             let wall = cursor.read::<u8>() as u16;
             if flags[2] & 0x10 != 0 {
-                println!("read color");
                 Some((wall, Some(cursor.read::<u8>())))
             } else {
                 Some((wall, None))
@@ -147,9 +136,9 @@ impl Deserializable for Tile {
         };
 
         let liquid = match (flags[0] & 0x18) >> 3 {
-            1 => Some(Liquid::Water(cursor.read::<u8>())),
-            2 => Some(Liquid::Lava(cursor.read::<u8>())),
-            3 => Some(Liquid::Honey(cursor.read::<u8>())),
+            1 => Some(Liquid::Water(cursor.read())),
+            2 => Some(Liquid::Lava(cursor.read())),
+            3 => Some(Liquid::Honey(cursor.read())),
             _ => None,
         };
 
@@ -168,11 +157,9 @@ impl Deserializable for Tile {
         let inactive = flags[2] & 0x04 != 0;
         if flags[2] & 0x40 != 0 {
             // this flag basically sets the higher byte of the u16
-            println!("read wall");
             wall.as_mut().expect("wall should be present").0 |= (cursor.read::<u8>() as u16) << 8;
         }
 
-        println!("read rle");
         let rle = match (flags[0] & 0xc0) >> 6 {
             0 => 0,
             1 => cursor.read::<u8>() as u16,
