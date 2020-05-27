@@ -40,6 +40,7 @@ pub struct UpdatePlayer {
     // }
     pub selected_item: u8,
     pub pos: Vec2,
+    /// Velocity at the time of changing the movement.
     pub vel: Option<Vec2>,
     pub original_and_home_pos: Option<(Vec2, Vec2)>,
 }

@@ -31,6 +31,16 @@ pub enum LoadNetModule {
     //
     //      We can probably determine if there's RGB at the end of the message
     //      to determine who we are…
+    ///
+    /// The vanilla commands are (case-sensitive):
+    /// * `"Emoji"`
+    /// * `"Emote"`
+    /// * `"Help"`
+    /// * `"Playing"`
+    /// * `"Party"`
+    /// * `"RPS"`
+    /// * `"Roll"`
+    /// * `"Say"`
     ClientText {
         command: String,
         text: String,
@@ -200,11 +210,11 @@ impl PacketBody for LoadNetModule {
             0 => LoadNetModule::Liquid {
                 // TODO
             },
-            1 => dbg!(LoadNetModule::ServerText {
+            1 => LoadNetModule::ServerText {
                 author: cursor.read(),
                 text: cursor.read(),
                 color: cursor.read(),
-            }),
+            },
             2 => LoadNetModule::Ping { pos: cursor.read() },
             3 => LoadNetModule::Ambience {
                 player: cursor.read(),

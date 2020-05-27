@@ -29,7 +29,7 @@ def check_buf(chunk, *, remote, persisted=[b'', b'', os.path.getmtime(handler.__
     buf = persisted[remote] + chunk
 
     # all packets are prefixed with their length
-    while buf and len(buf) >= struct.unpack('<H', buf[:2])[0]:
+    while len(buf) >= 2 and len(buf) >= struct.unpack('<H', buf[:2])[0]:
         length = struct.unpack('<H', buf[:2])[0]
         packet, buf = buf[:length], buf[length:]
 

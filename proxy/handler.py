@@ -3,7 +3,7 @@ from collections import defaultdict
 
 seen = defaultdict(int)
 
-MOVEMENT = struct.Struct('<BBBBBff')
+MOVEMENT = struct.Struct('<BBBBBBff')
 
 # small world
 WORLD_START_X = 656
@@ -44,6 +44,7 @@ def handle_4(tag, body):
     print(bin(difficulty_flag))
 
 def handle_5(tag, body):
+    return
     # inventory
     index, count, a, item_id = struct.unpack('<HHBH', body)
     # a = 72 for accessories
@@ -68,7 +69,7 @@ def handle_12(tag, body):
     print('back to spawn', x, y, timer, how)
 
 def handle_13(tag, body):
-    flags, speed_flag, c, d, hotbar, x, y = MOVEMENT.unpack(body[:MOVEMENT.size])
+    who, flags, speed_flag, c, d, hotbar, x, y = MOVEMENT.unpack(body[:MOVEMENT.size])
     """
     if flags & 0b0000_0001:
         print('holding up')
@@ -86,10 +87,10 @@ def handle_13(tag, body):
         print('facing right')
     """
 
-    assert not (flags & 0b1000_0000)
-    assert (speed_flag & 0b1111_1011) == 0b0001_0000
-    assert c in (0, 0b00000010)  # seems 0 for void bag
-    assert d == 0b00000000
+    #assert not (flags & 0b1000_0000)
+    #assert (speed_flag & 0b1111_1011) == 0b0001_0000
+    #assert c in (0, 0b00000010)  # seems 0 for void bag
+    #assert d == 0b00000000
 
     # normalize
     nx = round((x - WORLD_CENTER_X) / FT_POS_SCALE, 2)
@@ -103,12 +104,15 @@ def handle_13(tag, body):
         dx = 0.0
         dy = 0.0
 
+    print(f'pos ({x}, {y}), vel ({dx, dy})')
     #print('item', hotbar, 'move', nx, ny, '( + speed', dx, dy, ')')
 
 def handle_16(tag, body):
+    return
     life, max_life = struct.unpack('<HH', body)
 
 def handle_17(tag, body):
+    return
     # placing or removing (tile_id 0) things from the world
     x, y, tile_id, d = struct.unpack('<HHHB', body)
     assert d == 0
@@ -123,14 +127,16 @@ def handle_20(tag, body):
 
 def handle_21(tag, body):
     # item moved in the world
-    created, x, y, dx, dy, count, modifier, d, item_id = struct.unpack('<?ffffHBBH', body)
-    assert d == 0
+    #created, x, y, dx, dy, count, modifier, d, item_id = struct.unpack('<?ffffHBBH', body)
+    pass
 
 def handle_22(tag, body):
-    a, b = struct.unpack('<BB', body)
+    #a, b = struct.unpack('<BB', body)
     # seems to always be 00ff or ff00
+    pass
 
 def handle_27(tag, body):
+    return
     # shooting 007ba9ff4600c88f45369b60414429c9be000e003029009a994940
     a, x, y, dx, dy, player_id, kind, flags = struct.unpack('<BffffBHB', body[:21])
     body = body[21:]
@@ -158,11 +164,13 @@ def handle_27(tag, body):
     assert not body
 
 def handle_28(tag, body):
+    return
     # damaging enemies
     a, damage, maybe_knockback, d, e = struct.unpack('<BHfBB', body)
     assert a == 0
 
 def handle_29(tag, body):
+    return
     # seems to be 0000 while shooting
     assert body == b'\0\0'
 
@@ -171,12 +179,14 @@ def handle_35(tag, body):
     healed = struct.unpack('<H', body)[0]
 
 def handle_36(tag, body):
+    return
     # changing biome triggers this, may be flags
     zones = struct.unpack('<4B', body)
 
 def handle_40(tag, body):
     # -1 if not talking to anybody
-    talk_npc = struct.unpack('<h', body)[0]
+    #talk_npc = struct.unpack('<h', body)[0]
+    pass
 
 def handle_41(tag, body):
     # projectile animation, rotation in radians (0 left, clockwise)
@@ -190,10 +200,12 @@ def handle_43(tag, body):
     healed_mana = struct.unpack('<H', body)[0]
 
 def handle_50(tag, body):
+    return
     # includes debuffs or pets or mounts...
     buffs = struct.unpack('<22H', body)
 
 def handle_51(tag, body):
+    return
     # when using hook
     hook = struct.unpack('<B', body)
 
@@ -203,6 +215,7 @@ def handle_53(tag, body):
     assert a == 0
 
 def handle_55(tag, body):
+    return
     # placing sunflowers and new buff becomes active (?)
     struct.unpack('<HI', body)
 
@@ -251,7 +264,7 @@ def handle_117(tag, body):
     pass
 
 def handle_new(tag, body):
-    print(f'new {tag} ({seen[tag]}): {body.hex()}')
+    #print(f'new {tag} ({seen[tag]}): {body.hex()}')
     pass  # so we can comment out the print easily
 
 fds = [open('local.bin', 'wb'), open('remote.bin', 'wb')]
@@ -262,14 +275,12 @@ def handle(remote, packet):
     tag = packet[2]
     seen[tag] += 1
 
-    print('><'[remote], tag, ':', packet[:82].hex())
+    #print('><'[remote], tag, ':', packet[:82].hex())
 
-    return
     if tag in (6, 138):
         return  # these don't have more info
 
-    _player_index = packet[3]
-    body = packet[4:]
+    body = packet[3:]
 
     (globals().get(f'handle_{tag}') or handle_new)(tag, body)
 

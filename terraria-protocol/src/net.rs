@@ -1,4 +1,5 @@
 use crate::packets::{self, Packet, PacketBody};
+use crate::structures::Vec2;
 use crate::SliceCursor;
 use std::io::BufReader;
 use std::io::{self, Read, Write};
@@ -159,7 +160,10 @@ impl Terraria {
             };
         }
 
+        let (mut x, mut y) = (0, 0);
         if let Some(info) = this.world_info.clone() {
+            x = info.spawn_x;
+            y = info.spawn_y;
             this.send_packet(&packets::LoadNetModule::ClientText {
                 command: "Say".to_string(),
                 text: format!(
@@ -178,8 +182,15 @@ impl Terraria {
         }
 
         while let Ok(()) = this.recv_ready_packets() {
-            // TODO Update player
-            thread::sleep(Duration::from_millis(16));
+            this.send_packet(&packets::UpdatePlayer {
+                player_id: 1,
+                key_left: true,
+                pos: Vec2::from_tile_pos(x, y),
+                vel: None,
+                ..Default::default()
+            })?;
+            //x -= 1;
+            thread::sleep(Duration::from_secs(10));
         }
 
         this._reader_thread
@@ -206,6 +217,9 @@ impl Terraria {
         loop {
             match self.packet_rx.try_recv() {
                 Ok(Packet::WorldInfo(info)) => self.world_info = Some(info),
+                Ok(Packet::UpdatePlayer(player)) => {
+                    dbg!(player);
+                }
                 Ok(_) => continue,
                 Err(mpsc::TryRecvError::Empty) => break Ok(()),
                 Err(_) => break Err(()),
