@@ -33,6 +33,7 @@ impl PacketBody for SendTileSquare {
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         let mut size: u16 = cursor.read();
+
         let tile_change_type = if size & 0x8000 != 0 {
             size &= 0x7fff;
             Some(cursor.read())
@@ -40,13 +41,16 @@ impl PacketBody for SendTileSquare {
             None
         };
 
+        let tile_x = cursor.read();
+        let tile_y = cursor.read();
+
         let mut tiles = Vec::with_capacity(size as usize);
         (0..size).for_each(|_| tiles.push(cursor.read()));
 
         Self {
             tile_change_type,
-            tile_x: cursor.read(),
-            tile_y: cursor.read(),
+            tile_x,
+            tile_y,
             tiles,
         }
     }
