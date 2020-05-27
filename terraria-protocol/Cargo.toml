@@ -2,6 +2,15 @@
 name = "terraria-protocol"
 version = "0.1.0"
 authors = ["Lonami Exo <totufals@hotmail.com>"]
+license = "MIT OR Apache-2.0"
+description = """
+An implementation of Terraria's multiplayer network protocol.
+"""
+homepage = "https://github.com/Lonami/terry"
+documentation = "https://docs.rs/terraria-protocol"
+repository = "https://github.com/Lonami/terry"
+keywords = ["terraria", "network", "protocol"]
+categories = ["network-programming"]
 edition = "2018"
 
 [dependencies]
