@@ -18,4 +18,9 @@ skeleton of the packets and very basic.
 If I had to start again, I would automatically generating a custom DSL to
 describe the packets, clean it up, and generate proper code with it.
 
+The original goal was to automate the client for fun (like automatic mining,
+building or killing bosses, possibly in a realistic way), but the protocol
+was a lot of work and can probably be used to write a custom Terraria server
+in Rust too.
+
 [1]: https://tshock.readme.io/docs/multiplayer-packet-structure

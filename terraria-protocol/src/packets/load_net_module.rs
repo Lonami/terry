@@ -12,7 +12,7 @@ pub enum Bestiary {
 
 /// Load a network module.
 ///
-/// Direction: Client <-> Server.
+/// Direction: Variable.
 #[derive(Debug)]
 pub enum LoadNetModule {
     Liquid {
