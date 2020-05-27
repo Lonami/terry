@@ -5,6 +5,7 @@ use std::io::{self, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;
+use std::time::Duration;
 
 const PROTOCOL_VERSION: &str = "Terraria228";
 
@@ -18,7 +19,7 @@ pub struct Terraria {
     out_buffer: Vec<u8>,
     _reader_thread: thread::JoinHandle<io::Result<()>>,
     packet_rx: mpsc::Receiver<Packet>,
-    world_info: packets::WorldInfo,
+    world_info: Option<packets::WorldInfo>,
 }
 
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
@@ -77,7 +78,7 @@ impl Terraria {
             out_buffer: vec![0; 1024],
             _reader_thread,
             packet_rx,
-            world_info: packets::WorldInfo::default(),
+            world_info: None,
         };
 
         // handshake
@@ -152,16 +153,33 @@ impl Terraria {
             zoneflags4: 0,
         })?;
 
-        this.send_packet(&packets::LoadNetModule::ClientText {
-            command: "Say".to_string(),
-            text: format!(
-                "Hi, I'm terry and I sure love to spawn at ({}, {})!",
-                this.world_info.spawn_x, this.world_info.spawn_y
-            ),
-        })?;
+        while this.world_info.is_none() {
+            if this.recv_ready_packets().is_err() {
+                break;
+            };
+        }
+
+        if let Some(info) = this.world_info.clone() {
+            this.send_packet(&packets::LoadNetModule::ClientText {
+                command: "Say".to_string(),
+                text: format!(
+                    "Hi, I'm terry and I sure love to spawn at ({}, {})!",
+                    info.spawn_x, info.spawn_y
+                ),
+            })?;
+            thread::sleep(Duration::from_secs(4));
+            this.send_packet(&packets::LoadNetModule::ClientText {
+                command: "Say".to_string(),
+                text: format!(
+                    "I love how {} is {}x{} big, so much space!!",
+                    info.world_name, info.max_tiles_x, info.max_tiles_y,
+                ),
+            })?;
+        }
 
         while let Ok(()) = this.recv_ready_packets() {
             // TODO Update player
+            thread::sleep(Duration::from_millis(16));
         }
 
         this._reader_thread
@@ -187,7 +205,7 @@ impl Terraria {
     pub fn recv_ready_packets(&mut self) -> Result<(), ()> {
         loop {
             match self.packet_rx.try_recv() {
-                Ok(Packet::WorldInfo(info)) => self.world_info = info,
+                Ok(Packet::WorldInfo(info)) => self.world_info = Some(info),
                 Ok(_) => continue,
                 Err(mpsc::TryRecvError::Empty) => break Ok(()),
                 Err(_) => break Err(()),

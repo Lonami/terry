@@ -4,7 +4,7 @@ use crate::SliceCursor;
 /// World Info.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct WorldInfo {
     pub time: i32,
     // bitflags {
