@@ -257,8 +257,7 @@ def handle_new(tag, body):
 fds = [open('local.bin', 'wb'), open('remote.bin', 'wb')]
 
 def handle(remote, packet):
-    fds[remote].write(packet)
-    return
+    #fds[remote].write(packet)
 
     tag = packet[2]
     seen[tag] += 1

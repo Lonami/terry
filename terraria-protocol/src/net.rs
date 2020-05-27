@@ -18,6 +18,7 @@ pub struct Terraria {
     out_buffer: Vec<u8>,
     _reader_thread: thread::JoinHandle<io::Result<()>>,
     packet_rx: mpsc::Receiver<Packet>,
+    world_info: packets::WorldInfo,
 }
 
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
@@ -76,6 +77,7 @@ impl Terraria {
             out_buffer: vec![0; 1024],
             _reader_thread,
             packet_rx,
+            world_info: packets::WorldInfo::default(),
         };
 
         // handshake
@@ -133,10 +135,12 @@ impl Terraria {
             player_spawn_context: packets::SpawnContext::SpawningIntoWorld,
         })?;
 
+        /*
         this.send_packet(&packets::LoadNetModule {
             module_id: 6,
             arguments: vec![0, 0, 0, 0, 0x3f],
         })?;
+        */
 
         this.send_packet(&packets::UpdateNpcName { npc_id: 1 })?;
 
@@ -148,7 +152,8 @@ impl Terraria {
             zoneflags4: 0,
         })?;
 
-        //let (mut x, y) = (33534.0f32, 4582.0f32);
+        // TODO send message
+
         while let Ok(()) = this.recv_ready_packets() {
             // TODO Update player
         }
@@ -176,6 +181,7 @@ impl Terraria {
     pub fn recv_ready_packets(&mut self) -> Result<(), ()> {
         loop {
             match self.packet_rx.try_recv() {
+                Ok(Packet::WorldInfo(info)) => self.world_info = info,
                 Ok(_) => continue,
                 Err(mpsc::TryRecvError::Empty) => break Ok(()),
                 Err(_) => break Err(()),
@@ -183,7 +189,9 @@ impl Terraria {
         }
     }
 
+    /*
     pub fn recv_packet(&mut self) -> Result<Packet, mpsc::RecvError> {
         self.packet_rx.recv()
     }
+    */
 }
