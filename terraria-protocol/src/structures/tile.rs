@@ -1,7 +1,7 @@
 use crate::{Deserializable, Serializable, SliceCursor};
 
 /// Tiles for which the frame is considered "important".
-const TILE_FRAME_IMPORTANT: [bool; 623] = [
+const TILE_FRAME_IMPORTANT: [bool; 624] = [
     false, false, false, true, true, true, false, false, false, false, true, true, true, true,
     true, true, true, true, true, true, true, true, false, false, true, false, true, true, true,
     true, false, true, false, true, true, true, true, false, false, false, false, false, true,
@@ -32,11 +32,11 @@ const TILE_FRAME_IMPORTANT: [bool; 623] = [
     true, true, true, true, true, true, true, true, false, false, false, false, false, false,
     false, false, false, true, true, false, false, false, true, true, true, true, true, false,
     false, false, false, true, true, false, false, true, true, true, false, true, true, true,
-    false, false, false, false, false, false, false, false, false, false, true, true, true, true,
-    true, true, false, false, false, false, false, false, true, true, true, true, true, true,
-    false, false, false, true, true, true, true, true, true, true, true, true, true, true, false,
-    false, false, true, true, false, false, false, true, false, false, false, true, true, true,
-    true, true, true, true, true, false, true, true, false, false, true, false, true, false, false,
+    false, false, false, false, false, true, true, true, true, true, true, true, true, true, true,
+    true, false, false, false, false, false, false, true, true, true, true, true, true, false,
+    false, false, true, true, true, true, true, true, true, true, true, true, true, false, false,
+    false, true, true, false, false, false, true, false, false, false, true, true, true, true,
+    true, true, true, true, false, true, true, false, false, true, false, true, false, false,
     false, false, false, true, true, false, false, true, true, true, false, false, false, false,
     false, false, true, true, true, true, true, true, true, true, true, true, false, true, true,
     true, true, true, false, false, false, false, true, false, false, false, true, true, true,
@@ -45,7 +45,7 @@ const TILE_FRAME_IMPORTANT: [bool; 623] = [
     false, false, false, false, true, true, true, true, true, true, true, true, true, true, true,
     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
     true, true, true, true, true, true, true, true, true, true, true, true, false, true, true,
-    true, true,
+    true, true, true,
 ];
 
 #[derive(Debug, Clone)]
