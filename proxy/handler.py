@@ -19,6 +19,7 @@ HELD_ITEM_INVENTORY_INDEX = 58
 
 def handle_1(tag, body):
     print('protocol magic:', body.decode('ascii'))
+    return True
 
 def handle_4(tag, body):
     # player info on login + when changing hair or display accessories
@@ -265,9 +266,16 @@ def handle_117(tag, body):
 
 def handle_new(tag, body):
     print(f'new {tag} ({seen[tag]}): {body.hex()}')
-    pass  # so we can comment out the print easily
+    return True
+
+
+stop_calling = [False, False]
+
 
 def handle(remote, packet):
+    if stop_calling[remote]:
+        return
+
     tag = packet[2]
     seen[tag] += 1
 
@@ -278,7 +286,7 @@ def handle(remote, packet):
 
     body = packet[3:]
 
-    (globals().get(f'handle_{tag}') or handle_new)(tag, body)
+    stop_calling[remote] = (globals().get(f'handle_{tag}') or handle_new)(tag, body)
 
 def finish():
     pass
