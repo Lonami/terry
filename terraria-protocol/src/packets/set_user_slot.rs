@@ -6,7 +6,7 @@ use crate::SliceCursor;
 /// Direction: Server -> Client.
 #[derive(Debug)]
 pub struct SetUserSlot {
-    pub player_id: u8,
+    pub player_id: u16,
 }
 
 impl PacketBody for SetUserSlot {
