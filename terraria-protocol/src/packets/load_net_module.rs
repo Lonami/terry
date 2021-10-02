@@ -1,13 +1,179 @@
 use crate::packets::PacketBody;
-use crate::structures::{NetString, Vec2, RGB};
-use crate::SliceCursor;
+use crate::structures::{LiquidType, NetString, Vec2, RGB};
+use crate::{Deserializable, Serializable, SliceCursor};
 
-// prefix a byte with type: 0, 1, 2
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub struct Liquid {
+    y: i16,
+    x: i16,
+    amount: u8,
+    ty: LiquidType,
+}
+
+impl Serializable for Liquid {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        cursor.write(&self.y);
+        cursor.write(&self.x);
+        cursor.write(&self.amount);
+        cursor.write(&self.ty);
+    }
+}
+
+impl Deserializable for Liquid {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        Self {
+            y: cursor.read(),
+            x: cursor.read(),
+            amount: cursor.read(),
+            ty: cursor.read(),
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum Bestiary {
     KillCount { npc_net_id: i16, kill_count: u16 },
     Sight { npc_net_id: i16 },
     Chat { npc_net_id: i16 },
+}
+
+impl Serializable for Bestiary {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        match self {
+            Self::KillCount {
+                npc_net_id,
+                kill_count,
+            } => {
+                cursor.write(npc_net_id);
+                cursor.write(kill_count);
+            }
+            Self::Sight { npc_net_id } => {
+                cursor.write(npc_net_id);
+            }
+            Self::Chat { npc_net_id } => {
+                cursor.write(npc_net_id);
+            }
+        }
+    }
+}
+
+impl Deserializable for Bestiary {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        match cursor.read::<u8>() {
+            0 => Self::KillCount {
+                npc_net_id: cursor.read(),
+                kill_count: cursor.read(),
+            },
+            1 => Self::Sight {
+                npc_net_id: cursor.read(),
+            },
+            2 => Self::Chat {
+                npc_net_id: cursor.read(),
+            },
+            n => panic!("unknown bestiary net module {}", n),
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub enum CreativePower {
+    FreezeTime(i16),
+    StartDayImmediately,
+    StartNoonImmediately,
+    StartNightImmediately,
+    StartMidnightImmediately,
+    GodmodePower(i16, [u8; 32]),
+    ModifyWindDirectionAndStrength,
+    ModifyRainPower,
+    ModifyTimeRate(u8, i16, i16),
+    FreezeRainPower(i16),
+    FreezeWindDirectionAndStrength(i16),
+    FarPlacementRangePower(i16, [u8; 32]),
+    DifficultySliderPower(u8, i32),
+    StopBiomeSpreadPower(i16),
+    SpawnRateSliderPerPlayerPower,
+}
+
+impl Serializable for CreativePower {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        match self {
+            Self::FreezeTime(val) => {
+                cursor.write(&0);
+                cursor.write(val);
+            }
+            Self::StartDayImmediately => cursor.write(&1),
+            Self::StartNoonImmediately => cursor.write(&2),
+            Self::StartNightImmediately => cursor.write(&3),
+            Self::StartMidnightImmediately => cursor.write(&4),
+            Self::GodmodePower(val, data) => {
+                cursor.write(&5);
+                cursor.write(val);
+                data.iter().for_each(|datum| cursor.write(datum));
+            }
+            Self::ModifyWindDirectionAndStrength => cursor.write(&6),
+            Self::ModifyRainPower => cursor.write(&7),
+            Self::ModifyTimeRate(ty, left, right) => {
+                cursor.write(&8);
+                cursor.write(ty);
+                cursor.write(left);
+                cursor.write(right);
+            }
+            Self::FreezeRainPower(val) => {
+                cursor.write(&9);
+                cursor.write(val);
+            }
+            Self::FreezeWindDirectionAndStrength(val) => {
+                cursor.write(&10);
+                cursor.write(val);
+            }
+            Self::FarPlacementRangePower(val, data) => {
+                cursor.write(&11);
+                cursor.write(val);
+                data.iter().for_each(|datum| cursor.write(datum));
+            }
+            Self::DifficultySliderPower(ty, val) => {
+                cursor.write(&12);
+                cursor.write(ty);
+                cursor.write(val);
+            }
+            Self::StopBiomeSpreadPower(val) => {
+                cursor.write(&13);
+                cursor.write(val);
+            }
+            Self::SpawnRateSliderPerPlayerPower => cursor.write(&14),
+        }
+    }
+}
+
+impl Deserializable for CreativePower {
+    fn deserialize(cursor: &mut SliceCursor) -> Self {
+        match cursor.read::<u8>() {
+            0 => CreativePower::FreezeTime(cursor.read()),
+            1 => CreativePower::StartDayImmediately,
+            2 => CreativePower::StartNoonImmediately,
+            3 => CreativePower::StartNightImmediately,
+            4 => CreativePower::StartMidnightImmediately,
+            5 => CreativePower::GodmodePower(cursor.read(), {
+                let mut data = [0; 32];
+                data.iter_mut().for_each(|datum| *datum = cursor.read());
+                data
+            }),
+            6 => CreativePower::ModifyWindDirectionAndStrength,
+            7 => CreativePower::ModifyRainPower,
+            8 => CreativePower::ModifyTimeRate(cursor.read(), cursor.read(), cursor.read()),
+            9 => CreativePower::FreezeRainPower(cursor.read()),
+            10 => CreativePower::FreezeWindDirectionAndStrength(cursor.read()),
+            11 => CreativePower::FarPlacementRangePower(cursor.read(), {
+                let mut data = [0; 32];
+                data.iter_mut().for_each(|datum| *datum = cursor.read());
+                data
+            }),
+            12 => CreativePower::DifficultySliderPower(cursor.read(), cursor.read()),
+            13 => CreativePower::StopBiomeSpreadPower(cursor.read()),
+            14 => CreativePower::SpawnRateSliderPerPlayerPower,
+            n => panic!("invalid creative power {}", n),
+        }
+    }
 }
 
 /// Load a network module.
@@ -15,9 +181,7 @@ pub enum Bestiary {
 /// Direction: Variable.
 #[derive(Debug)]
 pub enum LoadNetModule {
-    Liquid {
-        // TODO
-    },
+    Liquid(Vec<Liquid>),
     // Client message is (command ID (text?), text)
     // Server message is (author ID, net text, RGB)
     // TODO ClientText and ServerText are the same packet but unfortunately
@@ -63,9 +227,7 @@ pub enum LoadNetModule {
         item_id: i16,
         sacrifice_count: u16,
     },
-    CreativePowers {
-        power_id: u16,
-    },
+    CreativePowers(CreativePower),
     CreativeUnlocksPlayerReport {
         zero: u8,
         item_id: u16,
@@ -98,8 +260,9 @@ impl PacketBody for LoadNetModule {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         match self {
-            LoadNetModule::Liquid {} => {
-                cursor.write(&0u16);
+            LoadNetModule::Liquid(liquids) => {
+                cursor.write(&(liquids.len() as u16));
+                liquids.iter().for_each(|liquid| cursor.write(liquid));
             }
             LoadNetModule::ClientText { command, text } => {
                 cursor.write(&1u16);
@@ -128,21 +291,7 @@ impl PacketBody for LoadNetModule {
             }
             LoadNetModule::Bestiary(bestiary) => {
                 cursor.write(&4u16);
-                match bestiary {
-                    Bestiary::KillCount {
-                        npc_net_id,
-                        kill_count,
-                    } => {
-                        cursor.write(npc_net_id);
-                        cursor.write(kill_count);
-                    }
-                    Bestiary::Sight { npc_net_id } => {
-                        cursor.write(npc_net_id);
-                    }
-                    Bestiary::Chat { npc_net_id } => {
-                        cursor.write(npc_net_id);
-                    }
-                }
+                cursor.write(bestiary);
             }
             LoadNetModule::CreativeUnlocks {
                 item_id,
@@ -152,9 +301,9 @@ impl PacketBody for LoadNetModule {
                 cursor.write(item_id);
                 cursor.write(sacrifice_count);
             }
-            LoadNetModule::CreativePowers { power_id } => {
+            LoadNetModule::CreativePowers(power) => {
                 cursor.write(&6u16);
-                cursor.write(power_id);
+                cursor.write(power);
             }
             LoadNetModule::CreativeUnlocksPlayerReport {
                 zero,
@@ -207,9 +356,10 @@ impl PacketBody for LoadNetModule {
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         match cursor.read::<u16>() {
-            0 => LoadNetModule::Liquid {
-                // TODO
-            },
+            0 => {
+                let liquid_count = cursor.read::<u16>();
+                LoadNetModule::Liquid((0..liquid_count).map(|_| cursor.read()).collect())
+            }
             1 => LoadNetModule::ServerText {
                 author: cursor.read(),
                 text: cursor.read(),
@@ -221,26 +371,12 @@ impl PacketBody for LoadNetModule {
                 num: cursor.read(),
                 ty: cursor.read(),
             },
-            4 => match cursor.read::<u8>() {
-                0 => LoadNetModule::Bestiary(Bestiary::KillCount {
-                    npc_net_id: cursor.read(),
-                    kill_count: cursor.read(),
-                }),
-                1 => LoadNetModule::Bestiary(Bestiary::Sight {
-                    npc_net_id: cursor.read(),
-                }),
-                2 => LoadNetModule::Bestiary(Bestiary::Chat {
-                    npc_net_id: cursor.read(),
-                }),
-                n => panic!("unknown bestiary net module {}", n),
-            },
+            4 => LoadNetModule::Bestiary(cursor.read()),
             5 => LoadNetModule::CreativeUnlocks {
                 item_id: cursor.read(),
                 sacrifice_count: cursor.read(),
             },
-            6 => LoadNetModule::CreativePowers {
-                power_id: cursor.read(),
-            },
+            6 => LoadNetModule::CreativePowers(cursor.read()),
             7 => LoadNetModule::CreativeUnlocksPlayerReport {
                 zero: cursor.read(),
                 item_id: cursor.read(),
