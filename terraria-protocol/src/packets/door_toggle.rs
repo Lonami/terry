@@ -27,7 +27,7 @@ impl Deserializable for DoorAction {
             3 => DoorAction::CloseTrapdoor,
             4 => DoorAction::OpenTallGate,
             5 => DoorAction::CloseTallGate,
-            n => panic!(format!("invalid door action {}", n)),
+            n => panic!("invalid door action {}", n),
         }
     }
 }

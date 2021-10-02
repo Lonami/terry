@@ -21,7 +21,7 @@ impl Deserializable for NetStringMode {
             0 => NetStringMode::Literal,
             1 => NetStringMode::Formattable,
             2 => NetStringMode::LocalizationKey,
-            n => panic!(format!("invalid net string mode {}", n)),
+            n => panic!("invalid net string mode {}", n),
         }
     }
 }

@@ -52,7 +52,7 @@ impl PlayerInventorySlot {
             179 => SlotLocation::Trash,
             180..=219 => SlotLocation::DefenderForge(index - 180),
             220..=259 => SlotLocation::VoidVault(index - 220),
-            n => panic!(format!("slot index {} is out of bounds", n)),
+            n => panic!("slot index {} is out of bounds", n),
         }
     }
 }

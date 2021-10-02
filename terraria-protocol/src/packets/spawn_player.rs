@@ -21,7 +21,7 @@ impl Deserializable for SpawnContext {
             0 => SpawnContext::ReviveFromDeath,
             1 => SpawnContext::SpawningIntoWorld,
             2 => SpawnContext::RecallFromItem,
-            n => panic!(format!("invalid respawn context {}", n)),
+            n => panic!("invalid respawn context {}", n),
         }
     }
 }

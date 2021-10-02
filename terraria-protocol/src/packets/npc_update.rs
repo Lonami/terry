@@ -117,7 +117,7 @@ impl PacketBody for NpcUpdate {
                 1 => cursor.read::<i8>() as i32,
                 2 => cursor.read::<i16>() as i32,
                 4 => cursor.read::<i32>() as i32,
-                n => panic!(format!("bad byte count for life {}", n)),
+                n => panic!("bad byte count for life {}", n),
             })
         } else {
             None

@@ -125,7 +125,7 @@ impl PacketBody for ModifyTile {
                 21 => TileAction::ReplaceTile { ty: extra, style },
                 22 => TileAction::ReplaceWall { ty: extra },
                 23 => TileAction::SlopePoundTile,
-                n => panic!(format!("invalid tile action {}", n)),
+                n => panic!("invalid tile action {}", n),
             },
             tile_x,
             tile_y,

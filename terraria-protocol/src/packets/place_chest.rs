@@ -27,7 +27,7 @@ impl Deserializable for ChestAction {
             3 => ChestAction::KillDresser,
             4 => ChestAction::PlaceContainers,
             5 => ChestAction::KillContainers,
-            n => panic!(format!("invalid chest action {}", n)),
+            n => panic!("invalid chest action {}", n),
         }
     }
 }

@@ -713,7 +713,7 @@ impl Packet {
             }
             SetAsHost::TAG => Packet::SetAsHost(SetAsHost::from_body(&mut cursor)),
 
-            tag => panic!(format!("unknown tag {}", tag)),
+            tag => panic!("unknown tag {}", tag),
         }
     }
 }

@@ -119,7 +119,7 @@ impl Deserializable for TileEntity {
                 x: cursor.read(),
                 y: cursor.read(),
             },
-            n => panic!(format!("invalid tile entity {}", n)),
+            n => panic!("invalid tile entity {}", n),
         }
     }
 }

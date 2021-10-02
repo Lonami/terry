@@ -232,7 +232,7 @@ impl PacketBody for LoadNetModule {
                 2 => LoadNetModule::Bestiary(Bestiary::Chat {
                     npc_net_id: cursor.read(),
                 }),
-                n => panic!(format!("unknown bestiary net module {}", n)),
+                n => panic!("unknown bestiary net module {}", n),
             },
             5 => LoadNetModule::CreativeUnlocks {
                 item_id: cursor.read(),
@@ -264,7 +264,7 @@ impl PacketBody for LoadNetModule {
                 power_id: cursor.read(),
                 level: cursor.read(),
             },
-            n => panic!(format!("unknown net module {}", n)),
+            n => panic!("unknown net module {}", n),
         }
     }
 }
