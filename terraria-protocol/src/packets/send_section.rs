@@ -32,9 +32,10 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
             rle -= 1;
             tiles.push(tiles[tiles.len() - 1].clone());
         } else {
-            let tile = cursor.read::<Tile>();
-            rle = tile.rle;
-            tiles.push(tile);
+            // tiles are encoded differently when being read through here
+            let tup = Tile::deserialize_packed(cursor);
+            tiles.push(tup.0);
+            rle = tup.1;
         }
     });
 
