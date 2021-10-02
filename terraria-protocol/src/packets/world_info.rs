@@ -111,6 +111,7 @@ pub struct WorldInfo {
     pub drunk_world: bool,
     pub downed_empress_of_light: bool,
     pub downed_queen_slime: bool,
+    pub get_good_world: bool,
     // }
     /// The respective tier indices, names and possible tile IDs are:
     ///
@@ -258,8 +259,10 @@ impl PacketBody for WorldInfo {
             | if self.free_cake { 0x08 } else { 0 }
             | if self.drunk_world { 0x10 } else { 0 }
             | if self.downed_empress_of_light { 0x20 } else { 0 }
-            | if self.downed_queen_slime { 0x40 } else { 0 }),
+            | if self.downed_queen_slime { 0x40 } else { 0 }
+            | if self.get_good_world { 0x80 } else { 0 }),
         );
+        cursor.write(&0u8); // event info[7]
         self.ore_tiers_tiles.iter().for_each(|t| cursor.write(t));
         cursor.write(&self.invasion_type);
         cursor.write(&self.lobby_id);
@@ -318,7 +321,8 @@ impl PacketBody for WorldInfo {
         let glowing_mushroom_tree_top_style = cursor.read();
         let underworld_tree_top_style = cursor.read();
         let rain = cursor.read();
-        let event_info: [u8; 7] = [
+        let event_info: [u8; 8] = [
+            cursor.read(),
             cursor.read(),
             cursor.read(),
             cursor.read(),
@@ -442,6 +446,7 @@ impl PacketBody for WorldInfo {
             drunk_world: event_info[6] & 0x10 != 0,
             downed_empress_of_light: event_info[6] & 0x20 != 0,
             downed_queen_slime: event_info[6] & 0x40 != 0,
+            get_good_world: event_info[6] & 0x80 != 0,
             ore_tiers_tiles,
             invasion_type,
             lobby_id,
