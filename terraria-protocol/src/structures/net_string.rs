@@ -9,6 +9,12 @@ pub enum NetStringMode {
     LocalizationKey = 2,
 }
 
+impl Default for NetStringMode {
+    fn default() -> Self {
+        Self::Literal
+    }
+}
+
 impl Serializable for NetStringMode {
     fn serialize(&self, cursor: &mut SliceCursor) {
         cursor.write(&(*self as u8));
@@ -26,7 +32,7 @@ impl Deserializable for NetStringMode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct NetString {
     mode: NetStringMode,
     text: String,

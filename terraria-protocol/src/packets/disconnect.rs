@@ -1,25 +1,13 @@
-use crate::packets::PacketBody;
+use crate::packets::packet_struct;
 use crate::structures::NetString;
-use crate::SliceCursor;
 
-/// Disconnect a client (e.g. via kicking).
-///
-/// Direction: Server -> Client.
-#[derive(Debug)]
-pub struct Disconnect {
-    pub reason: NetString,
-}
+packet_struct! {
+    /// Disconnect a client (e.g. via kicking).
+    ///
+    /// Direction: Server -> Client.
+    pub struct Disconnect {
+        const TAG = 2;
 
-impl PacketBody for Disconnect {
-    const TAG: u8 = 2;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.reason);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            reason: cursor.read(),
-        }
+        pub reason: NetString,
     }
 }

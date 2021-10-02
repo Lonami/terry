@@ -64,7 +64,7 @@ impl Deserializable for DeathType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct PlayerDeathReason {
     killer_player_id: Option<i16>,
     killing_npc_index: Option<i16>,

@@ -1,31 +1,15 @@
-use crate::packets::PacketBody;
+use crate::packets::packet_struct;
 use crate::structures::Vec2;
-use crate::SliceCursor;
 
-/// Sync an extra value.
-///
-/// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
-pub struct SyncExtraValue {
-    pub npc_index: i16,
-    pub extra_value: i32,
-    pub pos: Vec2,
-}
+packet_struct! {
+    /// Sync an extra value.
+    ///
+    /// Direction: Server <-> Client (Sync).
+    pub struct SyncExtraValue {
+        const TAG = 92;
 
-impl PacketBody for SyncExtraValue {
-    const TAG: u8 = 92;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.npc_index);
-        cursor.write(&self.extra_value);
-        cursor.write(&self.pos);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            npc_index: cursor.read(),
-            extra_value: cursor.read(),
-            pos: cursor.read(),
-        }
+        pub npc_index: i16,
+        pub extra_value: i32,
+        pub pos: Vec2,
     }
 }

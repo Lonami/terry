@@ -1,32 +1,16 @@
-use crate::packets::PacketBody;
+use crate::packets::packet_struct;
 use crate::structures::Vec2;
-use crate::SliceCursor;
 
-/// Nebula Level Up.
-///
-/// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
-pub struct NebulaLevelUp {
-    pub player_id: u8,
-    pub level_up_type: u16,
-    /// In world coordinate pixels.
-    pub origin: Vec2,
-}
+packet_struct! {
+    /// Nebula Level Up.
+    ///
+    /// Direction: Server <-> Client (Sync).
+    pub struct NebulaLevelUp {
+        const TAG = 102;
 
-impl PacketBody for NebulaLevelUp {
-    const TAG: u8 = 102;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.level_up_type);
-        cursor.write(&self.origin);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            level_up_type: cursor.read(),
-            origin: cursor.read(),
-        }
+        pub player_id: u8,
+        pub level_up_type: u16,
+        /// In world coordinate pixels.
+        pub origin: Vec2,
     }
 }

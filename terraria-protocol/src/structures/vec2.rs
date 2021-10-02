@@ -2,11 +2,13 @@ use crate::{Deserializable, Serializable, SliceCursor};
 
 pub const TILE_TO_POS_SCALE: f32 = 16.0;
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, PartialEq, Default, Clone, Copy)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
 }
+
+impl Eq for Vec2 {}
 
 impl Vec2 {
     pub fn new(x: f32, y: f32) -> Self {

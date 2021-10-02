@@ -1,16 +1,10 @@
 use crate::{Deserializable, Serializable, SliceCursor};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone, Copy)]
 pub struct RGB {
     pub r: u8,
     pub g: u8,
     pub b: u8,
-}
-
-impl RGB {
-    pub fn new() -> Self {
-        RGB { r: 0, g: 0, b: 0 }
-    }
 }
 
 impl Serializable for RGB {

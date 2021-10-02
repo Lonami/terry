@@ -739,3 +739,46 @@ impl<'a> fmt::Display for HexString<'a> {
         Ok(())
     }
 }
+
+macro_rules! packet_struct {
+    (
+        $(#[$attr:meta])*
+        pub struct $ident:ident {
+            const TAG = $tag:expr;
+
+            $(
+                $(#[$field_attr:meta])*
+                pub $field:ident: $ty:ty,
+            )*
+        }
+    ) => {
+        $(#[$attr])*
+        #[derive(Debug, PartialEq, Default, Clone)]
+        pub struct $ident {
+            $(
+                $(#[$field_attr])*
+                pub $field: $ty,
+            )*
+        }
+
+        impl Eq for $ident {}
+
+        impl crate::packets::PacketBody for $ident {
+            const TAG: u8 = $tag;
+
+            fn write_body(&self, cursor: &mut crate::structures::SliceCursor) {
+                let _ = cursor;
+                $(cursor.write(&self.$field);)*
+            }
+
+            fn from_body(cursor: &mut crate::structures::SliceCursor) -> Self {
+                let _ = cursor;
+                Self {
+                    $($field: cursor.read(),)*
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use packet_struct;

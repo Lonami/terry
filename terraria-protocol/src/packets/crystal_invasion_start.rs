@@ -1,27 +1,13 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Start the Invasion of the Eternia Crystal.
-///
-/// Direction: Client -> Server.
-#[derive(Debug)]
-pub struct CrystalInvasionStart {
-    pub x: i16,
-    pub y: i16,
-}
+packet_struct! {
+    /// Start the Invasion of the Eternia Crystal.
+    ///
+    /// Direction: Client -> Server.
+    pub struct CrystalInvasionStart {
+        const TAG = 113;
 
-impl PacketBody for CrystalInvasionStart {
-    const TAG: u8 = 113;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.x);
-        cursor.write(&self.y);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            x: cursor.read(),
-            y: cursor.read(),
-        }
+        pub x: i16,
+        pub y: i16,
     }
 }

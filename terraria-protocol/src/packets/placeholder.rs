@@ -1,19 +1,11 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Placeholder. Does not exist in the official client. Exists solely for
-/// the purpose of being used by custom clients and servers.
-///
-/// Direction: Variable.
-#[derive(Debug)]
-pub struct Placeholder {}
-
-impl PacketBody for Placeholder {
-    const TAG: u8 = 67;
-
-    fn write_body(&self, _cursor: &mut SliceCursor) {}
-
-    fn from_body(_cursor: &mut SliceCursor) -> Self {
-        Self {}
+packet_struct! {
+    /// Placeholder. Does not exist in the official client. Exists solely for
+    /// the purpose of being used by custom clients and servers.
+    ///
+    /// Direction: Variable.
+    pub struct Placeholder {
+        const TAG = 67;
     }
 }

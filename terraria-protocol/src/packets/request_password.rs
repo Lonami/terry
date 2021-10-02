@@ -1,18 +1,10 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Request password.
-///
-/// Direction: Server -> Client.
-#[derive(Debug)]
-pub struct RequestPassword {}
-
-impl PacketBody for RequestPassword {
-    const TAG: u8 = 37;
-
-    fn write_body(&self, _cursor: &mut SliceCursor) {}
-
-    fn from_body(_cursor: &mut SliceCursor) -> Self {
-        Self {}
+packet_struct! {
+    /// Request password.
+    ///
+    /// Direction: Server -> Client.
+    pub struct RequestPassword {
+        const TAG = 37;
     }
 }

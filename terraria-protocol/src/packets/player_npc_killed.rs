@@ -1,24 +1,12 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Notifies when a player's NPC is killed.
-///
-/// Direction: Server -> Client.
-#[derive(Debug)]
-pub struct PlayerNpcKilled {
-    pub npc_id: i16,
-}
+packet_struct! {
+    /// Notifies when a player's NPC is killed.
+    ///
+    /// Direction: Server -> Client.
+    pub struct PlayerNpcKilled {
+        const TAG = 97;
 
-impl PacketBody for PlayerNpcKilled {
-    const TAG: u8 = 97;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.npc_id);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            npc_id: cursor.read(),
-        }
+        pub npc_id: i16,
     }
 }

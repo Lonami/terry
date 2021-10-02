@@ -1,18 +1,10 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Request world data.
-///
-/// Direction: Client -> Server.
-#[derive(Debug)]
-pub struct RequestWorldData {}
-
-impl PacketBody for RequestWorldData {
-    const TAG: u8 = 6;
-
-    fn write_body(&self, _cursor: &mut SliceCursor) {}
-
-    fn from_body(_cursor: &mut SliceCursor) -> Self {
-        Self {}
+packet_struct! {
+    /// Request world data.
+    ///
+    /// Direction: Client -> Server.
+    pub struct RequestWorldData {
+        const TAG = 6;
     }
 }

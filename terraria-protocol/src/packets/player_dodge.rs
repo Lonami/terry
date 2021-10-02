@@ -1,28 +1,14 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Player dodging.
-///
-/// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
-pub struct PlayerDodge {
-    pub player_id: u8,
-    /// 1 = Ninja Dodge 2 = Shadow Dodge
-    pub flag: u8,
-}
+packet_struct! {
+    /// Player dodging.
+    ///
+    /// Direction: Server <-> Client (Sync).
+    pub struct PlayerDodge {
+        const TAG = 62;
 
-impl PacketBody for PlayerDodge {
-    const TAG: u8 = 62;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.flag);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            flag: cursor.read(),
-        }
+        pub player_id: u8,
+        /// 1 = Ninja Dodge 2 = Shadow Dodge
+        pub flag: u8,
     }
 }

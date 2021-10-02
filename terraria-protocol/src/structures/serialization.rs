@@ -110,3 +110,34 @@ pub trait Serializable {
 pub trait Deserializable {
     fn deserialize(cursor: &mut SliceCursor) -> Self;
 }
+
+macro_rules! serializable_enum {
+    (
+        pub enum $ident:ident as $ty:ty {
+            $($variant:ident = $value:expr,)+
+        }
+    ) => {
+        #[repr($ty)]
+        #[derive(PartialEq, Eq, Copy, Clone, Debug)]
+        pub enum $ident {
+            $($variant = $value,)+
+        }
+
+        impl Serializable for $ident {
+            fn serialize(&self, cursor: &mut SliceCursor) {
+                cursor.write(&(*self as $ty));
+            }
+        }
+
+        impl Deserializable for $ident {
+            fn deserialize(cursor: &mut SliceCursor) -> Self {
+                match cursor.read::<$ty>() {
+                    $($value => $ident::$variant,)+
+                    n => panic!("invalid $ty: {}", n),
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use serializable_enum;

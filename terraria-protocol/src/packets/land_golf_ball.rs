@@ -1,36 +1,16 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Land the golf ball in the cup.
-///
-/// Direction: Client <-> Server.
-#[derive(Debug)]
-pub struct LandGolfBall {
-    pub player_id: u8,
-    pub x: u16,
-    pub y: u16,
-    pub number_of_hits: u16,
-    pub proj_id: u16,
-}
+packet_struct! {
+    /// Land the golf ball in the cup.
+    ///
+    /// Direction: Client <-> Server.
+    pub struct LandGolfBall {
+        const TAG = 128;
 
-impl PacketBody for LandGolfBall {
-    const TAG: u8 = 128;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.x);
-        cursor.write(&self.y);
-        cursor.write(&self.number_of_hits);
-        cursor.write(&self.proj_id);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            x: cursor.read(),
-            y: cursor.read(),
-            number_of_hits: cursor.read(),
-            proj_id: cursor.read(),
-        }
+        pub player_id: u8,
+        pub x: u16,
+        pub y: u16,
+        pub number_of_hits: u16,
+        pub proj_id: u16,
     }
 }

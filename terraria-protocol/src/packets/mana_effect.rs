@@ -1,27 +1,13 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
-/// Apply a mana healing effect.
-///
-/// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
-pub struct ManaEffect {
-    pub player_id: u8,
-    pub mana_amount: i16,
-}
+packet_struct! {
+    /// Apply a mana healing effect.
+    ///
+    /// Direction: Server <-> Client (Sync).
+    pub struct ManaEffect {
+        const TAG = 43;
 
-impl PacketBody for ManaEffect {
-    const TAG: u8 = 43;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.mana_amount);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            mana_amount: cursor.read(),
-        }
+        pub player_id: u8,
+        pub mana_amount: i16,
     }
 }
