@@ -91,7 +91,7 @@ pub enum CreativePower {
     FarPlacementRangePower(i16, [u8; 32]),
     DifficultySliderPower(u8, i32),
     StopBiomeSpreadPower(i16),
-    SpawnRateSliderPerPlayerPower,
+    SpawnRateSliderPerPlayerPower([u8; 6]),
 }
 
 impl Serializable for CreativePower {
@@ -140,7 +140,10 @@ impl Serializable for CreativePower {
                 cursor.write(&13);
                 cursor.write(val);
             }
-            Self::SpawnRateSliderPerPlayerPower => cursor.write(&14),
+            Self::SpawnRateSliderPerPlayerPower(data) => {
+                cursor.write(&14);
+                data.iter().for_each(|datum| cursor.write(datum))
+            },
         }
     }
 }
@@ -170,7 +173,11 @@ impl Deserializable for CreativePower {
             }),
             12 => CreativePower::DifficultySliderPower(cursor.read(), cursor.read()),
             13 => CreativePower::StopBiomeSpreadPower(cursor.read()),
-            14 => CreativePower::SpawnRateSliderPerPlayerPower,
+            14 => CreativePower::SpawnRateSliderPerPlayerPower({
+                let mut data = [0; 6];
+                data.iter_mut().for_each(|datum| *datum = cursor.read());
+                data
+            }),
             n => panic!("invalid creative power {}", n),
         }
     }

@@ -17,7 +17,7 @@ mod tests {
 
     #[test]
     fn check_remote_deserialization() {
-        let mut data = include_bytes!("../test-data/remote.bin").to_vec();
+        let mut data = include_bytes!("../test-data/local.bin").to_vec();
 
         let mut index = 0;
         while index < data.len() {
