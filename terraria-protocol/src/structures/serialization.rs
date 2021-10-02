@@ -33,8 +33,13 @@ impl<'a> SliceCursor<'a> {
     }
 
     #[inline(always)]
-    pub fn finish(self) -> usize {
-        self.pos
+    pub fn eof(&self) -> bool {
+        self.pos == self.slice.len()
+    }
+
+    #[inline(always)]
+    pub fn finish(self) -> (&'a mut [u8], usize) {
+        (self.slice, self.pos)
     }
 
     // If the `const` feautre was a bit more advanced we could probably make

@@ -205,7 +205,7 @@ pub use player_death::PlayerDeath;
 pub use player_dodge::PlayerDodge;
 pub use player_hp::PlayerHP;
 pub use player_hurt::PlayerHurt;
-pub use player_info::PlayerInfo;
+pub use player_info::{Difficulty, PlayerInfo, Torches};
 pub use player_inventory_slot::{PlayerInventorySlot, SlotLocation};
 pub use player_item_animation::PlayerItemAnimation;
 pub use player_mana::PlayerMana;
@@ -278,6 +278,7 @@ pub use world_info::WorldInfo;
 
 use crate::SliceCursor;
 use std::convert::TryInto;
+use std::fmt;
 
 pub trait PacketBody: Sized {
     const TAG: u8;
@@ -463,7 +464,7 @@ impl Packet {
         let mut cursor = SliceCursor::new(slice);
         let tag = cursor.read::<u8>();
         // TODO too bad packet body is not serializable
-        match tag {
+        let decoded = match tag {
             Connect::TAG => Packet::Connect(Connect::from_body(&mut cursor)),
             Disconnect::TAG => Packet::Disconnect(Disconnect::from_body(&mut cursor)),
             SetUserSlot::TAG => Packet::SetUserSlot(SetUserSlot::from_body(&mut cursor)),
@@ -714,6 +715,27 @@ impl Packet {
             SetAsHost::TAG => Packet::SetAsHost(SetAsHost::from_body(&mut cursor)),
 
             tag => panic!("unknown tag {}", tag),
+        };
+
+        let (slice, pos) = cursor.finish();
+        assert_eq!(
+            pos,
+            slice.len(),
+            "incomplete read of packet: {}",
+            HexString(slice)
+        );
+
+        decoded
+    }
+}
+
+struct HexString<'a>(&'a [u8]);
+
+impl<'a> fmt::Display for HexString<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for byte in self.0 {
+            write!(f, "{:02x}", byte)?;
         }
+        Ok(())
     }
 }

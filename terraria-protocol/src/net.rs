@@ -8,7 +8,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;
 
-const PROTOCOL_VERSION: &str = "Terraria228";
+const PROTOCOL_VERSION: &str = "Terraria238";
 
 // TODO don't use constants for this
 const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
@@ -142,10 +142,10 @@ impl Terraria {
     pub fn send_packet<P: PacketBody>(&mut self, packet: &P) -> io::Result<()> {
         let mut cursor = SliceCursor::new(self.out_buffer.as_mut_slice());
         packet.serialize(&mut cursor);
-        let pos = cursor.finish();
-        self.stream.write_all(&self.out_buffer[..pos])?;
+        let (slice, pos) = cursor.finish();
+        self.stream.write_all(&slice[..pos])?;
         self.stream.flush()?;
-        trace!("> {} : {}", P::TAG, as_hex(&self.out_buffer[..pos]));
+        trace!("> {} : {}", P::TAG, as_hex(&slice[..pos]));
         Ok(())
     }
 
