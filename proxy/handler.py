@@ -264,14 +264,10 @@ def handle_117(tag, body):
     pass
 
 def handle_new(tag, body):
-    #print(f'new {tag} ({seen[tag]}): {body.hex()}')
+    print(f'new {tag} ({seen[tag]}): {body.hex()}')
     pass  # so we can comment out the print easily
 
-fds = [open('local.bin', 'wb'), open('remote.bin', 'wb')]
-
 def handle(remote, packet):
-    #fds[remote].write(packet)
-
     tag = packet[2]
     seen[tag] += 1
 
@@ -285,5 +281,4 @@ def handle(remote, packet):
     (globals().get(f'handle_{tag}') or handle_new)(tag, body)
 
 def finish():
-    fds[0].close()
-    fds[1].close()
+    pass
