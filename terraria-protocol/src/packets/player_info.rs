@@ -2,7 +2,24 @@ use crate::packets::PacketBody;
 use crate::structures::RGB;
 use crate::SliceCursor;
 
+use bitflags::bitflags;
+
 const MAX_HAIR_VARIANT: u8 = 162;
+
+bitflags! {
+    pub struct Difficulty: u8 {
+        const SOFTCORE = 0x00;
+        const MEDIUMCORE = 0x01;
+        const HARDCORE = 0x02;
+        const EXTRA_ACCESSORY = 0x04;
+        const CREATIVE = 0x08;
+    }
+    pub struct Torches: u8 {
+        const USING_BIOME = 0x01;
+        const HAPPY_FUN = 0x02;
+        const UNLOCKED_BIOME = 0x04;
+    }
+}
 
 /// Player information.
 ///
@@ -24,7 +41,8 @@ pub struct PlayerInfo {
     pub undershirt_color: RGB,
     pub pants_color: RGB,
     pub shoes_color: RGB,
-    pub difficulty: u8,
+    pub difficulty: Difficulty,
+    pub torches: Torches,
 }
 
 impl Default for PlayerInfo {
@@ -72,7 +90,8 @@ impl Default for PlayerInfo {
                 g: 105,
                 b: 60,
             },
-            difficulty: 0,
+            difficulty: Difficulty::SOFTCORE,
+            torches: Torches::empty(),
         }
     }
 }
@@ -100,7 +119,8 @@ impl PacketBody for PlayerInfo {
         cursor.write(&self.undershirt_color);
         cursor.write(&self.pants_color);
         cursor.write(&self.shoes_color);
-        cursor.write(&self.difficulty);
+        cursor.write(&self.difficulty.bits());
+        cursor.write(&self.torches.bits());
     }
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
@@ -119,7 +139,8 @@ impl PacketBody for PlayerInfo {
             undershirt_color: cursor.read(),
             pants_color: cursor.read(),
             shoes_color: cursor.read(),
-            difficulty: cursor.read(),
+            difficulty: Difficulty::from_bits_truncate(cursor.read()),
+            torches: Torches::from_bits_truncate(cursor.read()),
         }
     }
 }
