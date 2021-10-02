@@ -18,17 +18,31 @@ FT_POS_SCALE = 8
 HELD_ITEM_INVENTORY_INDEX = 58
 
 def handle_1(tag, body):
-    print('protocol magic:', body.decode('ascii'))
+    length = body[0]
+    string = body[1:1 + length]
+    print('connect:', string.decode('ascii'))
     return True
 
+def handle_2(tag, body):
+    mode = body[0]
+    length = body[1]
+    string = body[2:2 + length]
+    print('disconnect:', string.decode('ascii'))
+
+def handle_3(tag, body):
+    print('user slot:', *struct.unpack('H', body))
+
 def handle_4(tag, body):
+    print(body.hex())
     # player info on login + when changing hair or display accessories
-    skin_variant, hair, name_len = struct.unpack('<BBB', body[:3])
-    body = body[3:]
+    player_id, skin_variant, hair, name_len = struct.unpack('<BBBB', body[:4])
+    body = body[4:]
     name = body[:name_len].decode('ascii')
     body = body[name_len:]
+    print(player_id, skin_variant, hair, name)
 
     hair_dye, visible_accesory_flags8, visible_accesory_flags2, hide_misc, = struct.unpack('<BBBB', body[:4])
+    print(hair_dye, visible_accesory_flags8, visible_accesory_flags2, hide_misc)
     body = body[4:]
     hair_rgb = struct.unpack('<3B', body[0:3])
     skin_rgb = struct.unpack('<3B', body[3:6])
@@ -37,26 +51,20 @@ def handle_4(tag, body):
     undershirt_rgb = struct.unpack('<3B', body[12:15])
     pants_rgb = struct.unpack('<3B', body[15:18])
     shoe_rgb = struct.unpack('<3B', body[18:21])
+    print(hair_rgb, skin_rgb, eye_rgb, shirt_rgb, undershirt_rgb, pants_rgb, shoe_rgb)
     body = body[21:]
 
     # difficulty includes if we have extra accessory
-    difficulty_flag = struct.unpack('<B', body)[0]
-    assert len(body) == 1
-    print(bin(difficulty_flag))
+    difficulty_flag, torch_flags = struct.unpack('<BB', body)
+    print(bin(difficulty_flag), bin(torch_flags))
 
 def handle_5(tag, body):
-    return
     # inventory
-    index, count, a, item_id = struct.unpack('<HHBH', body)
-    # a = 72 for accessories
-    # a = 73 or 76 for vanity accessories
-    # a = 0 otherwise
-    """
-    if index == HELD_ITEM_INVENTORY_INDEX:
-        print(f'holding {count} items with id {item_id}')
-    else:
-        print(f'inventory: {count} items with id {item_id} at pos {index}, a {a}')
-    """
+    player_id, slot, stack, prefix, item_id = struct.unpack('<BHHBH', body)
+    print(player_id, slot, stack, prefix, item_id)
+
+def handle_6(tag, body):
+    print(body.hex())
 
 def handle_8(tag, body):
     # during login no idea what
@@ -281,12 +289,11 @@ def handle(remote, packet):
 
     #print('><'[remote], tag, ':', packet[:82].hex())
 
-    if tag in (6, 138):
-        return  # these don't have more info
-
     body = packet[3:]
 
-    stop_calling[remote] = (globals().get(f'handle_{tag}') or handle_new)(tag, body)
+    if tag == 6:
+        print('got', tag)
+        stop_calling[remote] = (globals().get(f'handle_{tag}') or handle_new)(tag, body)
 
 def finish():
     pass

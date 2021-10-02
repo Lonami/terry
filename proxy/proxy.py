@@ -72,7 +72,7 @@ else:
                 elif s == client:
                     terraria.send(chunk)
                     remote = False
-                fds[remote].write(packet)
+                fds[remote].write(chunk)
                 check_buf(chunk, remote=remote)
     except BrokenPipeError:
         pass
