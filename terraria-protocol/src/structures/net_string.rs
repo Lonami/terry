@@ -1,34 +1,12 @@
+use crate::structures::serializable_enum;
 use crate::{Deserializable, Serializable, SliceCursor};
 use std::convert::TryInto;
 
-#[repr(u8)]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum NetStringMode {
-    Literal = 0,
-    Formattable = 1,
-    LocalizationKey = 2,
-}
-
-impl Default for NetStringMode {
-    fn default() -> Self {
-        Self::Literal
-    }
-}
-
-impl Serializable for NetStringMode {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&(*self as u8));
-    }
-}
-
-impl Deserializable for NetStringMode {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        match cursor.read::<u8>() {
-            0 => NetStringMode::Literal,
-            1 => NetStringMode::Formattable,
-            2 => NetStringMode::LocalizationKey,
-            n => panic!("invalid net string mode {}", n),
-        }
+serializable_enum! {
+    pub enum NetStringMode: u8 {
+        Literal = 0,
+        Formattable = 1,
+        LocalizationKey = 2,
     }
 }
 

@@ -74,7 +74,7 @@ serializable_bitflags! {
 /// World Info.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, PartialEq, Default, Clone)]
 pub struct WorldInfo {
     pub time: i32,
     pub day_info: DayInfo,
@@ -136,6 +136,8 @@ pub struct WorldInfo {
     pub lobby_id: u64,
     pub sandstorm_severity: f32,
 }
+
+impl Eq for WorldInfo {}
 
 impl PacketBody for WorldInfo {
     const TAG: u8 = 7;

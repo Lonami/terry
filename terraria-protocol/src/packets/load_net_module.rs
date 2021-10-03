@@ -1,5 +1,5 @@
 use crate::packets::PacketBody;
-use crate::structures::{LiquidType, NetString, Vec2, RGB, serializable_struct};
+use crate::structures::{serializable_struct, LiquidType, NetString, Vec2, RGB};
 use crate::{Deserializable, Serializable, SliceCursor};
 
 serializable_struct! {
@@ -124,7 +124,7 @@ impl Serializable for CreativePower {
             Self::SpawnRateSliderPerPlayerPower(data) => {
                 cursor.write(&14);
                 data.iter().for_each(|datum| cursor.write(datum))
-            },
+            }
         }
     }
 }
@@ -167,7 +167,7 @@ impl Deserializable for CreativePower {
 /// Load a network module.
 ///
 /// Direction: Variable.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum LoadNetModule {
     Liquid(Vec<Liquid>),
     // Client message is (command ID (text?), text)
@@ -241,6 +241,12 @@ pub enum LoadNetModule {
         power_id: u16,
         level: u8,
     },
+}
+
+impl Default for LoadNetModule {
+    fn default() -> Self {
+        Self::Liquid(Vec::new())
+    }
 }
 
 impl PacketBody for LoadNetModule {

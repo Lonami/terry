@@ -122,13 +122,15 @@ macro_rules! serializable_struct {
         }
     ) => {
         $(#[$attr])*
-        #[derive(Debug, PartialEq, Eq, Default, Clone)]
+        #[derive(Debug, PartialEq, Default, Clone)]
         pub struct $ident {
             $(
                 $(#[$field_attr])*
                 pub $field: $ty,
             )+
         }
+
+        impl Eq for $ident {}
 
         impl crate::structures::Serializable for $ident {
             fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
@@ -216,4 +218,4 @@ macro_rules! serializable_bitflags {
     };
 }
 
-pub(crate) use {serializable_struct, serializable_enum, serializable_bitflags};
+pub(crate) use {serializable_bitflags, serializable_enum, serializable_struct};

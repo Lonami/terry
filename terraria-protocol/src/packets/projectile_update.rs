@@ -16,7 +16,7 @@ serializable_bitflags! {
 /// Projectile update.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Default, Clone)]
 pub struct ProjectileUpdate {
     pub projectile_id: i16,
     pub pos: Vec2,
@@ -33,6 +33,8 @@ pub struct ProjectileUpdate {
     pub proj_uuid: Option<i16>,
 }
 
+impl Eq for ProjectileUpdate {}
+
 impl PacketBody for ProjectileUpdate {
     const TAG: u8 = 27;
 
@@ -47,7 +49,7 @@ impl PacketBody for ProjectileUpdate {
             cursor.write(&self.ai[0]);
         }
         if self.flags.contains(ProjectileFlag::AI2) {
-            cursor.write(&self.ai[2]);
+            cursor.write(&self.ai[1]);
         }
         if let Some(damage) = self.damage {
             cursor.write(&damage);

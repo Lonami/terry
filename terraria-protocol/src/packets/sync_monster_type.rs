@@ -4,7 +4,7 @@ use crate::SliceCursor;
 /// Sync the type of a cavern monster.
 ///
 /// Direction: Client <-> Server.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct SyncMonsterType {
     pub net_id: [[u16; 3]; 2],
 }

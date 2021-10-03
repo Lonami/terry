@@ -17,7 +17,10 @@ pub use liquid_type::LiquidType;
 pub use net_string::{NetString, NetStringMode};
 pub use player_death_reason::PlayerDeathReason;
 pub use rgb::RGB;
-pub(crate) use serialization::{Deserializable, Serializable, SliceCursor, serializable_struct, serializable_enum, serializable_bitflags};
+pub(crate) use serialization::{
+    serializable_bitflags, serializable_enum, serializable_struct, Deserializable, Serializable,
+    SliceCursor,
+};
 pub use sign::Sign;
 pub use tile::Tile;
 pub use tile_entity::TileEntity;

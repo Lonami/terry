@@ -24,7 +24,7 @@ serializable_bitflags! {
 /// NPC update, such as movement.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Default, Clone)]
 pub struct NpcUpdate {
     pub npc_id: i16,
     pub pos: Vec2,
@@ -43,6 +43,8 @@ pub struct NpcUpdate {
     /// Only present if catchable
     pub release_owner: Option<u8>,
 }
+
+impl Eq for NpcUpdate {}
 
 // 1 if it's catchable, 0 otherwise
 const NPC_CATCHABLE: [u8; 668] = [

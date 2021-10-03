@@ -1,8 +1,7 @@
+use crate::structures::{serializable_bitflags, serializable_enum};
 use crate::{Deserializable, Serializable, SliceCursor};
 
-use bitflags::bitflags;
-
-bitflags! {
+serializable_bitflags! {
     pub struct DeathReason: u8 {
         const HAS_KILLER = 1;
         const HAS_KILLING = 2;
@@ -15,52 +14,23 @@ bitflags! {
     }
 }
 
-#[repr(u8)]
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-pub enum DeathType {
-    FallDamage = 0,
-    Drowning = 1,
-    LavaDamage = 2,
-    FallDamage2 = 3,
-    DemonAltar = 4,
-    CompanionCube = 6,
-    Suffocation = 7,
-    Burning = 8,
-    PoisonVenom = 9,
-    Electrified = 10,
-    WofEscape = 11,
-    WofLicked = 12,
-    ChaosState = 13,
-    ChaosStateMale = 14,
-    ChaosStateFemale = 15,
-}
-
-impl Serializable for DeathType {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&(*self as u8));
-    }
-}
-
-impl Deserializable for DeathType {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        match cursor.read::<u8>() {
-            0 => DeathType::FallDamage,
-            1 => DeathType::Drowning,
-            2 => DeathType::LavaDamage,
-            3 => DeathType::FallDamage,
-            4 => DeathType::DemonAltar,
-            6 => DeathType::CompanionCube,
-            7 => DeathType::Suffocation,
-            8 => DeathType::Burning,
-            9 => DeathType::PoisonVenom,
-            10 => DeathType::Electrified,
-            11 => DeathType::WofEscape,
-            12 => DeathType::WofLicked,
-            13 => DeathType::ChaosState,
-            14 => DeathType::ChaosStateMale,
-            15 => DeathType::ChaosStateFemale,
-            n => panic!("invalid death type {}", n),
-        }
+serializable_enum! {
+    pub enum DeathType: u8 {
+        FallDamage = 0,
+        Drowning = 1,
+        LavaDamage = 2,
+        FallDamage2 = 3,
+        DemonAltar = 4,
+        CompanionCube = 6,
+        Suffocation = 7,
+        Burning = 8,
+        PoisonVenom = 9,
+        Electrified = 10,
+        WofEscape = 11,
+        WofLicked = 12,
+        ChaosState = 13,
+        ChaosStateMale = 14,
+        ChaosStateFemale = 15,
     }
 }
 

@@ -1,56 +1,32 @@
+use crate::structures::serializable_bitflags;
 use crate::structures::LiquidType;
 use crate::{Deserializable, Serializable, SliceCursor};
-use bitflags::bitflags;
 
-/// Tiles for which the frame is considered "important".
-const TILE_FRAME_IMPORTANT: [bool; 624] = [
-    false, false, false, true, true, true, false, false, false, false, true, true, true, true,
-    true, true, true, true, true, true, true, true, false, false, true, false, true, true, true,
-    true, false, true, false, true, true, true, true, false, false, false, false, false, true,
-    false, false, false, false, false, false, true, true, false, false, false, false, true, false,
-    false, false, false, false, true, false, false, false, false, false, false, false, false,
-    false, true, true, true, true, false, false, true, true, true, false, true, true, true, true,
-    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-    true, true, true, true, true, true, false, false, false, true, false, false, true, true, false,
-    false, false, false, false, false, false, false, false, false, true, true, false, true, true,
-    false, false, true, true, true, true, true, true, true, true, false, true, true, true, true,
-    false, false, false, false, true, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, true, false, false, false, false, false, true,
-    true, true, true, false, false, false, true, false, false, false, false, false, true, true,
-    true, true, false, false, false, false, false, false, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, true, false, true, true, false, true, false,
-    false, true, true, true, true, true, true, false, false, false, false, false, false, true,
-    true, false, false, true, false, true, false, true, true, true, true, true, true, true, true,
-    true, true, true, true, true, false, false, false, false, false, false, true, false, false,
-    false, false, false, false, false, false, false, false, false, false, false, false, true, true,
-    true, false, false, false, true, true, true, true, true, true, true, true, true, false, true,
-    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-    true, true, true, true, true, true, true, true, true, false, false, false, true, false, true,
-    true, true, true, true, false, false, true, true, false, false, false, false, false, false,
-    false, false, false, true, true, false, true, true, true, false, false, false, false, false,
-    false, false, false, false, true, false, false, false, false, true, true, true, false, true,
-    true, true, true, true, true, true, false, false, false, false, false, false, false, true,
-    true, true, true, true, true, true, false, true, false, false, false, false, false, true, true,
-    true, true, true, true, true, true, true, true, false, false, false, false, false, false,
-    false, false, false, true, true, false, false, false, true, true, true, true, true, false,
-    false, false, false, true, true, false, false, true, true, true, false, true, true, true,
-    false, false, false, false, false, true, true, true, true, true, true, true, true, true, true,
-    true, false, false, false, false, false, false, true, true, true, true, true, true, false,
-    false, false, true, true, true, true, true, true, true, true, true, true, true, false, false,
-    false, true, true, false, false, false, true, false, false, false, true, true, true, true,
-    true, true, true, true, false, true, true, false, false, true, false, true, false, false,
-    false, false, false, true, true, false, false, true, true, true, false, false, false, false,
-    false, false, true, true, true, true, true, true, true, true, true, true, false, true, true,
-    true, true, true, false, false, false, false, true, false, false, false, true, true, true,
-    true, false, true, true, true, true, true, true, true, true, true, true, false, true, true,
-    true, false, false, false, true, true, false, true, true, true, true, true, true, true, false,
-    false, false, false, false, true, true, true, true, true, true, true, true, true, true, true,
-    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-    true, true, true, true, true, true, true, true, true, true, true, true, false, true, true,
-    true, true, true,
+// 1 if it's important, 0 otherwise
+const TILE_FRAME_IMPORTANT: [u8; 624] = [
+    0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1,
+    0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+    1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
+    0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1,
+    1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0,
+    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0,
+    0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0,
+    1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+    1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
 ];
 
-bitflags! {
+serializable_bitflags! {
     pub struct TileFlags: u16 {
         const ACTIVE = 0x0001;
         const LIGHTED = 0x0002;
@@ -71,7 +47,7 @@ bitflags! {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct Tile {
     flags: TileFlags,
     color: Option<u8>,
@@ -101,7 +77,7 @@ impl Deserializable for Tile {
         let ty = flags.contains(TileFlags::ACTIVE).then(|| cursor.read());
 
         let frame = ty
-            .map(|t| TILE_FRAME_IMPORTANT[t as usize])
+            .map(|t| TILE_FRAME_IMPORTANT[t as usize] != 0)
             .unwrap_or(false)
             .then(|| (cursor.read(), cursor.read()));
 
@@ -144,7 +120,7 @@ impl Tile {
             };
             ty = Some(ty_val);
 
-            frame = if TILE_FRAME_IMPORTANT[ty_val as usize] {
+            frame = if TILE_FRAME_IMPORTANT[ty_val as usize] != 0 {
                 Some((cursor.read(), cursor.read()))
             } else {
                 None

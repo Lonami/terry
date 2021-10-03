@@ -5,7 +5,7 @@ use crate::SliceCursor;
 /// Send a tile square.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct SendTileSquare {
     pub tile_y: i16,
     pub tile_x: i16,

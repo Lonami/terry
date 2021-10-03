@@ -45,7 +45,9 @@ impl PacketBody for PlayerNpcTeleport {
             target_id: cursor.read(),
             pos: cursor.read(),
             style: cursor.read(),
-            extra: mode.contains(TeleportMode::HAS_EXTRA_INFO).then(|| cursor.read()),
+            extra: mode
+                .contains(TeleportMode::HAS_EXTRA_INFO)
+                .then(|| cursor.read()),
         }
     }
 }

@@ -4,7 +4,7 @@ use crate::SliceCursor;
 /// Tamper with a NPC.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct TamperWithNpc {
     pub npc_id: u16,
     pub immunity_time: Option<i32>,

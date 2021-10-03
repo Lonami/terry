@@ -29,6 +29,7 @@ serializable_bitflags! {
 /// Tweak Item (formerly known as Alter Item Drop).
 ///
 /// Direction: Server -> Client.
+#[derive(Debug, PartialEq, Default, Clone)]
 pub struct TweakItem {
     pub item_index: u16,
     pub flags: TweakFlags,
@@ -47,6 +48,8 @@ pub struct TweakItem {
     pub use_ammo: Option<i16>,
     pub not_ammo: Option<bool>,
 }
+
+impl Eq for TweakItem {}
 
 impl PacketBody for TweakItem {
     const TAG: u8 = 88;

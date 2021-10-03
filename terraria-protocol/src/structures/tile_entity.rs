@@ -1,6 +1,6 @@
 use crate::{Deserializable, Serializable, SliceCursor};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TileEntity {
     TrainingDummy {
         id: i32,
@@ -56,6 +56,17 @@ pub enum TileEntity {
         x: i16,
         y: i16,
     },
+}
+
+impl Default for TileEntity {
+    fn default() -> Self {
+        Self::TrainingDummy {
+            id: 0,
+            x: 0,
+            y: 0,
+            npc_index: 0,
+        }
+    }
 }
 
 impl Serializable for TileEntity {

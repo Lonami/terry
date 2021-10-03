@@ -11,4 +11,3 @@ packet_struct! {
         pub player_id: u8,
     }
 }
-

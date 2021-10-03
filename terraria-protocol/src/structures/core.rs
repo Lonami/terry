@@ -1,71 +1,32 @@
 use crate::{Deserializable, Serializable, SliceCursor};
 use std::convert::TryInto;
 
+macro_rules! impl_serde_int {
+    ($read:ident: $($ty:ty),+) => {
+        $(
+            impl Serializable for $ty {
+                fn serialize(&self, cursor: &mut SliceCursor) {
+                    cursor.write_slice(&self.to_le_bytes());
+                }
+            }
+
+            impl Deserializable for $ty {
+                fn deserialize(cursor: &mut SliceCursor) -> Self {
+                    Self::from_le_bytes(cursor.$read())
+                }
+            }
+        )+
+    };
+}
+
+impl_serde_int!(read1: i8, u8);
+impl_serde_int!(read2: i16, u16);
+impl_serde_int!(read4: i32, u32, f32);
+impl_serde_int!(read8: i64, u64);
+
 impl Serializable for bool {
     fn serialize(&self, cursor: &mut SliceCursor) {
         cursor.write(&(*self as u8));
-    }
-}
-
-impl Serializable for i8 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for u8 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for i16 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for u16 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for i32 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for u32 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for f32 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for i64 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for u64 {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write_slice(&self.to_le_bytes());
-    }
-}
-
-impl Serializable for String {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        let len: u8 = self.len().try_into().expect("string too long");
-        cursor.write(&len);
-        cursor.write_slice(self.as_bytes());
     }
 }
 
@@ -75,57 +36,11 @@ impl Deserializable for bool {
     }
 }
 
-impl Deserializable for i8 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read1())
-    }
-}
-
-impl Deserializable for u8 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read1())
-    }
-}
-
-impl Deserializable for i16 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read2())
-    }
-}
-
-impl Deserializable for u16 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read2())
-    }
-}
-
-impl Deserializable for i32 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read4())
-    }
-}
-
-impl Deserializable for u32 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read4())
-    }
-}
-
-impl Deserializable for f32 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read4())
-    }
-}
-
-impl Deserializable for i64 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read8())
-    }
-}
-
-impl Deserializable for u64 {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self::from_le_bytes(cursor.read8())
+impl Serializable for String {
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        let len: u8 = self.len().try_into().expect("string too long");
+        cursor.write(&len);
+        cursor.write_slice(self.as_bytes());
     }
 }
 

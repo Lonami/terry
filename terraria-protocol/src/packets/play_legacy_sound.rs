@@ -1,5 +1,5 @@
 use crate::packets::packet_struct;
-use crate::structures::{Vec2, serializable_enum};
+use crate::structures::{serializable_enum, Vec2};
 
 serializable_enum! {
     pub enum SoundMode: u8 {

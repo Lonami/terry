@@ -47,7 +47,7 @@ serializable_bitflags! {
 /// Update Player.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug, Default)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct UpdatePlayer {
     pub player_id: u8,
     pub keys: KeyPress,

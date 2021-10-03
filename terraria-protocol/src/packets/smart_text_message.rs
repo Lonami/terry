@@ -6,7 +6,7 @@ use std::convert::TryInto;
 /// Smart Text Message (FKA. Chat Message v2).
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct SmartTextMessage {
     /// Note that the client cannot change colors
     pub message_color: RGB,

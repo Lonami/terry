@@ -6,7 +6,7 @@ use inflate;
 /// Send section.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct SendSection {
     pub x_start: i32,
     pub y_start: i32,

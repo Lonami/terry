@@ -300,7 +300,7 @@ pub trait PacketBody: Sized {
     }
 }
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Packet {
     Connect(Connect),                             // 1
     Disconnect(Disconnect),                       // 2
