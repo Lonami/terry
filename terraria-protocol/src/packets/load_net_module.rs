@@ -1,32 +1,13 @@
 use crate::packets::PacketBody;
-use crate::structures::{LiquidType, NetString, Vec2, RGB};
+use crate::structures::{LiquidType, NetString, Vec2, RGB, serializable_struct};
 use crate::{Deserializable, Serializable, SliceCursor};
 
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-pub struct Liquid {
-    y: i16,
-    x: i16,
-    amount: u8,
-    ty: LiquidType,
-}
-
-impl Serializable for Liquid {
-    fn serialize(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.y);
-        cursor.write(&self.x);
-        cursor.write(&self.amount);
-        cursor.write(&self.ty);
-    }
-}
-
-impl Deserializable for Liquid {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        Self {
-            y: cursor.read(),
-            x: cursor.read(),
-            amount: cursor.read(),
-            ty: cursor.read(),
-        }
+serializable_struct! {
+    pub struct Liquid {
+        pub y: i16,
+        pub x: i16,
+        pub amount: u8,
+        pub ty: LiquidType,
     }
 }
 
@@ -70,7 +51,7 @@ impl Deserializable for Bestiary {
             2 => Self::Chat {
                 npc_net_id: cursor.read(),
             },
-            n => panic!("unknown bestiary net module {}", n),
+            n => panic!("invalid Bestiary: {}", n),
         }
     }
 }
@@ -178,7 +159,7 @@ impl Deserializable for CreativePower {
                 data.iter_mut().for_each(|datum| *datum = cursor.read());
                 data
             }),
-            n => panic!("invalid creative power {}", n),
+            n => panic!("invalid CreativePower: {}", n),
         }
     }
 }
@@ -241,7 +222,7 @@ pub enum LoadNetModule {
         amount: u16,
     },
     TeleportPylon {
-        /// If 2, it's a use request. Otherwise, added or removed.
+        /// If 2, it's a use request. Otherwise, added or removed
         ty: u8,
         x: i16,
         y: i16,
@@ -252,7 +233,7 @@ pub enum LoadNetModule {
         pos: Vec2,
         vel: Vec2,
         packed_shader_index: i32,
-        /// Index of player who invoked this.
+        /// Index of player who invoked this
         player: u8,
     },
     CreativePowerPermissions {
@@ -407,7 +388,7 @@ impl PacketBody for LoadNetModule {
                 power_id: cursor.read(),
                 level: cursor.read(),
             },
-            n => panic!("unknown net module {}", n),
+            n => panic!("invalid LoadNetModule: {}", n),
         }
     }
 }

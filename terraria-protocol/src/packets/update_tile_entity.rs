@@ -4,10 +4,10 @@ use crate::SliceCursor;
 /// Update Tile Entity.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct UpdateTileEntity {
     pub id: i32,
-    /// If it should be removed, indicate the type and ``(x, y)`` coordinates.
+    /// If it should be removed, indicate the type and ``(x, y)`` coordinates
     pub remove: Option<(u8, i16, i16)>,
 }
 
@@ -26,11 +26,9 @@ impl PacketBody for UpdateTileEntity {
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         let id = cursor.read();
-        let remove = if !cursor.read::<bool>() {
-            Some((cursor.read(), cursor.read(), cursor.read()))
-        } else {
-            None
-        };
+        let remove =
+            (!cursor.read::<bool>()).then(|| (cursor.read(), cursor.read(), cursor.read()));
+
         Self { id, remove }
     }
 }

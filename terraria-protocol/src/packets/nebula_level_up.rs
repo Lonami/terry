@@ -10,7 +10,7 @@ packet_struct! {
 
         pub player_id: u8,
         pub level_up_type: u16,
-        /// In world coordinate pixels.
+        /// In world coordinate pixels
         pub origin: Vec2,
     }
 }

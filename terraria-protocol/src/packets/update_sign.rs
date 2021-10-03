@@ -12,7 +12,6 @@ packet_struct! {
         pub y: i16,
         pub text: String,
         pub player_id: u8,
-        /// BitFlags: 1 = TBD
-        pub sign_flags: u8,
+        pub flags: u8,
     }
 }

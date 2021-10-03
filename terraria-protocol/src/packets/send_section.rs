@@ -40,16 +40,13 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     });
 
     let n = cursor.read::<u16>() as usize;
-    let mut chests = Vec::with_capacity(n);
-    (0..n).for_each(|_| chests.push(cursor.read()));
+    let chests = (0..n).map(|_| cursor.read()).collect();
 
     let n = cursor.read::<u16>() as usize;
-    let mut signs = Vec::with_capacity(n);
-    (0..n).for_each(|_| signs.push(cursor.read()));
+    let signs = (0..n).map(|_| cursor.read()).collect();
 
     let n = cursor.read::<u16>() as usize;
-    let mut tile_entities = Vec::with_capacity(n);
-    (0..n).for_each(|_| tile_entities.push(cursor.read()));
+    let mut tile_entities = (0..n).map(|_| cursor.read()).collect();
 
     SendSection {
         x_start,

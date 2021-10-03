@@ -4,10 +4,10 @@ use crate::SliceCursor;
 /// Update NPC Buff.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct UpdateNpcBuff {
     pub npc_id: i16,
-    /// Tuples of ``(buff id, time)``.
+    /// Tuples of ``(buff id, time)``
     pub buff_times: [(u16, i16); 5],
 }
 

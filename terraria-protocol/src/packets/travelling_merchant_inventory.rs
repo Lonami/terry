@@ -5,6 +5,7 @@ use std::fmt;
 /// Travelling Merchant Inventory.
 ///
 /// Direction: Server -> Client.
+#[derive(Clone)]
 pub struct TravellingMerchantInventory {
     /// Each short related to an item type NetID.
     pub items: [i16; 40],
@@ -28,5 +29,22 @@ impl PacketBody for TravellingMerchantInventory {
 impl fmt::Debug for TravellingMerchantInventory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_list().entries(self.items.iter()).finish()
+    }
+}
+
+impl PartialEq for TravellingMerchantInventory {
+    fn eq(&self, other: &Self) -> bool {
+        self.items
+            .iter()
+            .zip(other.items.iter())
+            .all(|(a, b)| a == b)
+    }
+}
+
+impl Eq for TravellingMerchantInventory {}
+
+impl Default for TravellingMerchantInventory {
+    fn default() -> Self {
+        Self { items: [0; 40] }
     }
 }

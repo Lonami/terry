@@ -15,7 +15,7 @@ packet_struct! {
         pub vel: Vec2,
         pub stack_size: i16,
         pub prefix: u8,
-        /// If 0, set ``own_ignore = 0`` and ``own_time = 100``.
+        /// If 0, set ``own_ignore = 0`` and ``own_time = 100``
         pub no_delay: u8,
         pub item_net_id: i16,
     }

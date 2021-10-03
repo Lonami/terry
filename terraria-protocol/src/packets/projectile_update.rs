@@ -1,6 +1,17 @@
 use crate::packets::PacketBody;
-use crate::structures::Vec2;
+use crate::structures::{serializable_bitflags, Vec2};
 use crate::SliceCursor;
+
+serializable_bitflags! {
+    pub struct ProjectileFlag: u8 {
+        const AI1 = 0x01;
+        const AI2 = 0x02;
+        const HAS_DAMAGE = 0x10;
+        const HAS_KNOCKBACK = 0x20;
+        const HAS_ORIG_DAMAGE = 0x40;
+        const HAS_UUID = 0x80;
+    }
+}
 
 /// Projectile update.
 ///
@@ -10,11 +21,12 @@ pub struct ProjectileUpdate {
     pub projectile_id: i16,
     pub pos: Vec2,
     pub vel: Vec2,
-    /// Player ID.
+    /// Player ID
     pub owner: u8,
     pub ty: i16,
-    /// Can have up to 2 values.
-    pub ai: Vec<f32>,
+    pub flags: ProjectileFlag,
+    /// Only has meaningful values if the corresponding flag is set
+    pub ai: [f32; 2],
     pub damage: Option<i16>,
     pub knockback: Option<f32>,
     pub original_damage: Option<i16>,
@@ -30,16 +42,13 @@ impl PacketBody for ProjectileUpdate {
         cursor.write(&self.vel);
         cursor.write(&self.owner);
         cursor.write(&self.ty);
-        cursor.write(
-            &(0 // projectile flags
-            | if self.ai.len() >= 1 { 0x01 } else { 0 }
-            | if self.ai.len() >= 2 { 0x02 } else { 0 }
-            | if self.damage.is_some() { 0x10 } else { 0 }
-            | if self.knockback.is_some() { 0x20 } else { 0 }
-            | if self.original_damage.is_some() { 0x40 } else { 0 }
-            | if self.proj_uuid.is_some() { 0x80 } else { 0 }),
-        );
-        self.ai.iter().take(2).for_each(|a| cursor.write(a));
+        cursor.write(&self.flags);
+        if self.flags.contains(ProjectileFlag::AI1) {
+            cursor.write(&self.ai[0]);
+        }
+        if self.flags.contains(ProjectileFlag::AI2) {
+            cursor.write(&self.ai[2]);
+        }
         if let Some(damage) = self.damage {
             cursor.write(&damage);
         }
@@ -60,40 +69,39 @@ impl PacketBody for ProjectileUpdate {
         let vel = cursor.read();
         let owner = cursor.read();
         let ty = cursor.read();
-        let proj_flags = cursor.read::<u8>();
-        let mut ai = Vec::with_capacity(2);
-        if proj_flags & 0x01 != 0 {
-            ai.push(cursor.read());
+        let flags = cursor.read::<ProjectileFlag>();
+
+        let mut ai = [0f32; 2];
+        if flags.contains(ProjectileFlag::AI1) {
+            ai[0] = cursor.read();
         }
-        if proj_flags & 0x02 != 0 {
-            ai.push(cursor.read());
+        if flags.contains(ProjectileFlag::AI2) {
+            ai[1] = cursor.read();
         }
-        let damage = if proj_flags & 0x10 != 0 {
-            Some(cursor.read())
-        } else {
-            None
-        };
-        let knockback = if proj_flags & 0x20 != 0 {
-            Some(cursor.read())
-        } else {
-            None
-        };
-        let original_damage = if proj_flags & 0x40 != 0 {
-            Some(cursor.read())
-        } else {
-            None
-        };
-        let proj_uuid = if proj_flags & 0x80 != 0 {
-            Some(cursor.read())
-        } else {
-            None
-        };
+
+        let damage = flags
+            .contains(ProjectileFlag::HAS_DAMAGE)
+            .then(|| cursor.read());
+
+        let knockback = flags
+            .contains(ProjectileFlag::HAS_KNOCKBACK)
+            .then(|| cursor.read());
+
+        let original_damage = flags
+            .contains(ProjectileFlag::HAS_ORIG_DAMAGE)
+            .then(|| cursor.read());
+
+        let proj_uuid = flags
+            .contains(ProjectileFlag::HAS_UUID)
+            .then(|| cursor.read());
+
         Self {
             projectile_id,
             pos,
             vel,
             owner,
             ty,
+            flags,
             ai,
             damage,
             knockback,

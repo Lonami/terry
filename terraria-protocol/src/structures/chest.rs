@@ -3,8 +3,8 @@ use crate::{Deserializable, Serializable, SliceCursor};
 #[derive(Debug)]
 pub struct Chest {
     pub index: u16,
-    pub x: u16,
-    pub y: u16,
+    pub x: i16,
+    pub y: i16,
     pub name: String,
 }
 

@@ -8,7 +8,7 @@ packet_struct! {
         const TAG = 29;
 
         pub projectile_id: i16,
-        /// Player ID.
+        /// Player ID
         pub owner: u8,
     }
 }

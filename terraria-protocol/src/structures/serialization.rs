@@ -111,33 +111,109 @@ pub trait Deserializable {
     fn deserialize(cursor: &mut SliceCursor) -> Self;
 }
 
-macro_rules! serializable_enum {
+macro_rules! serializable_struct {
     (
-        pub enum $ident:ident as $ty:ty {
-            $($variant:ident = $value:expr,)+
+        $(#[$attr:meta])*
+        pub struct $ident:ident {
+            $(
+                $(#[$field_attr:meta])*
+                pub $field:ident: $ty:ty,
+            )*
         }
     ) => {
-        #[repr($ty)]
-        #[derive(PartialEq, Eq, Copy, Clone, Debug)]
-        pub enum $ident {
-            $($variant = $value,)+
+        $(#[$attr])*
+        #[derive(Debug, PartialEq, Eq, Default, Clone)]
+        pub struct $ident {
+            $(
+                $(#[$field_attr])*
+                pub $field: $ty,
+            )+
         }
 
-        impl Serializable for $ident {
-            fn serialize(&self, cursor: &mut SliceCursor) {
-                cursor.write(&(*self as $ty));
+        impl crate::structures::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+                $(cursor.write(&self.$field);)+
             }
         }
 
-        impl Deserializable for $ident {
-            fn deserialize(cursor: &mut SliceCursor) -> Self {
-                match cursor.read::<$ty>() {
-                    $($value => $ident::$variant,)+
-                    n => panic!("invalid $ty: {}", n),
+        impl crate::structures::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+                Self {
+                    $($field: cursor.read(),)+
                 }
             }
         }
     };
 }
 
-pub(crate) use serializable_enum;
+macro_rules! serializable_enum {
+    (
+        pub enum $ident:ident: $ty:ident {
+            $first_variant:ident = $first_value:expr,
+            $($variant:ident = $value:expr,)*
+        }
+    ) => {
+        #[repr($ty)]
+        #[derive(PartialEq, Eq, Copy, Clone, Debug)]
+        pub enum $ident {
+            $first_variant = $first_value,
+            $($variant = $value,)*
+        }
+
+        impl Default for $ident {
+            fn default() -> Self {
+                Self::$first_variant
+            }
+        }
+
+        impl crate::structures::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+                cursor.write(&(*self as $ty));
+            }
+        }
+
+        impl crate::structures::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+                match cursor.read::<$ty>() {
+                    $first_value => $ident::$first_variant,
+                    $($value => $ident::$variant,)*
+                    n => panic!("invalid {}: {}", stringify!($ty), n),
+                }
+            }
+        }
+    };
+}
+
+macro_rules! serializable_bitflags {
+    (
+        pub struct $ident:ident: $ty:ident {
+            $(const $variant:ident = $value:expr;)+
+        }
+    ) => {
+        bitflags::bitflags! {
+            pub struct $ident: $ty {
+                $(const $variant = $value;)+
+            }
+        }
+
+        impl Default for $ident {
+            fn default() -> Self {
+                Self::empty()
+            }
+        }
+
+        impl crate::structures::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+                cursor.write(&self.bits());
+            }
+        }
+
+        impl crate::structures::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+                Self::from_bits_truncate(cursor.read())
+            }
+        }
+    };
+}
+
+pub(crate) use {serializable_struct, serializable_enum, serializable_bitflags};

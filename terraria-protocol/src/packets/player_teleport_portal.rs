@@ -9,7 +9,7 @@ packet_struct! {
         const TAG = 96;
 
         pub player_id: u8,
-        pub portal_color_index: i16,
+        pub portal_color_index: u16,
         pub pos: Vec2,
         pub vel: Vec2,
     }

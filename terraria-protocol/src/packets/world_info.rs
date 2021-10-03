@@ -1,5 +1,75 @@
 use crate::packets::PacketBody;
+use crate::structures::serializable_bitflags;
 use crate::SliceCursor;
+
+serializable_bitflags! {
+    pub struct DayInfo: u8 {
+        const DAY_TIME = 0x01;
+        const BLOOD_MOON = 0x02;
+        const ECLIPSE = 0x04;
+    }
+}
+
+serializable_bitflags! {
+    pub struct EventInfo: u64 {
+        const SHADOW_ORB_SMASHED = 0x0000_0000_0000_0001;
+        const DOWNED_BOSS_1 = 0x0000_0000_0000_0002;
+        const DOWNED_BOSS_2 = 0x0000_0000_0000_0004;
+        const DOWNED_BOSS_3 = 0x0000_0000_0000_0008;
+        const HARD_MODE = 0x0000_0000_0000_0010;
+        const DOWNED_CLOWN = 0x0000_0000_0000_0020;
+        const SERVER_SIDE_CHARACTER = 0x0000_0000_0000_0040;
+        const DOWNED_PLANT_BOSS = 0x0000_0000_0000_0080;
+        const MECH_BOSS_DOWNED = 0x0000_0000_0000_0100;
+        const MECH_BOSS_DOWNED_2 = 0x0000_0000_0000_0200;
+        const MECH_BOSS_DOWNED_3 = 0x0000_0000_0000_0400;
+        const MECH_BOSS_ANY_DOWNED = 0x0000_0000_0000_0800;
+        const CLOUD_BG = 0x0000_0000_0000_1000;
+        const CRIMSON = 0x0000_0000_0000_2000;
+        const PUMPKIN_MOON = 0x0000_0000_0000_4000;
+        const SNOW_MOON = 0x0000_0000_0000_8000;
+        const EXPERT_MODE = 0x0000_0000_0001_0000;
+        const FASTFORWARDTIME = 0x0000_0000_0002_0000;
+        const SLIME_RAIN = 0x0000_0000_0004_0000;
+        const DOWNED_SLIME_KING = 0x0000_0000_0008_0000;
+        const DOWNED_QUEEN_BEE = 0x0000_0000_0010_0000;
+        const DOWNED_FISHRON = 0x0000_0000_0020_0000;
+        const DOWNED_MARTIANS = 0x0000_0000_0040_0000;
+        const DOWNED_ANCIENT_CULTIST = 0x0000_0000_0080_0000;
+        const DOWNED_MOON_LORD = 0x0000_0000_0100_0000;
+        const DOWNED_PUMKING = 0x0000_0000_0200_0000;
+        const DOWNED_MOURNING_WOOD = 0x0000_0000_0400_0000;
+        const DOWNED_ICE_QUEEN = 0x0000_0000_0800_0000;
+        const DOWNED_SANTANK = 0x0000_0000_1000_0000;
+        const DOWNED_EVERSCREAM = 0x0000_0000_2000_0000;
+        const DOWNED_GOLEM = 0x0000_0000_4000_0000;
+        const BIRTHDAY_PARTY = 0x0000_0000_8000_0000;
+        const DOWNED_PIRATES = 0x0000_0001_0000_0000;
+        const DOWNED_FROST_LEGION = 0x0000_0002_0000_0000;
+        const DOWNED_GOBLINS = 0x0000_0004_0000_0000;
+        const SANDSTORM = 0x0000_0008_0000_0000;
+        const DD2_EVENT = 0x0000_0010_0000_0000;
+        const DOWNED_DD2_TIER_1 = 0x0000_0020_0000_0000;
+        const DOWNED_DD2_TIER_2 = 0x0000_0040_0000_0000;
+        const DOWNED_DD2_TIER_3 = 0x0000_0080_0000_0000;
+        const COMBAT_BOOK_USED = 0x0000_0100_0000_0000;
+        const MANUAL_LANTERNS = 0x0000_0200_0000_0000;
+        const DOWNED_SOLAR_TOWER = 0x0000_0400_0000_0000;
+        const DOWNED_VORTEX_TOWER = 0x0000_0800_0000_0000;
+        const DOWNED_TOWER_NEBULA = 0x0000_1000_0000_0000;
+        const DOWNED_STARDUST_TOWER = 0x0000_2000_0000_0000;
+        const FORCE_HALLOWEEN_DAY = 0x0000_4000_0000_0000;
+        const FORCE_XMAS_DAY = 0x0000_8000_0000_0000;
+        const BOUGHT_CAT = 0x0001_0000_0000_0000;
+        const BOUGHT_DOG = 0x0002_0000_0000_0000;
+        const BOUGHT_BUNNY = 0x0004_0000_0000_0000;
+        const FREE_CAKE = 0x0008_0000_0000_0000;
+        const DRUNK_WORLD = 0x0010_0000_0000_0000;
+        const DOWNED_EMPRESS_OF_LIGHT = 0x0020_0000_0000_0000;
+        const DOWNED_QUEEN_SLIME = 0x0040_0000_0000_0000;
+        const GET_GOOD_WORLD = 0x0080_0000_0000_0000;
+    }
+}
 
 /// World Info.
 ///
@@ -7,11 +77,7 @@ use crate::SliceCursor;
 #[derive(Debug, Clone, Default)]
 pub struct WorldInfo {
     pub time: i32,
-    // bitflags {
-    pub day_time: bool,
-    pub blood_moon: bool,
-    pub eclipse: bool,
-    // }
+    pub day_info: DayInfo,
     pub moon_phase: u8,
     pub max_tiles_x: i16,
     pub max_tiles_y: i16,
@@ -55,64 +121,7 @@ pub struct WorldInfo {
     pub glowing_mushroom_tree_top_style: u8,
     pub underworld_tree_top_style: u8,
     pub rain: f32,
-    // bitflags {
-    pub shadow_orb_smashed: bool,
-    pub downed_boss_1: bool,
-    pub downed_boss_2: bool,
-    pub downed_boss_3: bool,
-    pub hard_mode: bool,
-    pub downed_clown: bool,
-    pub server_side_character: bool,
-    pub downed_plant_boss: bool,
-    pub mech_boss_downed: bool,
-    pub mech_boss_downed_2: bool,
-    pub mech_boss_downed_3: bool,
-    pub mech_boss_any_downed: bool,
-    pub cloud_bg: bool,
-    pub crimson: bool,
-    pub pumpkin_moon: bool,
-    pub snow_moon: bool,
-    pub expert_mode: bool,
-    pub fastforwardtime: bool,
-    pub slime_rain: bool,
-    pub downed_slime_king: bool,
-    pub downed_queen_bee: bool,
-    pub downed_fishron: bool,
-    pub downed_martians: bool,
-    pub downed_ancient_cultist: bool,
-    pub downed_moon_lord: bool,
-    pub downed_pumking: bool,
-    pub downed_mourning_wood: bool,
-    pub downed_ice_queen: bool,
-    pub downed_santank: bool,
-    pub downed_everscream: bool,
-    pub downed_golem: bool,
-    pub birthday_party: bool,
-    pub downed_pirates: bool,
-    pub downed_frost_legion: bool,
-    pub downed_goblins: bool,
-    pub sandstorm: bool,
-    pub dd2_event: bool,
-    pub downed_dd2_tier_1: bool,
-    pub downed_dd2_tier_2: bool,
-    pub downed_dd2_tier_3: bool,
-    pub combat_book_used: bool,
-    pub manual_lanterns: bool,
-    pub downed_solar_tower: bool,
-    pub downed_vortex_tower: bool,
-    pub downed_tower_nebula: bool,
-    pub downed_stardust_tower: bool,
-    pub force_halloween_day: bool,
-    pub force_xmas_day: bool,
-    pub bought_cat: bool,
-    pub bought_dog: bool,
-    pub bought_bunny: bool,
-    pub free_cake: bool,
-    pub drunk_world: bool,
-    pub downed_empress_of_light: bool,
-    pub downed_queen_slime: bool,
-    pub get_good_world: bool,
-    // }
+    pub event_info: EventInfo,
     /// The respective tier indices, names and possible tile IDs are:
     ///
     /// * Tier 0: Copper (tile ID 7 or 166)
@@ -133,12 +142,7 @@ impl PacketBody for WorldInfo {
 
     fn write_body(&self, cursor: &mut SliceCursor) {
         cursor.write(&self.time);
-        cursor.write(
-            &(0 // day and moon info
-            | if self.day_time { 0x01 } else { 0 }
-            | if self.blood_moon { 0x02 } else { 0 }
-            | if self.eclipse { 0x04 } else { 0 }),
-        );
+        cursor.write(&self.day_info);
         cursor.write(&self.moon_phase);
         cursor.write(&self.max_tiles_x);
         cursor.write(&self.max_tiles_y);
@@ -185,84 +189,7 @@ impl PacketBody for WorldInfo {
         cursor.write(&self.glowing_mushroom_tree_top_style);
         cursor.write(&self.underworld_tree_top_style);
         cursor.write(&self.rain);
-        cursor.write(
-            &(0 // event info[0]
-            | if self.shadow_orb_smashed { 0x01 } else { 0 }
-            | if self.downed_boss_1 { 0x02 } else { 0 }
-            | if self.downed_boss_2 { 0x04 } else { 0 }
-            | if self.downed_boss_3 { 0x08 } else { 0 }
-            | if self.hard_mode { 0x10 } else { 0 }
-            | if self.downed_clown { 0x20 } else { 0 }
-            | if self.server_side_character { 0x40 } else { 0 }
-            | if self.downed_plant_boss { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[1]
-            | if self.mech_boss_downed { 0x01 } else { 0 }
-            | if self.mech_boss_downed_2 { 0x02 } else { 0 }
-            | if self.mech_boss_downed_3 { 0x04 } else { 0 }
-            | if self.mech_boss_any_downed { 0x08 } else { 0 }
-            | if self.cloud_bg { 0x10 } else { 0 }
-            | if self.crimson { 0x20 } else { 0 }
-            | if self.pumpkin_moon { 0x40 } else { 0 }
-            | if self.snow_moon { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[2]
-            | if self.expert_mode { 0x01 } else { 0 }
-            | if self.fastforwardtime { 0x02 } else { 0 }
-            | if self.slime_rain { 0x04 } else { 0 }
-            | if self.downed_slime_king { 0x08 } else { 0 }
-            | if self.downed_queen_bee { 0x10 } else { 0 }
-            | if self.downed_fishron { 0x20 } else { 0 }
-            | if self.downed_martians { 0x40 } else { 0 }
-            | if self.downed_ancient_cultist { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[3]
-            | if self.downed_moon_lord { 0x01 } else { 0 }
-            | if self.downed_pumking { 0x02 } else { 0 }
-            | if self.downed_mourning_wood { 0x04 } else { 0 }
-            | if self.downed_ice_queen { 0x08 } else { 0 }
-            | if self.downed_santank { 0x10 } else { 0 }
-            | if self.downed_everscream { 0x20 } else { 0 }
-            | if self.downed_golem { 0x40 } else { 0 }
-            | if self.birthday_party { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[4]
-            | if self.downed_pirates { 0x01 } else { 0 }
-            | if self.downed_frost_legion { 0x02 } else { 0 }
-            | if self.downed_goblins { 0x04 } else { 0 }
-            | if self.sandstorm { 0x08 } else { 0 }
-            | if self.dd2_event { 0x10 } else { 0 }
-            | if self.downed_dd2_tier_1 { 0x20 } else { 0 }
-            | if self.downed_dd2_tier_2 { 0x40 } else { 0 }
-            | if self.downed_dd2_tier_3 { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[5]
-            | if self.combat_book_used { 0x01 } else { 0 }
-            | if self.manual_lanterns { 0x02 } else { 0 }
-            | if self.downed_solar_tower { 0x04 } else { 0 }
-            | if self.downed_vortex_tower { 0x08 } else { 0 }
-            | if self.downed_tower_nebula { 0x10 } else { 0 }
-            | if self.downed_stardust_tower { 0x20 } else { 0 }
-            | if self.force_halloween_day { 0x40 } else { 0 }
-            | if self.force_xmas_day { 0x80 } else { 0 }),
-        );
-        cursor.write(
-            &(0 // event info[6]
-            | if self.bought_cat { 0x01 } else { 0 }
-            | if self.bought_dog { 0x02 } else { 0 }
-            | if self.bought_bunny { 0x04 } else { 0 }
-            | if self.free_cake { 0x08 } else { 0 }
-            | if self.drunk_world { 0x10 } else { 0 }
-            | if self.downed_empress_of_light { 0x20 } else { 0 }
-            | if self.downed_queen_slime { 0x40 } else { 0 }
-            | if self.get_good_world { 0x80 } else { 0 }),
-        );
-        cursor.write(&0u8); // event info[7]
+        cursor.write(&self.event_info);
         self.ore_tiers_tiles.iter().for_each(|t| cursor.write(t));
         cursor.write(&self.invasion_type);
         cursor.write(&self.lobby_id);
@@ -271,7 +198,7 @@ impl PacketBody for WorldInfo {
 
     fn from_body(cursor: &mut SliceCursor) -> Self {
         let time = cursor.read();
-        let day_and_moon_info = cursor.read::<u8>();
+        let day_info = cursor.read();
         let moon_phase = cursor.read();
         let max_tiles_x = cursor.read();
         let max_tiles_y = cursor.read();
@@ -321,16 +248,7 @@ impl PacketBody for WorldInfo {
         let glowing_mushroom_tree_top_style = cursor.read();
         let underworld_tree_top_style = cursor.read();
         let rain = cursor.read();
-        let event_info: [u8; 8] = [
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-        ];
+        let event_info = cursor.read();
         let ore_tiers_tiles = [
             cursor.read(),
             cursor.read(),
@@ -344,11 +262,9 @@ impl PacketBody for WorldInfo {
         let lobby_id = cursor.read();
         let sandstorm_severity = cursor.read();
 
-        dbg!(Self {
+        Self {
             time,
-            day_time: day_and_moon_info & 0x01 != 0,
-            blood_moon: day_and_moon_info & 0x02 != 0,
-            eclipse: day_and_moon_info & 0x04 != 0,
+            day_info,
             moon_phase,
             max_tiles_x,
             max_tiles_y,
@@ -391,66 +307,11 @@ impl PacketBody for WorldInfo {
             glowing_mushroom_tree_top_style,
             underworld_tree_top_style,
             rain,
-            shadow_orb_smashed: event_info[0] & 0x01 != 0,
-            downed_boss_1: event_info[0] & 0x02 != 0,
-            downed_boss_2: event_info[0] & 0x04 != 0,
-            downed_boss_3: event_info[0] & 0x08 != 0,
-            hard_mode: event_info[0] & 0x10 != 0,
-            downed_clown: event_info[0] & 0x20 != 0,
-            server_side_character: event_info[0] & 0x40 != 0,
-            downed_plant_boss: event_info[0] & 0x80 != 0,
-            mech_boss_downed: event_info[1] & 0x01 != 0,
-            mech_boss_downed_2: event_info[1] & 0x02 != 0,
-            mech_boss_downed_3: event_info[1] & 0x04 != 0,
-            mech_boss_any_downed: event_info[1] & 0x08 != 0,
-            cloud_bg: event_info[1] & 0x10 != 0,
-            crimson: event_info[1] & 0x20 != 0,
-            pumpkin_moon: event_info[1] & 0x40 != 0,
-            snow_moon: event_info[1] & 0x80 != 0,
-            expert_mode: event_info[2] & 0x01 != 0,
-            fastforwardtime: event_info[2] & 0x02 != 0,
-            slime_rain: event_info[2] & 0x04 != 0,
-            downed_slime_king: event_info[2] & 0x08 != 0,
-            downed_queen_bee: event_info[2] & 0x10 != 0,
-            downed_fishron: event_info[2] & 0x20 != 0,
-            downed_martians: event_info[2] & 0x40 != 0,
-            downed_ancient_cultist: event_info[2] & 0x80 != 0,
-            downed_moon_lord: event_info[3] & 0x01 != 0,
-            downed_pumking: event_info[3] & 0x02 != 0,
-            downed_mourning_wood: event_info[3] & 0x04 != 0,
-            downed_ice_queen: event_info[3] & 0x08 != 0,
-            downed_santank: event_info[3] & 0x10 != 0,
-            downed_everscream: event_info[3] & 0x20 != 0,
-            downed_golem: event_info[3] & 0x40 != 0,
-            birthday_party: event_info[3] & 0x80 != 0,
-            downed_pirates: event_info[4] & 0x01 != 0,
-            downed_frost_legion: event_info[4] & 0x02 != 0,
-            downed_goblins: event_info[4] & 0x04 != 0,
-            sandstorm: event_info[4] & 0x08 != 0,
-            dd2_event: event_info[4] & 0x10 != 0,
-            downed_dd2_tier_1: event_info[4] & 0x20 != 0,
-            downed_dd2_tier_2: event_info[4] & 0x40 != 0,
-            downed_dd2_tier_3: event_info[4] & 0x80 != 0,
-            combat_book_used: event_info[5] & 0x01 != 0,
-            manual_lanterns: event_info[5] & 0x02 != 0,
-            downed_solar_tower: event_info[5] & 0x04 != 0,
-            downed_vortex_tower: event_info[5] & 0x08 != 0,
-            downed_tower_nebula: event_info[5] & 0x10 != 0,
-            downed_stardust_tower: event_info[5] & 0x20 != 0,
-            force_halloween_day: event_info[5] & 0x40 != 0,
-            force_xmas_day: event_info[5] & 0x80 != 0,
-            bought_cat: event_info[6] & 0x01 != 0,
-            bought_dog: event_info[6] & 0x02 != 0,
-            bought_bunny: event_info[6] & 0x04 != 0,
-            free_cake: event_info[6] & 0x08 != 0,
-            drunk_world: event_info[6] & 0x10 != 0,
-            downed_empress_of_light: event_info[6] & 0x20 != 0,
-            downed_queen_slime: event_info[6] & 0x40 != 0,
-            get_good_world: event_info[6] & 0x80 != 0,
+            event_info,
             ore_tiers_tiles,
             invasion_type,
             lobby_id,
             sandstorm_severity,
-        })
+        }
     }
 }

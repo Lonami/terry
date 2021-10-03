@@ -7,6 +7,6 @@ packet_struct! {
     pub struct RemoveItemOwner {
         const TAG = 39;
 
-        pub item_index: i16,
+        pub item_index: u16,
     }
 }

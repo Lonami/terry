@@ -8,8 +8,8 @@ packet_struct! {
         const TAG = 128;
 
         pub player_id: u8,
-        pub x: u16,
-        pub y: u16,
+        pub x: i16,
+        pub y: i16,
         pub number_of_hits: u16,
         pub proj_id: u16,
     }

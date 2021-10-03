@@ -4,7 +4,7 @@ use crate::SliceCursor;
 /// Update player buffs (and debuffs).
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct UpdatePlayerBuff {
     pub player_id: u8,
     pub buffs: [u16; 22],

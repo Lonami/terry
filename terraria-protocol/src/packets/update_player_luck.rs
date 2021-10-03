@@ -11,6 +11,6 @@ packet_struct! {
         pub ladybug_luck_time_remaining: i32,
         pub torch_luck: f32,
         pub luck_potion: u8,
-        pub hasgardengnomenearby: bool,
+        pub has_garden_gnome_nearby: bool,
     }
 }

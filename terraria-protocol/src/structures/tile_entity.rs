@@ -4,57 +4,57 @@ use crate::{Deserializable, Serializable, SliceCursor};
 pub enum TileEntity {
     TrainingDummy {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         npc_index: u16,
     },
     ItemFrame {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         item_type: u16,
         item_prefix: u8,
         item_stack: u16,
     },
     LogicSensor {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         logic_check_type: u8,
         on: bool,
     },
     DisplayDoll {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         flags: [u8; 2], // TODO read body
     },
     WeaponRack {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         item_type: u16,
         item_prefix: u8,
         item_stack: u16,
     },
     HatRack {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         flags: u8, // TODO read body
     },
     FoodPlatter {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
         item_type: u16,
         item_prefix: u8,
         item_stack: u16,
     },
     Pylon {
         id: i32,
-        x: u16,
-        y: u16,
+        x: i16,
+        y: i16,
     },
 }
 

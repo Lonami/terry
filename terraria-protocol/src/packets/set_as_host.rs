@@ -8,6 +8,6 @@ packet_struct! {
         const TAG = 139;
 
         pub player_id: u8,
-        pub countsashost: bool,
+        pub host: bool,
     }
 }

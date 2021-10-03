@@ -8,7 +8,7 @@ packet_struct! {
     pub struct SyncExtraValue {
         const TAG = 92;
 
-        pub npc_index: i16,
+        pub npc_index: u16,
         pub extra_value: i32,
         pub pos: Vec2,
     }

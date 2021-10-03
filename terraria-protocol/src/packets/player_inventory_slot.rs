@@ -1,5 +1,4 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::packets::packet_struct;
 
 pub enum SlotLocation {
     Inventory(usize),
@@ -14,16 +13,19 @@ pub enum SlotLocation {
     VoidVault(usize),
 }
 
-/// Player inventory slot.
-///
-/// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
-pub struct PlayerInventorySlot {
-    pub player_id: u8,
-    pub slot_id: i16,
-    pub stack: i16,
-    pub prefix: u8,
-    pub item_netid: i16,
+packet_struct! {
+    /// Player inventory slot.
+    ///
+    /// Direction: Server <-> Client (Sync).
+    pub struct PlayerInventorySlot {
+        const TAG = 5;
+
+        pub player_id: u8,
+        pub slot_id: i16,
+        pub stack: i16,
+        pub prefix: u8,
+        pub item_netid: i16,
+    }
 }
 
 impl PlayerInventorySlot {
@@ -53,28 +55,6 @@ impl PlayerInventorySlot {
             180..=219 => SlotLocation::DefenderForge(index - 180),
             220..=259 => SlotLocation::VoidVault(index - 220),
             n => panic!("slot index {} is out of bounds", n),
-        }
-    }
-}
-
-impl PacketBody for PlayerInventorySlot {
-    const TAG: u8 = 5;
-
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.slot_id);
-        cursor.write(&self.stack);
-        cursor.write(&self.prefix);
-        cursor.write(&self.item_netid);
-    }
-
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            player_id: cursor.read(),
-            slot_id: cursor.read(),
-            stack: cursor.read(),
-            prefix: cursor.read(),
-            item_netid: cursor.read(),
         }
     }
 }

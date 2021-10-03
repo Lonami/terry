@@ -4,7 +4,7 @@ use crate::SliceCursor;
 /// Update NPC name.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct UpdateNpcName {
     pub npc_id: i16,
     pub name: Option<String>,

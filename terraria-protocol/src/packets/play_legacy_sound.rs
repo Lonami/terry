@@ -1,5 +1,13 @@
 use crate::packets::packet_struct;
-use crate::structures::Vec2;
+use crate::structures::{Vec2, serializable_enum};
+
+serializable_enum! {
+    pub enum SoundMode: u8 {
+        Style = 1,
+        VolumeScale = 2,
+        PitchOffset = 3,
+    }
+}
 
 packet_struct! {
     /// Play a legacy sound.
@@ -10,7 +18,6 @@ packet_struct! {
 
         pub pos: Vec2,
         pub sound_id: u16,
-        /// BitFlags: 1 = Style, 2 = Volume Scale, 3 = Pitch Offset
-        pub sound_flags: u8,
+        pub mode: SoundMode,
     }
 }

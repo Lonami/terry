@@ -1,4 +1,16 @@
 use crate::packets::packet_struct;
+use crate::structures::serializable_bitflags;
+
+serializable_bitflags! {
+    pub struct ToolMode: u8 {
+        const RED = 0x01;
+        const GREEN = 0x02;
+        const BLUE = 0x04;
+        const YELLOW = 0x08;
+        const ACTUATOR = 0x16;
+        const CUTTER = 0x32;
+    }
+}
 
 packet_struct! {
     /// Perform a wire operation en-mass.
@@ -11,7 +23,6 @@ packet_struct! {
         pub start_y: i16,
         pub end_x: i16,
         pub end_y: i16,
-        /// BitFlags: 1 = Red, 2 = Green, 4 = Blue, 8 = Yellow, 16 = Actuator, 32 = Cutter
-        pub toolmode: u8,
+        pub tool_mode: ToolMode,
     }
 }

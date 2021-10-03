@@ -16,6 +16,6 @@ packet_struct! {
         pub npc_ai: i32,
         pub coin_value: i32,
         pub base_value: f32,
-        pub spawnedfromstatue: bool,
+        pub spawned_from_statue: bool,
     }
 }

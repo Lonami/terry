@@ -1,4 +1,13 @@
 use crate::packets::packet_struct;
+use crate::structures::serializable_enum;
+
+serializable_enum! {
+    pub enum EntityType: u8 {
+        TrainingDummy = 0,
+        ItemFrame = 1,
+        LogicSensor = 2,
+    }
+}
 
 packet_struct! {
     /// Place a tile entity.
@@ -9,7 +18,6 @@ packet_struct! {
 
         pub x: i16,
         pub y: i16,
-        /// 2 = Logic Sensor 1 = Item Frame 0 = Training Dummy
-        pub tileentitytype: u8,
+        pub tile_entity_type: EntityType,
     }
 }

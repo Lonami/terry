@@ -8,7 +8,7 @@ packet_struct! {
         const TAG = 121;
 
         pub player_id: u8,
-        pub tileentity_id: i32,
+        pub tile_entity_id: i32,
         pub item_index: u8,
         pub item_id: u16,
         pub stack: u16,

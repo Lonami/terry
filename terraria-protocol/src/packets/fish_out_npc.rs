@@ -7,8 +7,8 @@ packet_struct! {
     pub struct FishOutNpc {
         const TAG = 130;
 
-        pub x: u16,
-        pub y: u16,
+        pub x: i16,
+        pub y: i16,
         pub npc_id: i16,
     }
 }

@@ -29,10 +29,16 @@ pub enum TileAction {
     SlopePoundTile,
 }
 
+impl Default for TileAction {
+    fn default() -> Self {
+        Self::KillTile { fail: false }
+    }
+}
+
 /// Modify a single tile.
 ///
 /// Direction: Server <-> Client (Sync).
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct ModifyTile {
     pub action: TileAction,
     pub tile_x: i16,
@@ -43,31 +49,31 @@ impl PacketBody for ModifyTile {
     const TAG: u8 = 17;
 
     fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&match self.action {
-            TileAction::KillTile { .. } => 0u8,
-            TileAction::PlaceTile { .. } => 1u8,
-            TileAction::KillWall { .. } => 2u8,
-            TileAction::PlaceWall { .. } => 3u8,
-            TileAction::KillTileNoItem { .. } => 4u8,
-            TileAction::PlaceWire => 5u8,
-            TileAction::KillWire => 6u8,
-            TileAction::PoundTile => 7u8,
-            TileAction::PlaceActuator => 8u8,
-            TileAction::KillActuator => 9u8,
-            TileAction::PlaceWire2 => 10u8,
-            TileAction::KillWire2 => 11u8,
-            TileAction::PlaceWire3 => 12u8,
-            TileAction::KillWire3 => 13u8,
-            TileAction::SlopeTile { .. } => 14u8,
-            TileAction::FrameTrack => 15u8,
-            TileAction::PlaceWire4 => 16u8,
-            TileAction::KillWire4 => 17u8,
-            TileAction::PokeLogicGate => 18u8,
-            TileAction::Actuate => 19u8,
-            TileAction::KillTile2 { .. } => 20u8,
-            TileAction::ReplaceTile { .. } => 21u8,
-            TileAction::ReplaceWall { .. } => 22u8,
-            TileAction::SlopePoundTile => 23u8,
+        cursor.write::<u8>(&match self.action {
+            TileAction::KillTile { .. } => 0,
+            TileAction::PlaceTile { .. } => 1,
+            TileAction::KillWall { .. } => 2,
+            TileAction::PlaceWall { .. } => 3,
+            TileAction::KillTileNoItem { .. } => 4,
+            TileAction::PlaceWire => 5,
+            TileAction::KillWire => 6,
+            TileAction::PoundTile => 7,
+            TileAction::PlaceActuator => 8,
+            TileAction::KillActuator => 9,
+            TileAction::PlaceWire2 => 10,
+            TileAction::KillWire2 => 11,
+            TileAction::PlaceWire3 => 12,
+            TileAction::KillWire3 => 13,
+            TileAction::SlopeTile { .. } => 14,
+            TileAction::FrameTrack => 15,
+            TileAction::PlaceWire4 => 16,
+            TileAction::KillWire4 => 17,
+            TileAction::PokeLogicGate => 18,
+            TileAction::Actuate => 19,
+            TileAction::KillTile2 { .. } => 20,
+            TileAction::ReplaceTile { .. } => 21,
+            TileAction::ReplaceWall { .. } => 22,
+            TileAction::SlopePoundTile => 23,
         });
         cursor.write(&self.tile_x);
         cursor.write(&self.tile_y);
@@ -125,7 +131,7 @@ impl PacketBody for ModifyTile {
                 21 => TileAction::ReplaceTile { ty: extra, style },
                 22 => TileAction::ReplaceWall { ty: extra },
                 23 => TileAction::SlopePoundTile,
-                n => panic!("invalid tile action {}", n),
+                n => panic!("invalid TileAction: {}", n),
             },
             tile_x,
             tile_y,

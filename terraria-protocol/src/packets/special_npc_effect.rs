@@ -1,4 +1,14 @@
 use crate::packets::packet_struct;
+use crate::structures::serializable_enum;
+
+serializable_enum! {
+    pub enum SpecialEffect: u8 {
+        SpawnSkeletron = 1,
+        CauseSoundAtPlayer = 2,
+        StartSundialing = 3,
+        BigMimicSpawnSmoke = 4,
+    }
+}
 
 packet_struct! {
     /// Special NPC Effect.
@@ -8,7 +18,6 @@ packet_struct! {
         const TAG = 51;
 
         pub player_id: u8,
-        /// Values: 1 = Spawn Skeletron, 2 = Cause sound at player, 3 = Start Sundialing (Only works if server is receiving), 4 = BigMimcSpawnSmoke
-        pub ty: u8,
+        pub ty: SpecialEffect,
     }
 }
