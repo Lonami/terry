@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody as _, SliceCursor};
+use crate::serde::{PacketBody as _, Result, SliceCursor};
 
 macro_rules! define_packet {
     ($($variant:ident,)+) => {
@@ -16,7 +16,7 @@ macro_rules! define_packet {
         }
 
         impl crate::serde::Serializable for Packet {
-            fn serialize(&self, cursor: &mut SliceCursor) {
+            fn serialize(&self, cursor: &mut SliceCursor) -> Result<()> {
                 match self {
                     $(Self::$variant(p) => p.serialize_as_packet(cursor),)+
                 }
@@ -25,15 +25,14 @@ macro_rules! define_packet {
 
         impl crate::serde::Deserializable for Packet {
             // TODO player should probably go inside the packets
-            fn deserialize(cursor: &mut SliceCursor) -> Self {
-                let tag = cursor.read::<u8>();
-                match tag {
+            fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
+                Ok(match cursor.read::<u8>()? {
                     $(
                         crate::packets::$variant::TAG =>
-                            Self::$variant(crate::packets::$variant::from_body(cursor)),
+                            Self::$variant(crate::packets::$variant::from_body(cursor)?),
                     )+
-                    tag => panic!("unknown tag {}", tag),
-                }
+                    tag => panic!("unknown tag: {}", tag),
+                })
             }
         }
 
@@ -47,7 +46,7 @@ macro_rules! define_packet {
             impl std::convert::TryFrom<Packet> for crate::packets::$variant {
                 type Error = ();
 
-                fn try_from(packet: Packet) -> Result<Self, Self::Error> {
+                fn try_from(packet: Packet) -> std::result::Result<Self, Self::Error> {
                     match packet {
                         Packet::$variant(p) => Ok(p),
                         _ => Err(())

@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum TileAction {
@@ -47,7 +47,7 @@ pub struct ModifyTile {
 impl PacketBody for ModifyTile {
     const TAG: u8 = 17;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write::<u8>(&match self.action {
             TileAction::KillTile { .. } => 0,
             TileAction::PlaceTile { .. } => 1,
@@ -74,8 +74,8 @@ impl PacketBody for ModifyTile {
             TileAction::ReplaceWall { .. } => 22,
             TileAction::SlopePoundTile => 23,
         });
-        cursor.write(&self.tile_x);
-        cursor.write(&self.tile_y);
+        cursor.write(&self.tile_x)?;
+        cursor.write(&self.tile_y)?;
         cursor.write(&match self.action {
             TileAction::KillTile { fail } => fail as i16,
             TileAction::PlaceTile { ty, .. } => ty as i16,
@@ -93,15 +93,16 @@ impl PacketBody for ModifyTile {
             TileAction::ReplaceTile { style, .. } => style,
             _ => 0u8,
         });
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let action = cursor.read::<u8>();
-        let tile_x = cursor.read();
-        let tile_y = cursor.read();
-        let extra = cursor.read::<i16>();
-        let style = cursor.read::<u8>();
-        Self {
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let action = cursor.read::<u8>()?;
+        let tile_x = cursor.read()?;
+        let tile_y = cursor.read()?;
+        let extra = cursor.read::<i16>()?;
+        let style = cursor.read::<u8>()?;
+        Ok(Self {
             action: match action {
                 0 => TileAction::KillTile { fail: extra != 0 },
                 1 => TileAction::PlaceTile {
@@ -134,6 +135,6 @@ impl PacketBody for ModifyTile {
             },
             tile_x,
             tile_y,
-        }
+        })
     }
 }

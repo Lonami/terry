@@ -1,5 +1,5 @@
 use crate::serde::{
-    serializable_bitflags, serializable_enum, Deserializable, Serializable, SliceCursor,
+    serializable_bitflags, serializable_enum, Deserializable, Result, Serializable, SliceCursor,
 };
 
 serializable_bitflags! {
@@ -48,48 +48,56 @@ pub struct PlayerDeathReason {
 }
 
 impl Serializable for PlayerDeathReason {
-    fn serialize(&self, _cursor: &mut SliceCursor) {
+    fn serialize(&self, _cursor: &mut SliceCursor) -> Result<()> {
         todo!()
     }
 }
 
 impl Deserializable for PlayerDeathReason {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        let reason = DeathReason::from_bits_truncate(cursor.read());
+    fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
+        let reason = DeathReason::from_bits_truncate(cursor.read()?);
 
         let killer_player_id = reason
             .contains(DeathReason::HAS_KILLER)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let killing_npc_index = reason
             .contains(DeathReason::HAS_KILLING)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let projectile_index = reason
             .contains(DeathReason::HAS_PROJECTILE_IDX)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let type_of_death = reason
             .contains(DeathReason::HAS_TYPE_OF_DEATH)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let projectile_type = reason
             .contains(DeathReason::HAS_PROJECTILE_TY)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let item_type = reason
             .contains(DeathReason::HAS_ITEM_TY)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let item_prefix = reason
             .contains(DeathReason::HAS_ITEM_PREFIX)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let death_reason = reason
             .contains(DeathReason::HAS_CUSTOM_MSG)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
-        Self {
+        Ok(Self {
             killer_player_id,
             killing_npc_index,
             projectile_index,
@@ -98,6 +106,6 @@ impl Deserializable for PlayerDeathReason {
             item_type,
             item_prefix,
             death_reason,
-        }
+        })
     }
 }

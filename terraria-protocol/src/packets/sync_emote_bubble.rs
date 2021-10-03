@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 /// Sync an emote bubble.
 ///
@@ -16,9 +16,9 @@ pub struct SyncEmoteBubble {
 impl PacketBody for SyncEmoteBubble {
     const TAG: u8 = 91;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.emote_id);
-        cursor.write(&self.anchor_type);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.emote_id)?;
+        cursor.write(&self.anchor_type)?;
 
         if self.anchor_type != 255 {
             cursor.write(&self.player_id.unwrap());
@@ -28,17 +28,18 @@ impl PacketBody for SyncEmoteBubble {
                 cursor.write(&self.emote_metadata.unwrap());
             }
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let emote_id = cursor.read();
-        let anchor_type = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let emote_id = cursor.read()?;
+        let anchor_type = cursor.read()?;
 
         let (player_id, emote_lifetime, emote) = if anchor_type != 255 {
             (
-                Some(cursor.read()),
-                Some(cursor.read()),
-                Some(cursor.read()),
+                Some(cursor.read()?),
+                Some(cursor.read()?),
+                Some(cursor.read()?),
             )
         } else {
             (None, None, None)
@@ -47,17 +48,17 @@ impl PacketBody for SyncEmoteBubble {
         let mut emote_metadata = None;
         if let Some(emote) = emote {
             if emote & 0x80 != 0 {
-                emote_metadata = Some(cursor.read());
+                emote_metadata = Some(cursor.read()?);
             }
         }
 
-        Self {
+        Ok(Self {
             emote_id,
             anchor_type,
             player_id,
             emote_lifetime,
             emote,
             emote_metadata,
-        }
+        })
     }
 }

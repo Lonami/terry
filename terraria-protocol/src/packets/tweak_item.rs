@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
 
 serializable_bitflags! {
     pub struct TweakFlags: u8 {
@@ -52,93 +52,118 @@ impl Eq for TweakItem {}
 impl PacketBody for TweakItem {
     const TAG: u8 = 88;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.item_index);
-        cursor.write(&self.flags);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.item_index)?;
+        cursor.write(&self.flags)?;
         if let Some(packed_color_value) = self.packed_color_value {
-            cursor.write(&packed_color_value);
+            cursor.write(&packed_color_value)?;
         }
         if let Some(damage) = self.damage {
-            cursor.write(&damage);
+            cursor.write(&damage)?;
         }
         if let Some(knockback) = self.knockback {
-            cursor.write(&knockback);
+            cursor.write(&knockback)?;
         }
         if let Some(use_animation) = self.use_animation {
-            cursor.write(&use_animation);
+            cursor.write(&use_animation)?;
         }
         if let Some(use_time) = self.use_time {
-            cursor.write(&use_time);
+            cursor.write(&use_time)?;
         }
         if let Some(shoot) = self.shoot {
-            cursor.write(&shoot);
+            cursor.write(&shoot)?;
         }
         if let Some(shootspeed) = self.shootspeed {
-            cursor.write(&shootspeed);
+            cursor.write(&shootspeed)?;
         }
         if self.flags.contains(TweakFlags::NEXT_FLAGS) {
-            cursor.write(&self.extra_flags);
+            cursor.write(&self.extra_flags)?;
         }
         if let Some(width) = self.width {
-            cursor.write(&width);
+            cursor.write(&width)?;
         }
         if let Some(height) = self.height {
-            cursor.write(&height);
+            cursor.write(&height)?;
         }
         if let Some(scale) = self.scale {
-            cursor.write(&scale);
+            cursor.write(&scale)?;
         }
         if let Some(ammo) = self.ammo {
-            cursor.write(&ammo);
+            cursor.write(&ammo)?;
         }
         if let Some(use_ammo) = self.use_ammo {
-            cursor.write(&use_ammo);
+            cursor.write(&use_ammo)?;
         }
         if let Some(not_ammo) = self.not_ammo {
-            cursor.write(&not_ammo);
+            cursor.write(&not_ammo)?;
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let item_index = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let item_index = cursor.read()?;
 
-        let flags = cursor.read::<TweakFlags>();
-        let packed_color_value = flags.contains(TweakFlags::COLOR).then(|| cursor.read());
-        let damage = flags.contains(TweakFlags::DAMAGE).then(|| cursor.read());
-        let knockback = flags.contains(TweakFlags::KNOCKBACK).then(|| cursor.read());
+        let flags = cursor.read::<TweakFlags>()?;
+        let packed_color_value = flags
+            .contains(TweakFlags::COLOR)
+            .then(|| cursor.read())
+            .transpose()?;
+        let damage = flags
+            .contains(TweakFlags::DAMAGE)
+            .then(|| cursor.read())
+            .transpose()?;
+        let knockback = flags
+            .contains(TweakFlags::KNOCKBACK)
+            .then(|| cursor.read())
+            .transpose()?;
         let use_animation = flags
             .contains(TweakFlags::USE_ANIMATON)
-            .then(|| cursor.read());
-        let use_time = flags.contains(TweakFlags::USE_TIME).then(|| cursor.read());
-        let shoot = flags.contains(TweakFlags::SHOOT).then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
+        let use_time = flags
+            .contains(TweakFlags::USE_TIME)
+            .then(|| cursor.read())
+            .transpose()?;
+        let shoot = flags
+            .contains(TweakFlags::SHOOT)
+            .then(|| cursor.read())
+            .transpose()?;
         let shootspeed = flags
             .contains(TweakFlags::SHOOT_SPEED)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let extra_flags = flags
             .contains(TweakFlags::NEXT_FLAGS)
             .then(|| cursor.read::<TweakExtraFlags>())
+            .transpose()?
             .unwrap_or_else(TweakExtraFlags::empty);
         let width = extra_flags
             .contains(TweakExtraFlags::WIDTH)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
         let height = extra_flags
             .contains(TweakExtraFlags::HEIGHT)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
         let scale = extra_flags
             .contains(TweakExtraFlags::SCALE)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
         let ammo = extra_flags
             .contains(TweakExtraFlags::AMMO)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
         let use_ammo = extra_flags
             .contains(TweakExtraFlags::USE_AMMO)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
         let not_ammo = extra_flags
             .contains(TweakExtraFlags::NOT_AMMO)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
-        Self {
+        Ok(Self {
             item_index,
             flags,
             packed_color_value,
@@ -155,6 +180,6 @@ impl PacketBody for TweakItem {
             ammo,
             use_ammo,
             not_ammo,
-        }
+        })
     }
 }

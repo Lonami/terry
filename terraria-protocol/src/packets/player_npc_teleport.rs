@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 serializable_bitflags! {
@@ -27,26 +27,28 @@ pub struct PlayerNpcTeleport {
 impl PacketBody for PlayerNpcTeleport {
     const TAG: u8 = 65;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.mode);
-        cursor.write(&self.target_id);
-        cursor.write(&self.pos);
-        cursor.write(&self.style);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.mode)?;
+        cursor.write(&self.target_id)?;
+        cursor.write(&self.pos)?;
+        cursor.write(&self.style)?;
         if let Some(extra) = self.extra {
-            cursor.write(&extra);
+            cursor.write(&extra)?;
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let mode = cursor.read();
-        Self {
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let mode = cursor.read()?;
+        Ok(Self {
             mode,
-            target_id: cursor.read(),
-            pos: cursor.read(),
-            style: cursor.read(),
+            target_id: cursor.read()?,
+            pos: cursor.read()?,
+            style: cursor.read()?,
             extra: mode
                 .contains(TeleportMode::HAS_EXTRA_INFO)
-                .then(|| cursor.read()),
-        }
+                .then(|| cursor.read())
+                .transpose()?,
+        })
     }
 }

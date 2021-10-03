@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 serializable_bitflags! {
@@ -63,39 +63,44 @@ pub struct UpdatePlayer {
 impl PacketBody for UpdatePlayer {
     const TAG: u8 = 13;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        cursor.write(&self.keys);
-        cursor.write(&self.pulley);
-        cursor.write(&self.action);
-        cursor.write(&self.sleep_info);
-        cursor.write(&self.selected_item);
-        cursor.write(&self.pos);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.player_id)?;
+        cursor.write(&self.keys)?;
+        cursor.write(&self.pulley)?;
+        cursor.write(&self.action)?;
+        cursor.write(&self.sleep_info)?;
+        cursor.write(&self.selected_item)?;
+        cursor.write(&self.pos)?;
         if let Some(vel) = self.vel.as_ref() {
-            cursor.write(vel);
+            cursor.write(vel)?;
         }
         if let Some((original_pos, home_pos)) = self.original_and_home_pos.as_ref() {
-            cursor.write(original_pos);
-            cursor.write(home_pos);
+            cursor.write(original_pos)?;
+            cursor.write(home_pos)?;
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let player_id = cursor.read();
-        let keys = cursor.read();
-        let pulley = cursor.read::<PulleyMode>();
-        let action = cursor.read::<PlayerAction>();
-        let sleep_info = cursor.read();
-        let selected_item = cursor.read();
-        let pos = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let player_id = cursor.read()?;
+        let keys = cursor.read()?;
+        let pulley = cursor.read::<PulleyMode>()?;
+        let action = cursor.read::<PlayerAction>()?;
+        let sleep_info = cursor.read()?;
+        let selected_item = cursor.read()?;
+        let pos = cursor.read()?;
 
-        let vel = pulley.contains(PulleyMode::HAS_VEL).then(|| cursor.read());
+        let vel = pulley
+            .contains(PulleyMode::HAS_VEL)
+            .then(|| cursor.read())
+            .transpose()?;
 
         let original_and_home_pos = action
             .contains(PlayerAction::HAS_ORIG_AND_HOME_POS)
-            .then(|| (cursor.read(), cursor.read()));
+            .then(|| Ok((cursor.read()?, cursor.read()?)))
+            .transpose()?;
 
-        Self {
+        Ok(Self {
             player_id,
             keys,
             pulley,
@@ -105,6 +110,6 @@ impl PacketBody for UpdatePlayer {
             pos,
             vel,
             original_and_home_pos,
-        }
+        })
     }
 }

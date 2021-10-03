@@ -30,7 +30,7 @@ fn reader_worker(
     loop {
         reader.read_exact(&mut packet)?;
         let mut cursor = SliceCursor::new(&mut packet);
-        let len = cursor.read::<u16>() as usize;
+        let len = cursor.read::<u16>().unwrap() as usize;
         cursor.finish();
 
         packet.reserve(len - 2);
@@ -41,7 +41,7 @@ fn reader_worker(
 
         trace!("< {} : {}", packet[2], crate::utils::HexString(&packet),);
         let mut cursor = SliceCursor::new(&mut packet);
-        if sender.send(cursor.read::<Packet>()).is_err() {
+        if sender.send(cursor.read::<Packet>().unwrap()).is_err() {
             break Ok(());
         }
     }

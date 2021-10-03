@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 use crate::structures::{Chest, Sign, Tile, TileEntity};
 use inflate;
 
@@ -17,37 +17,37 @@ pub struct SendSection {
     pub tile_entities: Vec<TileEntity>,
 }
 
-fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
-    let x_start = cursor.read();
-    let y_start = cursor.read();
-    let width = cursor.read();
-    let height = cursor.read();
+fn read_decompressed_section(cursor: &mut SliceCursor) -> Result<SendSection> {
+    let x_start = cursor.read()?;
+    let y_start = cursor.read()?;
+    let width = cursor.read()?;
+    let height = cursor.read()?;
 
     let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
     let mut rle = 0; // kind of a run-length encoding
 
-    (0..width * height).for_each(|_| {
+    for _ in 0..width * height {
         if rle != 0 {
             rle -= 1;
             tiles.push(tiles[tiles.len() - 1].clone());
         } else {
             // tiles are encoded differently when being read through here
-            let tup = Tile::deserialize_packed(cursor);
+            let tup = Tile::deserialize_packed(cursor)?;
             tiles.push(tup.0);
             rle = tup.1;
         }
-    });
+    }
 
-    let n = cursor.read::<u16>() as usize;
-    let chests = (0..n).map(|_| cursor.read()).collect();
+    let n = cursor.read::<u16>()? as usize;
+    let chests = (0..n).map(|_| cursor.read()).collect::<Result<_>>()?;
 
-    let n = cursor.read::<u16>() as usize;
-    let signs = (0..n).map(|_| cursor.read()).collect();
+    let n = cursor.read::<u16>()? as usize;
+    let signs = (0..n).map(|_| cursor.read()).collect::<Result<_>>()?;
 
-    let n = cursor.read::<u16>() as usize;
-    let tile_entities = (0..n).map(|_| cursor.read()).collect();
+    let n = cursor.read::<u16>()? as usize;
+    let tile_entities = (0..n).map(|_| cursor.read()).collect::<Result<_>>()?;
 
-    SendSection {
+    Ok(SendSection {
         x_start,
         y_start,
         width,
@@ -56,18 +56,18 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
         chests,
         signs,
         tile_entities,
-    }
+    })
 }
 
 impl PacketBody for SendSection {
     const TAG: u8 = 10;
 
-    fn write_body(&self, _cursor: &mut SliceCursor) {
+    fn write_body(&self, _cursor: &mut SliceCursor) -> Result<()> {
         todo!()
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        if cursor.read::<bool>() {
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        if cursor.read::<bool>()? {
             let mut decompressed =
                 inflate::inflate_bytes(cursor.read_to_end()).expect("failed to decompress tiles");
 

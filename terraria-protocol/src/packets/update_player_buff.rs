@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 /// Update player buffs (and debuffs).
 ///
@@ -12,15 +12,20 @@ pub struct UpdatePlayerBuff {
 impl PacketBody for UpdatePlayerBuff {
     const TAG: u8 = 50;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.player_id);
-        self.buffs.iter().for_each(|b| cursor.write(b));
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.player_id)?;
+        for b in self.buffs.iter() {
+            cursor.write(b)?;
+        }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let player_id = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let player_id = cursor.read()?;
         let mut buffs = [0; 22];
-        buffs.iter_mut().for_each(|b| *b = cursor.read());
-        Self { player_id, buffs }
+        for b in buffs.iter_mut() {
+            *b = cursor.read()?;
+        }
+        Ok(Self { player_id, buffs })
     }
 }

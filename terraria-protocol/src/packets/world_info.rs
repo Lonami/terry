@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
 
 serializable_bitflags! {
     pub struct DayInfo: u8 {
@@ -140,129 +140,161 @@ impl Eq for WorldInfo {}
 impl PacketBody for WorldInfo {
     const TAG: u8 = 7;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.time);
-        cursor.write(&self.day_info);
-        cursor.write(&self.moon_phase);
-        cursor.write(&self.max_tiles_x);
-        cursor.write(&self.max_tiles_y);
-        cursor.write(&self.spawn_x);
-        cursor.write(&self.spawn_y);
-        cursor.write(&self.world_surface);
-        cursor.write(&self.rock_layer);
-        cursor.write(&self.world_id);
-        cursor.write(&self.world_name);
-        cursor.write(&self.game_mode);
-        self.world_unique_id.iter().for_each(|i| cursor.write(i));
-        self.world_generator_version
-            .iter()
-            .for_each(|x| cursor.write(x));
-        cursor.write(&self.moon_type);
-        cursor.write(&self.tree_background);
-        cursor.write(&self.corruption_background);
-        cursor.write(&self.jungle_background);
-        cursor.write(&self.snow_background);
-        cursor.write(&self.hallow_background);
-        cursor.write(&self.crimson_background);
-        cursor.write(&self.desert_background);
-        cursor.write(&self.ocean_background);
-        self.unknown_background.iter().for_each(|x| cursor.write(x));
-        cursor.write(&self.ice_back_style);
-        cursor.write(&self.jungle_back_style);
-        cursor.write(&self.hell_back_style);
-        cursor.write(&self.wind_speed_set);
-        cursor.write(&self.cloud_number);
-        self.trees.iter().for_each(|x| cursor.write(x));
-        self.tree_styles.iter().for_each(|x| cursor.write(x));
-        self.cave_backs.iter().for_each(|x| cursor.write(x));
-        self.cave_back_styles.iter().for_each(|x| cursor.write(x));
-        self.forest_tree_top_styles
-            .iter()
-            .for_each(|x| cursor.write(x));
-        cursor.write(&self.corruption_tree_top_style);
-        cursor.write(&self.jungle_tree_top_style);
-        cursor.write(&self.snow_tree_top_style);
-        cursor.write(&self.hallow_tree_top_style);
-        cursor.write(&self.crimson_tree_top_style);
-        cursor.write(&self.desert_tree_top_style);
-        cursor.write(&self.ocean_tree_top_style);
-        cursor.write(&self.glowing_mushroom_tree_top_style);
-        cursor.write(&self.underworld_tree_top_style);
-        cursor.write(&self.rain);
-        cursor.write(&self.event_info);
-        self.ore_tiers_tiles.iter().for_each(|t| cursor.write(t));
-        cursor.write(&self.invasion_type);
-        cursor.write(&self.lobby_id);
-        cursor.write(&self.sandstorm_severity);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.time)?;
+        cursor.write(&self.day_info)?;
+        cursor.write(&self.moon_phase)?;
+        cursor.write(&self.max_tiles_x)?;
+        cursor.write(&self.max_tiles_y)?;
+        cursor.write(&self.spawn_x)?;
+        cursor.write(&self.spawn_y)?;
+        cursor.write(&self.world_surface)?;
+        cursor.write(&self.rock_layer)?;
+        cursor.write(&self.world_id)?;
+        cursor.write(&self.world_name)?;
+        cursor.write(&self.game_mode)?;
+        for x in self.world_unique_id.iter() {
+            cursor.write(x)?;
+        }
+        for x in self.world_generator_version.iter() {
+            cursor.write(x)?;
+        }
+        cursor.write(&self.moon_type)?;
+        cursor.write(&self.tree_background)?;
+        cursor.write(&self.corruption_background)?;
+        cursor.write(&self.jungle_background)?;
+        cursor.write(&self.snow_background)?;
+        cursor.write(&self.hallow_background)?;
+        cursor.write(&self.crimson_background)?;
+        cursor.write(&self.desert_background)?;
+        cursor.write(&self.ocean_background)?;
+        for x in self.unknown_background.iter() {
+            cursor.write(x)?;
+        }
+        cursor.write(&self.ice_back_style)?;
+        cursor.write(&self.jungle_back_style)?;
+        cursor.write(&self.hell_back_style)?;
+        cursor.write(&self.wind_speed_set)?;
+        cursor.write(&self.cloud_number)?;
+        for x in self.trees.iter() {
+            cursor.write(x)?;
+        }
+        for x in self.tree_styles.iter() {
+            cursor.write(x)?;
+        }
+        for x in self.cave_backs.iter() {
+            cursor.write(x)?;
+        }
+        for x in self.cave_back_styles.iter() {
+            cursor.write(x)?;
+        }
+        for x in self.forest_tree_top_styles.iter() {
+            cursor.write(x)?;
+        }
+        cursor.write(&self.corruption_tree_top_style)?;
+        cursor.write(&self.jungle_tree_top_style)?;
+        cursor.write(&self.snow_tree_top_style)?;
+        cursor.write(&self.hallow_tree_top_style)?;
+        cursor.write(&self.crimson_tree_top_style)?;
+        cursor.write(&self.desert_tree_top_style)?;
+        cursor.write(&self.ocean_tree_top_style)?;
+        cursor.write(&self.glowing_mushroom_tree_top_style)?;
+        cursor.write(&self.underworld_tree_top_style)?;
+        cursor.write(&self.rain)?;
+        cursor.write(&self.event_info)?;
+        for x in self.ore_tiers_tiles.iter() {
+            cursor.write(x)?;
+        }
+        cursor.write(&self.invasion_type)?;
+        cursor.write(&self.lobby_id)?;
+        cursor.write(&self.sandstorm_severity)?;
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let time = cursor.read();
-        let day_info = cursor.read();
-        let moon_phase = cursor.read();
-        let max_tiles_x = cursor.read();
-        let max_tiles_y = cursor.read();
-        let spawn_x = cursor.read();
-        let spawn_y = cursor.read();
-        let world_surface = cursor.read();
-        let rock_layer = cursor.read();
-        let world_id = cursor.read();
-        let world_name = cursor.read();
-        let game_mode = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let time = cursor.read()?;
+        let day_info = cursor.read()?;
+        let moon_phase = cursor.read()?;
+        let max_tiles_x = cursor.read()?;
+        let max_tiles_y = cursor.read()?;
+        let spawn_x = cursor.read()?;
+        let spawn_y = cursor.read()?;
+        let world_surface = cursor.read()?;
+        let rock_layer = cursor.read()?;
+        let world_id = cursor.read()?;
+        let world_name = cursor.read()?;
+        let game_mode = cursor.read()?;
         let mut world_unique_id = [0; 16];
-        world_unique_id.iter_mut().for_each(|i| *i = cursor.read());
-        let world_generator_version = [cursor.read(), cursor.read()];
-        let moon_type = cursor.read();
-        let tree_background = cursor.read();
-        let corruption_background = cursor.read();
-        let jungle_background = cursor.read();
-        let snow_background = cursor.read();
-        let hallow_background = cursor.read();
-        let crimson_background = cursor.read();
-        let desert_background = cursor.read();
-        let ocean_background = cursor.read();
+        for i in world_unique_id.iter_mut() {
+            *i = cursor.read()?;
+        }
+        let world_generator_version = [cursor.read()?, cursor.read()?];
+        let moon_type = cursor.read()?;
+        let tree_background = cursor.read()?;
+        let corruption_background = cursor.read()?;
+        let jungle_background = cursor.read()?;
+        let snow_background = cursor.read()?;
+        let hallow_background = cursor.read()?;
+        let crimson_background = cursor.read()?;
+        let desert_background = cursor.read()?;
+        let ocean_background = cursor.read()?;
         let unknown_background = [
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
         ];
-        let ice_back_style = cursor.read();
-        let jungle_back_style = cursor.read();
-        let hell_back_style = cursor.read();
-        let wind_speed_set = cursor.read();
-        let cloud_number = cursor.read();
-        let trees = [cursor.read(), cursor.read(), cursor.read()];
-        let tree_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let cave_backs = [cursor.read(), cursor.read(), cursor.read()];
-        let cave_back_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let forest_tree_top_styles = [cursor.read(), cursor.read(), cursor.read(), cursor.read()];
-        let corruption_tree_top_style = cursor.read();
-        let jungle_tree_top_style = cursor.read();
-        let snow_tree_top_style = cursor.read();
-        let hallow_tree_top_style = cursor.read();
-        let crimson_tree_top_style = cursor.read();
-        let desert_tree_top_style = cursor.read();
-        let ocean_tree_top_style = cursor.read();
-        let glowing_mushroom_tree_top_style = cursor.read();
-        let underworld_tree_top_style = cursor.read();
-        let rain = cursor.read();
-        let event_info = cursor.read();
+        let ice_back_style = cursor.read()?;
+        let jungle_back_style = cursor.read()?;
+        let hell_back_style = cursor.read()?;
+        let wind_speed_set = cursor.read()?;
+        let cloud_number = cursor.read()?;
+        let trees = [cursor.read()?, cursor.read()?, cursor.read()?];
+        let tree_styles = [
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+        ];
+        let cave_backs = [cursor.read()?, cursor.read()?, cursor.read()?];
+        let cave_back_styles = [
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+        ];
+        let forest_tree_top_styles = [
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+        ];
+        let corruption_tree_top_style = cursor.read()?;
+        let jungle_tree_top_style = cursor.read()?;
+        let snow_tree_top_style = cursor.read()?;
+        let hallow_tree_top_style = cursor.read()?;
+        let crimson_tree_top_style = cursor.read()?;
+        let desert_tree_top_style = cursor.read()?;
+        let ocean_tree_top_style = cursor.read()?;
+        let glowing_mushroom_tree_top_style = cursor.read()?;
+        let underworld_tree_top_style = cursor.read()?;
+        let rain = cursor.read()?;
+        let event_info = cursor.read()?;
         let ore_tiers_tiles = [
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
-            cursor.read(),
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
+            cursor.read()?,
         ];
-        let invasion_type = cursor.read();
-        let lobby_id = cursor.read();
-        let sandstorm_severity = cursor.read();
+        let invasion_type = cursor.read()?;
+        let lobby_id = cursor.read()?;
+        let sandstorm_severity = cursor.read()?;
 
-        Self {
+        Ok(Self {
             time,
             day_info,
             moon_phase,
@@ -312,6 +344,6 @@ impl PacketBody for WorldInfo {
             invasion_type,
             lobby_id,
             sandstorm_severity,
-        }
+        })
     }
 }

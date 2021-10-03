@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 /// Update NPC Buff.
 ///
@@ -13,20 +13,21 @@ pub struct UpdateNpcBuff {
 impl PacketBody for UpdateNpcBuff {
     const TAG: u8 = 54;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.npc_id);
-        self.buff_times.iter().for_each(|(b, t)| {
-            cursor.write(b);
-            cursor.write(t);
-        })
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.npc_id)?;
+        for (b, t) in self.buff_times.iter() {
+            cursor.write(b)?;
+            cursor.write(t)?;
+        }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let npc_id = cursor.read();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let npc_id = cursor.read()?;
         let mut buff_times = [(0, 0); 5];
-        buff_times
-            .iter_mut()
-            .for_each(|tuple| *tuple = (cursor.read(), cursor.read()));
-        Self { npc_id, buff_times }
+        for tuple in buff_times.iter_mut() {
+            *tuple = (cursor.read()?, cursor.read()?);
+        }
+        Ok(Self { npc_id, buff_times })
     }
 }

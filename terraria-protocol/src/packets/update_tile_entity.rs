@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 /// Update Tile Entity.
 ///
@@ -13,21 +13,25 @@ pub struct UpdateTileEntity {
 impl PacketBody for UpdateTileEntity {
     const TAG: u8 = 86;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.id);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.id)?;
         cursor.write(&self.remove.is_some());
         if let Some((ty, x, y)) = self.remove {
-            cursor.write(&ty);
-            cursor.write(&x);
-            cursor.write(&y);
+            cursor.write(&ty)?;
+            cursor.write(&x)?;
+            cursor.write(&y)?;
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let id = cursor.read();
-        let remove =
-            (!cursor.read::<bool>()).then(|| (cursor.read(), cursor.read(), cursor.read()));
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let id = cursor.read()?;
+        let remove = if cursor.read::<bool>()? {
+            None
+        } else {
+            Some((cursor.read()?, cursor.read()?, cursor.read()?))
+        };
 
-        Self { id, remove }
+        Ok(Self { id, remove })
     }
 }

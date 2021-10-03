@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 
 /// Tamper with a NPC.
 ///
@@ -14,20 +14,21 @@ pub struct TamperWithNpc {
 impl PacketBody for TamperWithNpc {
     const TAG: u8 = 131;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.npc_id);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.npc_id)?;
         cursor.write(&self.immunity_time.is_some());
         if let Some(time) = self.immunity_time {
-            cursor.write(&time);
+            cursor.write(&time)?;
         }
-        cursor.write(&self.immunity_player_id);
+        cursor.write(&self.immunity_player_id)?;
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        Self {
-            npc_id: cursor.read(),
-            immunity_time: cursor.read::<bool>().then(|| cursor.read()),
-            immunity_player_id: cursor.read(),
-        }
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        Ok(Self {
+            npc_id: cursor.read()?,
+            immunity_time: cursor.read::<bool>()?.then(|| cursor.read()).transpose()?,
+            immunity_player_id: cursor.read()?,
+        })
     }
 }

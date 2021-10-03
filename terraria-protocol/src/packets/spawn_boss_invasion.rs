@@ -1,4 +1,4 @@
-use crate::serde::{packet_struct, Deserializable, Serializable, SliceCursor};
+use crate::serde::{packet_struct, Deserializable, Result, Serializable, SliceCursor};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum Invader {
@@ -26,7 +26,7 @@ impl Default for Invader {
 }
 
 impl Serializable for Invader {
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&match self {
             Self::GoblinInvasion => -1,
             Self::FrostInvasion => -2,
@@ -42,13 +42,13 @@ impl Serializable for Invader {
             Self::BoughtDog => -13,
             Self::BoughtBunny => -14,
             Self::SpawnNpc(npc) => *npc,
-        });
+        })
     }
 }
 
 impl Deserializable for Invader {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        match cursor.read::<i16>() {
+    fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
+        Ok(match cursor.read::<i16>()? {
             -1 => Self::GoblinInvasion,
             -2 => Self::FrostInvasion,
             -3 => Self::PirateInvasion,
@@ -63,7 +63,7 @@ impl Deserializable for Invader {
             -13 => Self::BoughtDog,
             -14 => Self::BoughtBunny,
             npc => Self::SpawnNpc(npc),
-        }
+        })
     }
 }
 

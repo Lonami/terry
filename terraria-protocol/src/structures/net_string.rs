@@ -1,4 +1,4 @@
-use crate::serde::{serializable_enum, Deserializable, Serializable, SliceCursor};
+use crate::serde::{serializable_enum, Deserializable, Result, Serializable, SliceCursor};
 use std::convert::TryInto;
 
 serializable_enum! {
@@ -23,7 +23,7 @@ impl NetString {
 }
 
 impl Serializable for NetString {
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&self.mode);
         cursor.write(&self.text);
         if self.mode != NetStringMode::Literal {
@@ -33,25 +33,30 @@ impl Serializable for NetString {
                 .try_into()
                 .expect("too many substitutions");
             cursor.write(&len);
-            self.substitutions.iter().for_each(|s| cursor.write(s));
+            for s in self.substitutions.iter() {
+                cursor.write(s)?;
+            }
         }
+        Ok(())
     }
 }
 
 impl Deserializable for NetString {
-    fn deserialize(cursor: &mut SliceCursor) -> Self {
-        let mode = cursor.read();
-        let text = cursor.read();
+    fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
+        let mode = cursor.read()?;
+        let text = cursor.read()?;
         let mut substitutions = Vec::new();
         if mode != NetStringMode::Literal {
-            let len = cursor.read::<u8>() as usize;
+            let len = cursor.read::<u8>()? as usize;
             substitutions.reserve(len);
-            (0..len).for_each(|_| substitutions.push(cursor.read()));
+            for _ in 0..len {
+                substitutions.push(cursor.read()?);
+            }
         }
-        Self {
+        Ok(Self {
             mode,
             text,
             substitutions,
-        }
+        })
     }
 }

@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, SliceCursor};
+use crate::serde::{PacketBody, Result, SliceCursor};
 use std::fmt;
 
 /// Travelling Merchant Inventory.
@@ -13,14 +13,19 @@ pub struct TravellingMerchantInventory {
 impl PacketBody for TravellingMerchantInventory {
     const TAG: u8 = 72;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        self.items.iter().for_each(|i| cursor.write(i));
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        for i in self.items.iter() {
+            cursor.write(i)?;
+        }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
         let mut items = [0; 40];
-        items.iter_mut().for_each(|i| *i = cursor.read());
-        Self { items }
+        for i in items.iter_mut() {
+            *i = cursor.read()?;
+        }
+        Ok(Self { items })
     }
 }
 

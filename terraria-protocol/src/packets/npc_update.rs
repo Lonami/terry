@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 use std::convert::TryInto;
@@ -73,25 +73,25 @@ const NPC_CATCHABLE: [u8; 668] = [
 impl PacketBody for NpcUpdate {
     const TAG: u8 = 23;
 
-    fn write_body(&self, cursor: &mut SliceCursor) {
-        cursor.write(&self.npc_id);
-        cursor.write(&self.pos);
-        cursor.write(&self.vel);
-        cursor.write(&self.target);
-        cursor.write(&self.flags);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        cursor.write(&self.npc_id)?;
+        cursor.write(&self.pos)?;
+        cursor.write(&self.vel)?;
+        cursor.write(&self.target)?;
+        cursor.write(&self.flags)?;
         for (i, _) in [NpcFlag::AI1, NpcFlag::AI2, NpcFlag::AI3, NpcFlag::AI4]
             .iter()
             .enumerate()
             .filter(|(_, flag)| self.flags.contains(**flag))
         {
-            cursor.write(&self.ai[i]);
+            cursor.write(&self.ai[i])?;
         }
-        cursor.write(&self.npc_net_id);
+        cursor.write(&self.npc_net_id)?;
         if let Some(scale) = self.player_count_scale.as_ref() {
-            cursor.write(scale);
+            cursor.write(scale)?;
         }
         if let Some(mult) = self.strength_multiplier.as_ref() {
-            cursor.write(mult);
+            cursor.write(mult)?;
         }
         if let Some(life) = self.life {
             if let Ok(hp) = life.try_into() {
@@ -106,16 +106,17 @@ impl PacketBody for NpcUpdate {
             }
         }
         if let Some(release_owner) = self.release_owner {
-            cursor.write(&release_owner);
+            cursor.write(&release_owner)?;
         }
+        Ok(())
     }
 
-    fn from_body(cursor: &mut SliceCursor) -> Self {
-        let npc_id = cursor.read();
-        let pos = cursor.read();
-        let vel = cursor.read();
-        let target = cursor.read();
-        let flags = cursor.read::<NpcFlag>();
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
+        let npc_id = cursor.read()?;
+        let pos = cursor.read()?;
+        let vel = cursor.read()?;
+        let target = cursor.read()?;
+        let flags = cursor.read::<NpcFlag>()?;
 
         let mut ai = [0f32; 4];
         for (i, _) in [NpcFlag::AI1, NpcFlag::AI2, NpcFlag::AI3, NpcFlag::AI4]
@@ -123,32 +124,38 @@ impl PacketBody for NpcUpdate {
             .enumerate()
             .filter(|(_, flag)| flags.contains(**flag))
         {
-            ai[i] = cursor.read();
+            ai[i] = cursor.read()?;
         }
 
-        let npc_net_id = cursor.read();
+        let npc_net_id = cursor.read()?;
 
         let player_count_scale = flags
             .contains(NpcFlag::SCALE_PLAYER_COUNT)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let strength_multiplier = flags
             .contains(NpcFlag::MULTIPLY_STRENGTH)
-            .then(|| cursor.read());
+            .then(|| cursor.read())
+            .transpose()?;
 
         let life = flags
             .contains(NpcFlag::HAS_LIFE)
-            .then(|| match cursor.read::<u8>() {
-                1 => cursor.read::<i8>() as i32,
-                2 => cursor.read::<i16>() as i32,
-                4 => cursor.read::<i32>() as i32,
-                n => panic!("bad byte count for life {}", n),
-            });
+            .then(|| {
+                Ok(match cursor.read::<u8>()? {
+                    1 => cursor.read::<i8>()? as i32,
+                    2 => cursor.read::<i16>()? as i32,
+                    4 => cursor.read::<i32>()? as i32,
+                    n => panic!("bad byte count for life {}", n),
+                })
+            })
+            .transpose()?;
 
-        let release_owner =
-            (npc_net_id >= 0 && NPC_CATCHABLE[npc_net_id as usize] != 0).then(|| cursor.read());
+        let release_owner = (npc_net_id >= 0 && NPC_CATCHABLE[npc_net_id as usize] != 0)
+            .then(|| cursor.read())
+            .transpose()?;
 
-        Self {
+        Ok(Self {
             npc_id,
             pos,
             vel,
@@ -160,6 +167,6 @@ impl PacketBody for NpcUpdate {
             strength_multiplier,
             life,
             release_owner,
-        }
+        })
     }
 }

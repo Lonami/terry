@@ -1,6 +1,25 @@
 mod core;
 
 use std::convert::TryInto as _;
+use std::fmt;
+
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub enum Error {
+    /// Reached a premature end of data, and the type could not be deseariled as a whole.
+    PrematureEnd,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::PrematureEnd => write!(f, "deserialization error: premature end of data"),
+        }
+    }
+}
+
+impl std::error::Error for Error {}
+
+pub type Result<T: Sized> = std::result::Result<T, Error>;
 
 pub struct SliceCursor<'a> {
     slice: &'a mut [u8],
@@ -13,12 +32,12 @@ impl<'a> SliceCursor<'a> {
     }
 
     #[inline(always)]
-    pub fn read<D: Deserializable>(&mut self) -> D {
+    pub fn read<D: Deserializable>(&mut self) -> Result<D> {
         D::deserialize(self)
     }
 
     #[inline(always)]
-    pub fn write<S: Serializable>(&mut self, s: &S) {
+    pub fn write<S: Serializable>(&mut self, s: &S) -> Result<()> {
         s.serialize(self)
     }
 
@@ -48,39 +67,40 @@ impl<'a> SliceCursor<'a> {
 
     // If the `const` feautre was a bit more advanced we could probably make
     // this return `[u8; n]` which would play nice with `{integer}::from_le`.
+    // TODO don't panic!() in these
     #[inline(always)]
-    pub(crate) fn readn(&mut self, n: usize) -> &[u8] {
+    pub(crate) fn readn(&mut self, n: usize) -> Result<&[u8]> {
         self.pos += n;
-        &self.slice[self.pos - n..self.pos]
+        Ok(&self.slice[self.pos - n..self.pos])
     }
 
     #[inline(always)]
-    pub(crate) fn read1(&mut self) -> [u8; 1] {
+    pub(crate) fn read1(&mut self) -> Result<[u8; 1]> {
         self.pos += 1;
-        [self.slice[self.pos - 1]]
+        Ok([self.slice[self.pos - 1]])
     }
 
     #[inline(always)]
-    pub(crate) fn read2(&mut self) -> [u8; 2] {
+    pub(crate) fn read2(&mut self) -> Result<[u8; 2]> {
         self.pos += 2;
-        [self.slice[self.pos - 2], self.slice[self.pos - 1]]
+        Ok([self.slice[self.pos - 2], self.slice[self.pos - 1]])
     }
 
     #[inline(always)]
-    pub(crate) fn read4(&mut self) -> [u8; 4] {
+    pub(crate) fn read4(&mut self) -> Result<[u8; 4]> {
         self.pos += 4;
-        [
+        Ok([
             self.slice[self.pos - 4],
             self.slice[self.pos - 3],
             self.slice[self.pos - 2],
             self.slice[self.pos - 1],
-        ]
+        ])
     }
 
     #[inline(always)]
-    pub(crate) fn read8(&mut self) -> [u8; 8] {
+    pub(crate) fn read8(&mut self) -> Result<[u8; 8]> {
         self.pos += 8;
-        [
+        Ok([
             self.slice[self.pos - 8],
             self.slice[self.pos - 7],
             self.slice[self.pos - 6],
@@ -89,14 +109,15 @@ impl<'a> SliceCursor<'a> {
             self.slice[self.pos - 3],
             self.slice[self.pos - 2],
             self.slice[self.pos - 1],
-        ]
+        ])
     }
 
     #[inline(always)]
-    pub(crate) fn write_slice(&mut self, slice: &[u8]) {
+    pub(crate) fn write_slice(&mut self, slice: &[u8]) -> Result<()> {
         let pos = self.pos;
         self.slice[pos..pos + slice.len()].copy_from_slice(slice);
         self.pos += slice.len();
+        Ok(())
     }
 
     #[inline(always)]
@@ -108,22 +129,24 @@ impl<'a> SliceCursor<'a> {
 }
 
 pub trait Serializable {
-    fn serialize(&self, cursor: &mut SliceCursor);
+    fn serialize(&self, cursor: &mut SliceCursor) -> Result<()>;
 }
 
 pub trait Deserializable {
-    fn deserialize(cursor: &mut SliceCursor) -> Self;
+    fn deserialize(cursor: &mut SliceCursor) -> Result<Self>
+    where
+        Self: Sized;
 }
 
 pub trait PacketBody: Sized {
     const TAG: u8;
 
-    fn write_body(&self, cursor: &mut SliceCursor);
+    fn write_body(&self, cursor: &mut SliceCursor) -> Result<()>;
 
-    fn from_body(cursor: &mut SliceCursor) -> Self;
+    fn from_body(cursor: &mut SliceCursor) -> Result<Self>;
 
     // TODO player should probably go inside the packets
-    fn serialize_as_packet(&self, cursor: &mut SliceCursor) {
+    fn serialize_as_packet(&self, cursor: &mut SliceCursor) -> Result<()> {
         let length_pos = cursor.pos();
         cursor.write(&0u16); // length
         cursor.write(&Self::TAG);
@@ -132,6 +155,7 @@ pub trait PacketBody: Sized {
             .try_into()
             .expect("packet too long");
         cursor.rewrite(length_pos, &length);
+        Ok(())
     }
 }
 
@@ -157,16 +181,17 @@ macro_rules! serializable_struct {
         impl Eq for $ident {}
 
         impl crate::serde::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<()> {
                 $(cursor.write(&self.$field);)+
+                Ok(())
             }
         }
 
         impl crate::serde::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
-                Self {
-                    $($field: cursor.read(),)+
-                }
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<Self> {
+                Ok(Self {
+                    $($field: cursor.read()?,)+
+                })
             }
         }
     };
@@ -193,18 +218,18 @@ macro_rules! serializable_enum {
         }
 
         impl crate::serde::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
-                cursor.write(&(*self as $ty));
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<()> {
+                cursor.write(&(*self as $ty))
             }
         }
 
         impl crate::serde::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
-                match cursor.read::<$ty>() {
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<Self> {
+                Ok(match cursor.read::<$ty>()? {
                     $first_value => $ident::$first_variant,
                     $($value => $ident::$variant,)*
                     n => panic!("invalid {}: {}", stringify!($ty), n),
-                }
+                })
             }
         }
     };
@@ -229,14 +254,14 @@ macro_rules! serializable_bitflags {
         }
 
         impl crate::serde::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
-                cursor.write(&self.bits());
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<()> {
+                cursor.write(&self.bits())
             }
         }
 
         impl crate::serde::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
-                Self::from_bits_truncate(cursor.read())
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<Self> {
+                cursor.read().map(Self::from_bits_truncate)
             }
         }
     };
@@ -268,16 +293,17 @@ macro_rules! packet_struct {
         impl crate::serde::PacketBody for $ident {
             const TAG: u8 = $tag;
 
-            fn write_body(&self, cursor: &mut crate::serde::SliceCursor) {
+            fn write_body(&self, cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<()> {
                 let _ = cursor;
-                $(cursor.write(&self.$field);)*
+                $(cursor.write(&self.$field)?;)*
+                Ok(())
             }
 
-            fn from_body(cursor: &mut crate::serde::SliceCursor) -> Self {
+            fn from_body(cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<Self> {
                 let _ = cursor;
-                Self {
-                    $($field: cursor.read(),)*
-                }
+                Ok(Self {
+                    $($field: cursor.read()?,)*
+                })
             }
         }
     };
