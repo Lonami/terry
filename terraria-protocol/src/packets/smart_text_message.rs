@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, Result, SliceCursor};
+use crate::serde::{Error, PacketBody, Result, SliceCursor};
 use crate::structures::{NetString, Rgb};
 use std::convert::TryInto;
 
@@ -18,8 +18,13 @@ impl PacketBody for SmartTextMessage {
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&self.message_color)?;
         cursor.write(&self.message)?;
-        let message_len: u16 = self.message.len().try_into().expect("message too long");
-        cursor.write(&message_len)?;
+        cursor.write::<u16>(
+            &self
+                .message
+                .len()
+                .try_into()
+                .map_err(|_| Error::PrematureEnd)?,
+        )?;
         Ok(())
     }
 

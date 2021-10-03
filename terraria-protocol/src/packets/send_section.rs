@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, Result, SliceCursor};
+use crate::serde::{Error, PacketBody, Result, SliceCursor};
 use crate::structures::{Chest, Sign, Tile, TileEntity};
 use inflate;
 
@@ -68,8 +68,8 @@ impl PacketBody for SendSection {
 
     fn from_body(cursor: &mut SliceCursor) -> Result<Self> {
         if cursor.read::<bool>()? {
-            let mut decompressed =
-                inflate::inflate_bytes(cursor.read_to_end()).expect("failed to decompress tiles");
+            let mut decompressed = inflate::inflate_bytes(cursor.read_to_end())
+                .map_err(|details| Error::MalformedPayload { details })?;
 
             // I can't make the borrow checker happy because if I tried to
             // update cursor to this new borrowed data (even if defined out)

@@ -1,11 +1,14 @@
 mod core;
 
-use std::convert::TryInto as _;
+use std::convert::TryFrom as _;
 use std::fmt;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Error {
     /// Reached a premature end of data, and the type could not be deserealized as a whole.
+    ///
+    /// During serialization, this error indicates that the end of the buffer was found,
+    /// and the payload cannot otherwise fit within the message.
     PrematureEnd,
     /// An invalid or unknown packet tag was found, and the packet cannot be decoded further.
     InvalidPacketTag { tag: u8 },
@@ -14,6 +17,8 @@ pub enum Error {
         enumeration: &'static str,
         value: u16,
     },
+    /// Malformed data which cannot be treated was found (such as decompression failure).
+    MalformedPayload { details: String },
 }
 
 impl fmt::Display for Error {
@@ -26,6 +31,7 @@ impl fmt::Display for Error {
                 "invalid or unknown value for enumeration {}: {}",
                 enumeration, value
             ),
+            Self::MalformedPayload { details } => write!(f, "malformed payload data: {}", details),
         }
     }
 }
@@ -157,10 +163,10 @@ pub trait PacketBody: Sized {
         cursor.write(&0u16)?; // length
         cursor.write(&Self::TAG)?;
         self.write_body(cursor)?;
-        let length: u16 = (cursor.pos() - length_pos)
-            .try_into()
-            .expect("packet too long");
-        cursor.rewrite(length_pos, &length)?;
+        cursor.rewrite(
+            length_pos,
+            &u16::try_from(cursor.pos() - length_pos).map_err(|_| Error::PrematureEnd)?,
+        )?;
         Ok(())
     }
 }

@@ -1,4 +1,6 @@
-use crate::serde::{serializable_bitflags, Deserializable, Result, Serializable, SliceCursor};
+use crate::serde::{
+    serializable_bitflags, Deserializable, Error, Result, Serializable, SliceCursor,
+};
 use crate::structures::LiquidType;
 
 // 1 if it's important, 0 otherwise
@@ -198,7 +200,15 @@ impl Tile {
 
         if flags[2] & 0x40 != 0 {
             // this flag basically sets the higher byte of the u16
-            *wall.as_mut().expect("wall should be present") |= (cursor.read::<u8>()? as u16) << 8;
+            match wall.as_mut() {
+                Some(w) => *w |= (cursor.read::<u8>()? as u16) << 8,
+                None => {
+                    return Err(Error::InvalidEnumValue {
+                        enumeration: std::any::type_name::<Tile>(),
+                        value: flags[0] as _,
+                    })
+                }
+            }
         }
 
         let rle = match (flags[0] & 0xc0) >> 6 {

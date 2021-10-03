@@ -1,6 +1,6 @@
 //! Implements Serializable and Deserializable for "core" types.
 
-use crate::serde::{Deserializable, Result, Serializable, SliceCursor};
+use crate::serde::{Deserializable, Error, Result, Serializable, SliceCursor};
 
 use std::convert::TryInto;
 
@@ -41,8 +41,7 @@ impl Deserializable for bool {
 
 impl Serializable for String {
     fn serialize(&self, cursor: &mut SliceCursor) -> Result<()> {
-        let len: u8 = self.len().try_into().expect("string too long");
-        cursor.write(&len)?;
+        cursor.write::<u8>(&self.len().try_into().map_err(|_| Error::PrematureEnd)?)?;
         cursor.write_slice(self.as_bytes())
     }
 }

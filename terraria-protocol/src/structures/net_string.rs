@@ -1,4 +1,4 @@
-use crate::serde::{serializable_enum, Deserializable, Result, Serializable, SliceCursor};
+use crate::serde::{serializable_enum, Deserializable, Error, Result, Serializable, SliceCursor};
 use std::convert::TryInto;
 
 serializable_enum! {
@@ -27,12 +27,13 @@ impl Serializable for NetString {
         cursor.write(&self.mode)?;
         cursor.write(&self.text)?;
         if self.mode != NetStringMode::Literal {
-            let len: u8 = self
-                .substitutions
-                .len()
-                .try_into()
-                .expect("too many substitutions");
-            cursor.write(&len)?;
+            cursor.write::<u8>(
+                &self
+                    .substitutions
+                    .len()
+                    .try_into()
+                    .map_err(|_| Error::PrematureEnd)?,
+            )?;
             for s in self.substitutions.iter() {
                 cursor.write(s)?;
             }
