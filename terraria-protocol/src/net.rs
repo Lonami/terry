@@ -21,17 +21,6 @@ pub struct Terraria {
     packet_rx: mpsc::Receiver<Packet>,
 }
 
-fn as_hex(buf: &[u8]) -> String {
-    const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
-    let mut bytes = Vec::with_capacity(buf.len() * 2);
-    buf.into_iter().for_each(|b| {
-        bytes.push(HEX_DIGITS[(b >> 4) as usize]);
-        bytes.push(HEX_DIGITS[(b & 15) as usize]);
-    });
-    // SAFETY: we're only pushing ASCII characters (i.e. valid UTF-8)
-    unsafe { String::from_utf8_unchecked(bytes) }
-}
-
 fn reader_worker(
     mut reader: BufReader<TcpStream>,
     sender: mpsc::SyncSender<Packet>,
@@ -50,7 +39,7 @@ fn reader_worker(
         }
         reader.read_exact(&mut packet[2..len])?;
 
-        trace!("< {} : {}", packet[2], as_hex(&packet),);
+        trace!("< {} : {}", packet[2], crate::utils::HexString(&packet),);
         let mut cursor = SliceCursor::new(&mut packet);
         if sender.send(cursor.read::<Packet>()).is_err() {
             break Ok(());
@@ -163,7 +152,11 @@ impl Terraria {
         let (slice, pos) = cursor.finish();
         self.stream.write_all(&slice[..pos])?;
         self.stream.flush()?;
-        trace!("> {} : {}", packet.tag(), as_hex(&slice[..pos]));
+        trace!(
+            "> {} : {}",
+            packet.tag(),
+            crate::utils::HexString(&slice[..pos])
+        );
         Ok(())
     }
 

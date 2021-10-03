@@ -27,27 +27,13 @@ macro_rules! define_packet {
             // TODO player should probably go inside the packets
             fn deserialize(cursor: &mut SliceCursor) -> Self {
                 let tag = cursor.read::<u8>();
-                let decoded = match tag {
+                match tag {
                     $(
                         crate::packets::$variant::TAG =>
                             Self::$variant(crate::packets::$variant::from_body(cursor)),
                     )+
                     tag => panic!("unknown tag {}", tag),
-                };
-
-                struct HexString<'a>(&'a [u8]);
-
-                use std::fmt;
-                impl<'a> fmt::Display for HexString<'a> {
-                    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                        for byte in self.0 {
-                            write!(f, "{:02x}", byte)?;
-                        }
-                        Ok(())
-                    }
                 }
-
-                decoded
             }
         }
 

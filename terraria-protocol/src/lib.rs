@@ -11,6 +11,7 @@ pub mod packets;
 mod parser;
 pub mod serde;
 pub mod structures;
+pub(crate) mod utils;
 
 pub use packet::Packet;
 pub use parser::Parser;
