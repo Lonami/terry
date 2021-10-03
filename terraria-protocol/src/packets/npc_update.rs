@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
+use crate::serde::{serializable_bitflags, Error, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 use std::convert::TryInto;
@@ -146,7 +146,12 @@ impl PacketBody for NpcUpdate {
                     1 => cursor.read::<i8>()? as i32,
                     2 => cursor.read::<i16>()? as i32,
                     4 => cursor.read::<i32>()? as i32,
-                    n => panic!("bad byte count for life {}", n),
+                    n => {
+                        return Err(Error::InvalidEnumValue {
+                            enumeration: std::any::type_name::<NpcUpdate>(),
+                            value: n as _,
+                        })
+                    }
                 })
             })
             .transpose()?;

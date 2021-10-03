@@ -1,4 +1,4 @@
-use crate::serde::{Deserializable, Result, Serializable, SliceCursor};
+use crate::serde::{Deserializable, Error, Result, Serializable, SliceCursor};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TileEntity {
@@ -130,7 +130,12 @@ impl Deserializable for TileEntity {
                 x: cursor.read()?,
                 y: cursor.read()?,
             },
-            n => panic!("invalid tile entity {}", n),
+            n => {
+                return Err(Error::InvalidEnumValue {
+                    enumeration: std::any::type_name::<TileEntity>(),
+                    value: n as _,
+                })
+            }
         })
     }
 }

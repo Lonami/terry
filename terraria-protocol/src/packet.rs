@@ -31,7 +31,7 @@ macro_rules! define_packet {
                         crate::packets::$variant::TAG =>
                             Self::$variant(crate::packets::$variant::from_body(cursor)?),
                     )+
-                    tag => panic!("unknown tag: {}", tag),
+                    tag => return Err(crate::serde::Error::InvalidPacketTag { tag }),
                 })
             }
         }

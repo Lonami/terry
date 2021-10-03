@@ -1,5 +1,5 @@
 use crate::serde::{
-    serializable_struct, Deserializable, PacketBody, Result, Serializable, SliceCursor,
+    serializable_struct, Deserializable, Error, PacketBody, Result, Serializable, SliceCursor,
 };
 use crate::structures::{LiquidType, NetString, Rgb, Vec2};
 
@@ -53,7 +53,12 @@ impl Deserializable for Bestiary {
             2 => Self::Chat {
                 npc_net_id: cursor.read()?,
             },
-            n => panic!("invalid Bestiary: {}", n),
+            n => {
+                return Err(Error::InvalidEnumValue {
+                    enumeration: std::any::type_name::<Bestiary>(),
+                    value: n as _,
+                })
+            }
         })
     }
 }
@@ -174,7 +179,12 @@ impl Deserializable for CreativePower {
                 }
                 data
             }),
-            n => panic!("invalid CreativePower: {}", n),
+            n => {
+                return Err(Error::InvalidEnumValue {
+                    enumeration: std::any::type_name::<CreativePower>(),
+                    value: n as _,
+                })
+            }
         })
     }
 }
@@ -418,7 +428,12 @@ impl PacketBody for LoadNetModule {
                 power_id: cursor.read()?,
                 level: cursor.read()?,
             },
-            n => panic!("invalid LoadNetModule: {}", n),
+            n => {
+                return Err(Error::InvalidEnumValue {
+                    enumeration: std::any::type_name::<LoadNetModule>(),
+                    value: n as _,
+                })
+            }
         })
     }
 }

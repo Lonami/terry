@@ -41,9 +41,9 @@ impl PlayerInventorySlot {
     /// * 179 = Trash
     /// * 180 - 219 = Defender's Forge
     /// * 220 - 259 = Void Vault
-    pub fn slot_location(&self) -> SlotLocation {
+    pub fn slot_location(&self) -> Option<SlotLocation> {
         let index = self.slot_id as usize;
-        match self.slot_id {
+        Some(match self.slot_id {
             0..=58 => SlotLocation::Inventory(index),
             59..=78 => SlotLocation::Armor(index - 59),
             79..=88 => SlotLocation::Dye(index - 79),
@@ -54,7 +54,7 @@ impl PlayerInventorySlot {
             179 => SlotLocation::Trash,
             180..=219 => SlotLocation::DefenderForge(index - 180),
             220..=259 => SlotLocation::VoidVault(index - 220),
-            n => panic!("slot index {} is out of bounds", n),
-        }
+            _ => return None,
+        })
     }
 }

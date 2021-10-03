@@ -5,14 +5,27 @@ use std::fmt;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Error {
-    /// Reached a premature end of data, and the type could not be deseariled as a whole.
+    /// Reached a premature end of data, and the type could not be deserealized as a whole.
     PrematureEnd,
+    /// An invalid or unknown packet tag was found, and the packet cannot be decoded further.
+    InvalidPacketTag { tag: u8 },
+    /// An invalid or unknown enumeration value was found within a valid packet.
+    InvalidEnumValue {
+        enumeration: &'static str,
+        value: u16,
+    },
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::PrematureEnd => write!(f, "deserialization error: premature end of data"),
+            Self::PrematureEnd => write!(f, "premature end of data"),
+            Self::InvalidPacketTag { tag } => write!(f, "invalid or unknown packet tag: {}", tag),
+            Self::InvalidEnumValue { enumeration, value } => write!(
+                f,
+                "invalid or unknown value for enumeration {}: {}",
+                enumeration, value
+            ),
         }
     }
 }
@@ -229,7 +242,10 @@ macro_rules! serializable_enum {
                 Ok(match cursor.read::<$ty>()? {
                     $first_value => $ident::$first_variant,
                     $($value => $ident::$variant,)*
-                    n => panic!("invalid {}: {}", stringify!($ty), n),
+                    n => return Err(crate::serde::Error::InvalidEnumValue {
+                        enumeration: std::any::type_name::<$ident>(),
+                        value: n as _,
+                    }),
                 })
             }
         }

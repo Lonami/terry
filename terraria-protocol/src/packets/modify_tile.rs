@@ -1,4 +1,4 @@
-use crate::serde::{PacketBody, Result, SliceCursor};
+use crate::serde::{Error, PacketBody, Result, SliceCursor};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum TileAction {
@@ -131,7 +131,12 @@ impl PacketBody for ModifyTile {
                 21 => TileAction::ReplaceTile { ty: extra, style },
                 22 => TileAction::ReplaceWall { ty: extra },
                 23 => TileAction::SlopePoundTile,
-                n => panic!("invalid TileAction: {}", n),
+                n => {
+                    return Err(Error::InvalidEnumValue {
+                        enumeration: std::any::type_name::<ModifyTile>(),
+                        value: n as _,
+                    })
+                }
             },
             tile_x,
             tile_y,
