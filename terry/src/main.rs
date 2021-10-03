@@ -1,7 +1,7 @@
 use std::thread;
 use std::time::Duration;
 use terraria_protocol::net::Terraria;
-use terraria_protocol::packets::{self, Packet};
+use terraria_protocol::{packets, Packet};
 
 use std::io;
 

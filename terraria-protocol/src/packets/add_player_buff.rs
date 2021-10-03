@@ -1,4 +1,4 @@
-use crate::packets::packet_struct;
+use crate::serde::packet_struct;
 
 packet_struct! {
     /// Add a buff (or debuff) to some player for a certain duration.

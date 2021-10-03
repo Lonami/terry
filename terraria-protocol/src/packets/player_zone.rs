@@ -1,5 +1,4 @@
-use crate::packets::packet_struct;
-use crate::structures::serializable_bitflags;
+use crate::serde::{packet_struct, serializable_bitflags};
 
 serializable_bitflags! {
     pub struct ZoneFlag: u32 {

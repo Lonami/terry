@@ -1,5 +1,5 @@
-use crate::packets::Packet;
-use crate::SliceCursor;
+use crate::serde::SliceCursor;
+use crate::Packet;
 
 #[derive(Debug)]
 pub struct Parser {

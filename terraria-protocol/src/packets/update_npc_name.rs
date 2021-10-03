@@ -1,5 +1,4 @@
-use crate::packets::PacketBody;
-use crate::SliceCursor;
+use crate::serde::{PacketBody, SliceCursor};
 
 /// Update NPC name.
 ///

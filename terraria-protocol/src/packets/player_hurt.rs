@@ -1,5 +1,5 @@
-use crate::packets::packet_struct;
-use crate::structures::{serializable_bitflags, PlayerDeathReason};
+use crate::serde::{packet_struct, serializable_bitflags};
+use crate::structures::PlayerDeathReason;
 
 serializable_bitflags! {
     pub struct DamageType: u8 {

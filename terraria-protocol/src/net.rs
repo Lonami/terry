@@ -1,9 +1,8 @@
 //! Basic, threaded network implementation.
-use crate::packets::{self, Packet, PacketBody};
-use crate::SliceCursor;
+use crate::serde::{PacketBody, SliceCursor};
+use crate::{packets, Packet};
 use log::trace;
-use std::io::BufReader;
-use std::io::{self, Read, Write};
+use std::io::{self, BufReader, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;

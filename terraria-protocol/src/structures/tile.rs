@@ -1,6 +1,5 @@
-use crate::structures::serializable_bitflags;
+use crate::serde::{serializable_bitflags, Deserializable, Serializable, SliceCursor};
 use crate::structures::LiquidType;
-use crate::{Deserializable, Serializable, SliceCursor};
 
 // 1 if it's important, 0 otherwise
 const TILE_FRAME_IMPORTANT: [u8; 624] = [

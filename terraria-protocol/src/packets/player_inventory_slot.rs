@@ -1,4 +1,4 @@
-use crate::packets::packet_struct;
+use crate::serde::packet_struct;
 
 pub enum SlotLocation {
     Inventory(usize),

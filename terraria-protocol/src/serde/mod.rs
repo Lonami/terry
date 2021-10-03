@@ -1,3 +1,7 @@
+mod core;
+
+use std::convert::TryInto as _;
+
 pub struct SliceCursor<'a> {
     slice: &'a mut [u8],
     pos: usize,
@@ -111,6 +115,26 @@ pub trait Deserializable {
     fn deserialize(cursor: &mut SliceCursor) -> Self;
 }
 
+pub trait PacketBody: Sized {
+    const TAG: u8;
+
+    fn write_body(&self, cursor: &mut SliceCursor);
+
+    fn from_body(cursor: &mut SliceCursor) -> Self;
+
+    // TODO player should probably go inside the packets
+    fn serialize(&self, cursor: &mut SliceCursor) {
+        let length_pos = cursor.pos();
+        cursor.write(&0u16); // length
+        cursor.write(&Self::TAG);
+        self.write_body(cursor);
+        let length: u16 = (cursor.pos() - length_pos)
+            .try_into()
+            .expect("packet too long");
+        cursor.rewrite(length_pos, &length);
+    }
+}
+
 macro_rules! serializable_struct {
     (
         $(#[$attr:meta])*
@@ -132,14 +156,14 @@ macro_rules! serializable_struct {
 
         impl Eq for $ident {}
 
-        impl crate::structures::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+        impl crate::serde::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
                 $(cursor.write(&self.$field);)+
             }
         }
 
-        impl crate::structures::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+        impl crate::serde::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
                 Self {
                     $($field: cursor.read(),)+
                 }
@@ -168,14 +192,14 @@ macro_rules! serializable_enum {
             }
         }
 
-        impl crate::structures::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+        impl crate::serde::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
                 cursor.write(&(*self as $ty));
             }
         }
 
-        impl crate::structures::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+        impl crate::serde::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
                 match cursor.read::<$ty>() {
                     $first_value => $ident::$first_variant,
                     $($value => $ident::$variant,)*
@@ -204,18 +228,59 @@ macro_rules! serializable_bitflags {
             }
         }
 
-        impl crate::structures::Serializable for $ident {
-            fn serialize(&self, cursor: &mut crate::structures::SliceCursor) {
+        impl crate::serde::Serializable for $ident {
+            fn serialize(&self, cursor: &mut crate::serde::SliceCursor) {
                 cursor.write(&self.bits());
             }
         }
 
-        impl crate::structures::Deserializable for $ident {
-            fn deserialize(cursor: &mut crate::structures::SliceCursor) -> Self {
+        impl crate::serde::Deserializable for $ident {
+            fn deserialize(cursor: &mut crate::serde::SliceCursor) -> Self {
                 Self::from_bits_truncate(cursor.read())
             }
         }
     };
 }
 
-pub(crate) use {serializable_bitflags, serializable_enum, serializable_struct};
+macro_rules! packet_struct {
+    (
+        $(#[$attr:meta])*
+        pub struct $ident:ident {
+            const TAG = $tag:expr;
+
+            $(
+                $(#[$field_attr:meta])*
+                pub $field:ident: $ty:ty,
+            )*
+        }
+    ) => {
+        $(#[$attr])*
+        #[derive(Debug, PartialEq, Default, Clone)]
+        pub struct $ident {
+            $(
+                $(#[$field_attr])*
+                pub $field: $ty,
+            )*
+        }
+
+        impl Eq for $ident {}
+
+        impl crate::serde::PacketBody for $ident {
+            const TAG: u8 = $tag;
+
+            fn write_body(&self, cursor: &mut crate::serde::SliceCursor) {
+                let _ = cursor;
+                $(cursor.write(&self.$field);)*
+            }
+
+            fn from_body(cursor: &mut crate::serde::SliceCursor) -> Self {
+                let _ = cursor;
+                Self {
+                    $($field: cursor.read(),)*
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use {packet_struct, serializable_bitflags, serializable_enum, serializable_struct};

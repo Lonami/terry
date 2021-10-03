@@ -1,4 +1,4 @@
-use crate::structures::serializable_struct;
+use crate::serde::serializable_struct;
 
 serializable_struct! {
     pub struct RGB {

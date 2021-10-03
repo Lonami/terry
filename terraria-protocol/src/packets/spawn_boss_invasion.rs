@@ -1,5 +1,4 @@
-use crate::packets::packet_struct;
-use crate::structures::{Deserializable, Serializable, SliceCursor};
+use crate::serde::{packet_struct, Deserializable, Serializable, SliceCursor};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum Invader {

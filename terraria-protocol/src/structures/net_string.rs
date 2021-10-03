@@ -1,5 +1,4 @@
-use crate::structures::serializable_enum;
-use crate::{Deserializable, Serializable, SliceCursor};
+use crate::serde::{serializable_enum, Deserializable, Serializable, SliceCursor};
 use std::convert::TryInto;
 
 serializable_enum! {

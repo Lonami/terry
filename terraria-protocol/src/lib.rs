@@ -6,11 +6,13 @@
 //! to serialize and deserialize them, along with basic protocol management.
 //! If you want it to do anything interesting, you should build that yourself.
 pub mod net;
+mod packet;
 pub mod packets;
 mod parser;
+pub(crate) mod serde;
 pub mod structures;
 
-pub(crate) use structures::{Deserializable, Serializable, SliceCursor};
+pub use packet::Packet;
 pub use parser::Parser;
 
 #[cfg(test)]
@@ -30,7 +32,7 @@ mod tests {
                 data[index + 2],
                 &data[index + 3..index + packet_len]
             );
-            packets::Packet::from_slice(&mut data[index + 2..index + packet_len]);
+            Packet::from_slice(&mut data[index + 2..index + packet_len]);
             index += packet_len;
         }
     }

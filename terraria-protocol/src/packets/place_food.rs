@@ -1,4 +1,4 @@
-use crate::packets::packet_struct;
+use crate::serde::packet_struct;
 
 packet_struct! {
     /// Tries to place food in a food platter.

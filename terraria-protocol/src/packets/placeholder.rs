@@ -1,4 +1,4 @@
-use crate::packets::packet_struct;
+use crate::serde::packet_struct;
 
 packet_struct! {
     /// Placeholder. Does not exist in the official client. Exists solely for

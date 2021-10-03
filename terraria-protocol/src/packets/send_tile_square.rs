@@ -1,6 +1,5 @@
-use crate::packets::PacketBody;
-use crate::structures::{serializable_enum, Tile};
-use crate::SliceCursor;
+use crate::serde::{serializable_enum, PacketBody, SliceCursor};
+use crate::structures::Tile;
 
 serializable_enum! {
     pub enum ChangeType: u8 {

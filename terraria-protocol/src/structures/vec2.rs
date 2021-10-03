@@ -1,4 +1,4 @@
-use crate::structures::serializable_struct;
+use crate::serde::serializable_struct;
 
 pub const TILE_TO_POS_SCALE: f32 = 16.0;
 

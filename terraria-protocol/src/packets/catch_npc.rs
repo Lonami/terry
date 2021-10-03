@@ -1,4 +1,4 @@
-use crate::packets::packet_struct;
+use crate::serde::packet_struct;
 
 packet_struct! {
     /// Catch a NPC, presumably used for pets.

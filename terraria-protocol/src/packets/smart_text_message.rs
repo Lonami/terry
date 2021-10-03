@@ -1,6 +1,5 @@
-use crate::packets::PacketBody;
+use crate::serde::{PacketBody, SliceCursor};
 use crate::structures::{NetString, RGB};
-use crate::SliceCursor;
 use std::convert::TryInto;
 
 /// Smart Text Message (FKA. Chat Message v2).

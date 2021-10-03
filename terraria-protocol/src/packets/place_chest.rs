@@ -1,5 +1,4 @@
-use crate::packets::packet_struct;
-use crate::structures::serializable_enum;
+use crate::serde::{packet_struct, serializable_enum};
 
 serializable_enum! {
     pub enum ChestAction: u8 {

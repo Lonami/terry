@@ -1,5 +1,5 @@
 use std::io::{self, BufRead};
-use terraria_protocol::packets;
+use terraria_protocol::Packet;
 
 fn parse_hex(hex: &str) -> Vec<u8> {
     let mut result = Vec::with_capacity(hex.len() / 2);
@@ -13,6 +13,6 @@ fn main() {
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
         let mut payload = parse_hex(&line.unwrap());
-        dbg!(packets::Packet::from_slice(&mut payload[2..]));
+        dbg!(Packet::from_slice(&mut payload[2..]));
     }
 }

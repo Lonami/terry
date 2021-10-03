@@ -1,6 +1,4 @@
-use crate::packets::PacketBody;
-use crate::structures::serializable_bitflags;
-use crate::SliceCursor;
+use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
 
 serializable_bitflags! {
     pub struct DayInfo: u8 {

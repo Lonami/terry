@@ -1,4 +1,4 @@
-use crate::{Deserializable, Serializable, SliceCursor};
+use crate::serde::{Deserializable, Serializable, SliceCursor};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TileEntity {

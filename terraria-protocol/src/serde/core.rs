@@ -1,4 +1,7 @@
-use crate::{Deserializable, Serializable, SliceCursor};
+//! Implements Serializable and Deserializable for "core" types.
+
+use crate::serde::{Deserializable, Serializable, SliceCursor};
+
 use std::convert::TryInto;
 
 macro_rules! impl_serde_int {

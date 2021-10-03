@@ -1,5 +1,5 @@
-use crate::packets::packet_struct;
-use crate::structures::{serializable_bitflags, RGB};
+use crate::serde::{packet_struct, serializable_bitflags};
+use crate::structures::RGB;
 
 serializable_bitflags! {
     pub struct Difficulty: u8 {

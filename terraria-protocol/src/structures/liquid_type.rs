@@ -1,4 +1,4 @@
-use crate::structures::serializable_enum;
+use crate::serde::serializable_enum;
 
 serializable_enum! {
     pub enum LiquidType: u8 {

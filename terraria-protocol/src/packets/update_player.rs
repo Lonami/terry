@@ -1,6 +1,5 @@
-use crate::packets::PacketBody;
-use crate::structures::{serializable_bitflags, Vec2};
-use crate::SliceCursor;
+use crate::serde::{serializable_bitflags, PacketBody, SliceCursor};
+use crate::structures::Vec2;
 
 serializable_bitflags! {
     pub struct KeyPress: u8 {

@@ -1,5 +1,6 @@
-use crate::structures::{serializable_bitflags, serializable_enum};
-use crate::{Deserializable, Serializable, SliceCursor};
+use crate::serde::{
+    serializable_bitflags, serializable_enum, Deserializable, Serializable, SliceCursor,
+};
 
 serializable_bitflags! {
     pub struct DeathReason: u8 {

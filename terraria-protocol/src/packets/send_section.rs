@@ -1,6 +1,5 @@
-use crate::packets::PacketBody;
+use crate::serde::{PacketBody, SliceCursor};
 use crate::structures::{Chest, Sign, Tile, TileEntity};
-use crate::SliceCursor;
 use inflate;
 
 /// Send section.
