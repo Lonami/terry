@@ -54,6 +54,7 @@ mod npc_shop_item;
 mod npc_strike;
 mod npc_teleport_portal;
 mod npc_update;
+mod null;
 mod open_chest;
 mod paint_tile;
 mod paint_wall;
@@ -188,6 +189,7 @@ pub use npc_shop_item::NpcShopItem;
 pub use npc_strike::NpcStrike;
 pub use npc_teleport_portal::NpcTeleportPortal;
 pub use npc_update::NpcUpdate;
+pub use null::Null;
 pub use open_chest::OpenChest;
 pub use paint_tile::PaintTile;
 pub use paint_wall::PaintWall;
@@ -317,7 +319,7 @@ pub enum Packet {
     SpawnPlayer(SpawnPlayer),           // 12
     UpdatePlayer(UpdatePlayer),         // 13
     PlayerActive(PlayerActive),         // 14
-    // 15 (null)
+    Null(Null),                     // 15
     PlayerHP(PlayerHP),             // 16
     ModifyTile(ModifyTile),         // 17
     Time(Time),                     // 18
@@ -487,6 +489,7 @@ impl Packet {
             SpawnPlayer::TAG => Packet::SpawnPlayer(SpawnPlayer::from_body(&mut cursor)),
             UpdatePlayer::TAG => Packet::UpdatePlayer(UpdatePlayer::from_body(&mut cursor)),
             PlayerActive::TAG => Packet::PlayerActive(PlayerActive::from_body(&mut cursor)),
+            Null::TAG => Packet::Null(Null::from_body(&mut cursor)),
             PlayerHP::TAG => Packet::PlayerHP(PlayerHP::from_body(&mut cursor)),
             ModifyTile::TAG => Packet::ModifyTile(ModifyTile::from_body(&mut cursor)),
             Time::TAG => Packet::Time(Time::from_body(&mut cursor)),
