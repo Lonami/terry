@@ -24,15 +24,15 @@ impl NetString {
 
 impl Serializable for NetString {
     fn serialize(&self, cursor: &mut SliceCursor) -> Result<()> {
-        cursor.write(&self.mode);
-        cursor.write(&self.text);
+        cursor.write(&self.mode)?;
+        cursor.write(&self.text)?;
         if self.mode != NetStringMode::Literal {
             let len: u8 = self
                 .substitutions
                 .len()
                 .try_into()
                 .expect("too many substitutions");
-            cursor.write(&len);
+            cursor.write(&len)?;
             for s in self.substitutions.iter() {
                 cursor.write(s)?;
             }

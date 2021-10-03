@@ -16,7 +16,7 @@ impl PacketBody for TamperWithNpc {
 
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&self.npc_id)?;
-        cursor.write(&self.immunity_time.is_some());
+        cursor.write(&self.immunity_time.is_some())?;
         if let Some(time) = self.immunity_time {
             cursor.write(&time)?;
         }

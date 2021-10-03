@@ -73,7 +73,7 @@ impl PacketBody for ModifyTile {
             TileAction::ReplaceTile { .. } => 21,
             TileAction::ReplaceWall { .. } => 22,
             TileAction::SlopePoundTile => 23,
-        });
+        })?;
         cursor.write(&self.tile_x)?;
         cursor.write(&self.tile_y)?;
         cursor.write(&match self.action {
@@ -87,12 +87,12 @@ impl PacketBody for ModifyTile {
             TileAction::ReplaceTile { ty, .. } => ty,
             TileAction::ReplaceWall { ty } => ty,
             _ => 0i16,
-        });
+        })?;
         cursor.write(&match self.action {
             TileAction::PlaceTile { style, .. } => style,
             TileAction::ReplaceTile { style, .. } => style,
             _ => 0u8,
-        });
+        })?;
         Ok(())
     }
 

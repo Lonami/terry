@@ -21,11 +21,11 @@ impl PacketBody for SyncEmoteBubble {
         cursor.write(&self.anchor_type)?;
 
         if self.anchor_type != 255 {
-            cursor.write(&self.player_id.unwrap());
-            cursor.write(&self.emote_lifetime.unwrap());
-            cursor.write(&self.emote.unwrap());
+            cursor.write(&self.player_id.unwrap())?;
+            cursor.write(&self.emote_lifetime.unwrap())?;
+            cursor.write(&self.emote.unwrap())?;
             if self.emote.unwrap() & 0x80 != 0 {
-                cursor.write(&self.emote_metadata.unwrap());
+                cursor.write(&self.emote_metadata.unwrap())?;
             }
         }
         Ok(())

@@ -148,7 +148,7 @@ impl Terraria {
 
     pub fn send_packet(&mut self, packet: &Packet) -> io::Result<()> {
         let mut cursor = SliceCursor::new(self.out_buffer.as_mut_slice());
-        cursor.write(packet);
+        cursor.write(packet).unwrap();
         let (slice, pos) = cursor.finish();
         self.stream.write_all(&slice[..pos])?;
         self.stream.flush()?;

@@ -270,7 +270,7 @@ impl PacketBody for LoadNetModule {
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         match self {
             LoadNetModule::Liquid(liquids) => {
-                cursor.write(&(liquids.len() as u16));
+                cursor.write(&(liquids.len() as u16))?;
                 for liquid in liquids.iter() {
                     cursor.write(liquid)?;
                 }

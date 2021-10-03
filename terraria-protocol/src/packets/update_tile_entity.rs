@@ -15,7 +15,7 @@ impl PacketBody for UpdateTileEntity {
 
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&self.id)?;
-        cursor.write(&self.remove.is_some());
+        cursor.write(&self.remove.is_some())?;
         if let Some((ty, x, y)) = self.remove {
             cursor.write(&ty)?;
             cursor.write(&x)?;

@@ -95,14 +95,14 @@ impl PacketBody for NpcUpdate {
         }
         if let Some(life) = self.life {
             if let Ok(hp) = life.try_into() {
-                cursor.write(&(size_of::<i8>() as u8));
-                cursor.write::<i8>(&hp);
+                cursor.write(&(size_of::<i8>() as u8))?;
+                cursor.write::<i8>(&hp)?;
             } else if let Ok(hp) = life.try_into() {
-                cursor.write(&(size_of::<i16>() as u8));
-                cursor.write::<i16>(&hp);
+                cursor.write(&(size_of::<i16>() as u8))?;
+                cursor.write::<i16>(&hp)?;
             } else {
-                cursor.write(&(size_of::<i32>() as u8));
-                cursor.write::<i32>(&life);
+                cursor.write(&(size_of::<i32>() as u8))?;
+                cursor.write::<i32>(&life)?;
             }
         }
         if let Some(release_owner) = self.release_owner {

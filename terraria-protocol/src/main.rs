@@ -14,6 +14,6 @@ fn main() {
     for line in stdin.lock().lines() {
         let mut payload = parse_hex(&line.unwrap());
         let mut cursor = serde::SliceCursor::new(&mut payload);
-        dbg!(cursor.read::<Packet>());
+        dbg!(cursor.read::<Packet>().unwrap());
     }
 }

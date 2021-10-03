@@ -19,7 +19,7 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-pub type Result<T: Sized> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 pub struct SliceCursor<'a> {
     slice: &'a mut [u8],
@@ -42,12 +42,13 @@ impl<'a> SliceCursor<'a> {
     }
 
     #[inline(always)]
-    pub fn rewrite<S: Serializable>(&mut self, pos: usize, s: &S) {
+    pub fn rewrite<S: Serializable>(&mut self, pos: usize, s: &S) -> Result<()> {
         let last = self.pos;
         self.pos = pos;
-        self.write(s);
+        self.write(s)?;
         assert!(self.pos <= last);
         self.pos = last;
+        Ok(())
     }
 
     #[inline(always)]
@@ -148,13 +149,13 @@ pub trait PacketBody: Sized {
     // TODO player should probably go inside the packets
     fn serialize_as_packet(&self, cursor: &mut SliceCursor) -> Result<()> {
         let length_pos = cursor.pos();
-        cursor.write(&0u16); // length
-        cursor.write(&Self::TAG);
-        self.write_body(cursor);
+        cursor.write(&0u16)?; // length
+        cursor.write(&Self::TAG)?;
+        self.write_body(cursor)?;
         let length: u16 = (cursor.pos() - length_pos)
             .try_into()
             .expect("packet too long");
-        cursor.rewrite(length_pos, &length);
+        cursor.rewrite(length_pos, &length)?;
         Ok(())
     }
 }
@@ -182,7 +183,7 @@ macro_rules! serializable_struct {
 
         impl crate::serde::Serializable for $ident {
             fn serialize(&self, cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<()> {
-                $(cursor.write(&self.$field);)+
+                $(cursor.write(&self.$field)?;)+
                 Ok(())
             }
         }
