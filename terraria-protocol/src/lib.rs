@@ -7,9 +7,11 @@
 //! If you want it to do anything interesting, you should build that yourself.
 pub mod net;
 pub mod packets;
+mod parser;
 pub mod structures;
 
 pub(crate) use structures::{Deserializable, Serializable, SliceCursor};
+pub use parser::Parser;
 
 #[cfg(test)]
 mod tests {
