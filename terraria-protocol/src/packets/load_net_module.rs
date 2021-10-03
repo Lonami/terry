@@ -1,5 +1,5 @@
 use crate::serde::{serializable_struct, Deserializable, PacketBody, Serializable, SliceCursor};
-use crate::structures::{LiquidType, NetString, Vec2, Rgb};
+use crate::structures::{LiquidType, NetString, Rgb, Vec2};
 
 serializable_struct! {
     pub struct Liquid {

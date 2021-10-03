@@ -13,14 +13,24 @@ macro_rules! define_packet {
                     $(Self::$variant(_) => crate::packets::$variant::TAG,)+
                 }
             }
+        }
 
-            pub fn from_slice(slice: &mut [u8]) -> Self {
-                let mut cursor = SliceCursor::new(slice);
+        impl crate::serde::Serializable for Packet {
+            fn serialize(&self, cursor: &mut SliceCursor) {
+                match self {
+                    $(Self::$variant(p) => p.serialize_as_packet(cursor),)+
+                }
+            }
+        }
+
+        impl crate::serde::Deserializable for Packet {
+            // TODO player should probably go inside the packets
+            fn deserialize(cursor: &mut SliceCursor) -> Self {
                 let tag = cursor.read::<u8>();
                 let decoded = match tag {
                     $(
                         crate::packets::$variant::TAG =>
-                            Self::$variant(crate::packets::$variant::from_body(&mut cursor)),
+                            Self::$variant(crate::packets::$variant::from_body(cursor)),
                     )+
                     tag => panic!("unknown tag {}", tag),
                 };
@@ -37,18 +47,28 @@ macro_rules! define_packet {
                     }
                 }
 
-                let (slice, pos) = cursor.finish();
-                assert_eq!(
-                    pos,
-                    slice.len(),
-                    "incomplete read of packet: {}",
-                    HexString(slice)
-                );
-
                 decoded
             }
         }
 
+        $(
+            impl From<crate::packets::$variant> for Packet {
+                fn from(p: crate::packets::$variant) -> Self {
+                    Self::$variant(p)
+                }
+            }
+
+            impl std::convert::TryFrom<Packet> for crate::packets::$variant {
+                type Error = ();
+
+                fn try_from(packet: Packet) -> Result<Self, Self::Error> {
+                    match packet {
+                        Packet::$variant(p) => Ok(p),
+                        _ => Err(())
+                    }
+                }
+            }
+        )+
     };
 }
 

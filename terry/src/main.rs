@@ -24,21 +24,27 @@ fn main() -> io::Result<()> {
         }
     };
 
-    terraria.send_packet(&packets::LoadNetModule::ClientText {
-        command: "Say".to_string(),
-        text: format!(
-            "Hi, I'm terry and I sure love to spawn at ({}, {})!",
-            info.spawn_x, info.spawn_y
-        ),
-    })?;
+    terraria.send_packet(
+        &packets::LoadNetModule::ClientText {
+            command: "Say".to_string(),
+            text: format!(
+                "Hi, I'm terry and I sure love to spawn at ({}, {})!",
+                info.spawn_x, info.spawn_y
+            ),
+        }
+        .into(),
+    )?;
     thread::sleep(Duration::from_secs(4));
-    terraria.send_packet(&packets::LoadNetModule::ClientText {
-        command: "Say".to_string(),
-        text: format!(
-            "I love how {} is {}x{} big, so much space!!",
-            info.world_name, info.max_tiles_x, info.max_tiles_y,
-        ),
-    })?;
+    terraria.send_packet(
+        &packets::LoadNetModule::ClientText {
+            command: "Say".to_string(),
+            text: format!(
+                "I love how {} is {}x{} big, so much space!!",
+                info.world_name, info.max_tiles_x, info.max_tiles_y,
+            ),
+        }
+        .into(),
+    )?;
     thread::sleep(Duration::from_secs(4));
 
     Ok(())

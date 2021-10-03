@@ -27,7 +27,8 @@ impl Parser {
             return None;
         }
 
-        let packet = Packet::from_slice(&mut self.buffer[..len]);
+        let mut cursor = SliceCursor::new(&mut self.buffer);
+        let packet = cursor.read();
         self.buffer.copy_within(len.., 0);
         self.buffer.truncate(self.buffer.len() - len);
         return Some(packet);

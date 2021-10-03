@@ -1,5 +1,5 @@
 use crate::serde::packet_struct;
-use crate::structures::{NetString, Vec2, Rgb};
+use crate::structures::{NetString, Rgb, Vec2};
 
 packet_struct! {
     /// Combat text string.

@@ -1,5 +1,5 @@
 use std::io::{self, BufRead};
-use terraria_protocol::Packet;
+use terraria_protocol::{serde, Packet};
 
 fn parse_hex(hex: &str) -> Vec<u8> {
     let mut result = Vec::with_capacity(hex.len() / 2);
@@ -13,6 +13,7 @@ fn main() {
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
         let mut payload = parse_hex(&line.unwrap());
-        dbg!(Packet::from_slice(&mut payload[2..]));
+        let mut cursor = serde::SliceCursor::new(&mut payload);
+        dbg!(cursor.read::<Packet>());
     }
 }

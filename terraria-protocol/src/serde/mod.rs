@@ -123,7 +123,7 @@ pub trait PacketBody: Sized {
     fn from_body(cursor: &mut SliceCursor) -> Self;
 
     // TODO player should probably go inside the packets
-    fn serialize(&self, cursor: &mut SliceCursor) {
+    fn serialize_as_packet(&self, cursor: &mut SliceCursor) {
         let length_pos = cursor.pos();
         cursor.write(&0u16); // length
         cursor.write(&Self::TAG);

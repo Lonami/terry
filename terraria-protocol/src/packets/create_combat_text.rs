@@ -1,5 +1,5 @@
 use crate::serde::packet_struct;
-use crate::structures::{Vec2, Rgb};
+use crate::structures::{Rgb, Vec2};
 
 packet_struct! {
     /// Create combat text.

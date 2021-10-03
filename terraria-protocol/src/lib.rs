@@ -9,7 +9,7 @@ pub mod net;
 mod packet;
 pub mod packets;
 mod parser;
-pub(crate) mod serde;
+pub mod serde;
 pub mod structures;
 
 pub use packet::Packet;
@@ -32,7 +32,8 @@ mod tests {
                 data[index + 2],
                 &data[index + 3..index + packet_len]
             );
-            Packet::from_slice(&mut data[index + 2..index + packet_len]);
+            let mut cursor = serde::SliceCursor::new(&mut data[index + 2..index + packet_len]);
+            cursor.read::<Packet>();
             index += packet_len;
         }
     }
