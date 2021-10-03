@@ -92,7 +92,7 @@ impl Terraria {
         })?;
 
         // TODO rename to Health?
-        this.send_packet(&packets::PlayerHP {
+        this.send_packet(&packets::PlayerHp {
             player_id: 0,
             hp: 100,
             max_hp: 100,

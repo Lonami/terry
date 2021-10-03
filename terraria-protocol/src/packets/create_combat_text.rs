@@ -1,5 +1,5 @@
 use crate::serde::packet_struct;
-use crate::structures::{Vec2, RGB};
+use crate::structures::{Vec2, Rgb};
 
 packet_struct! {
     /// Create combat text.
@@ -9,7 +9,7 @@ packet_struct! {
         const TAG = 81;
 
         pub pos: Vec2,
-        pub color: RGB,
+        pub color: Rgb,
         pub heal_amount: i32,
     }
 }

@@ -1,5 +1,5 @@
 use crate::serde::{packet_struct, serializable_bitflags};
-use crate::structures::RGB;
+use crate::structures::Rgb;
 
 serializable_bitflags! {
     pub struct Difficulty: u8 {
@@ -34,13 +34,13 @@ packet_struct! {
         pub hair_dye: u8,
         pub hide_visuals: u16,
         pub hide_misc: u8,
-        pub hair_color: RGB,
-        pub skin_color: RGB,
-        pub eye_color: RGB,
-        pub shirt_color: RGB,
-        pub undershirt_color: RGB,
-        pub pants_color: RGB,
-        pub shoes_color: RGB,
+        pub hair_color: Rgb,
+        pub skin_color: Rgb,
+        pub eye_color: Rgb,
+        pub shirt_color: Rgb,
+        pub undershirt_color: Rgb,
+        pub pants_color: Rgb,
+        pub shoes_color: Rgb,
         pub difficulty: Difficulty,
         pub torches: Torches,
     }
@@ -56,37 +56,37 @@ impl PlayerInfo {
             hair_dye: 0,
             hide_visuals: 0,
             hide_misc: 0,
-            hair_color: RGB {
+            hair_color: Rgb {
                 r: 215,
                 g: 90,
                 b: 55,
             },
-            skin_color: RGB {
+            skin_color: Rgb {
                 r: 255,
                 g: 125,
                 b: 90,
             },
-            eye_color: RGB {
+            eye_color: Rgb {
                 r: 105,
                 g: 90,
                 b: 75,
             },
-            shirt_color: RGB {
+            shirt_color: Rgb {
                 r: 175,
                 g: 165,
                 b: 140,
             },
-            undershirt_color: RGB {
+            undershirt_color: Rgb {
                 r: 160,
                 g: 180,
                 b: 215,
             },
-            pants_color: RGB {
+            pants_color: Rgb {
                 r: 255,
                 g: 230,
                 b: 175,
             },
-            shoes_color: RGB {
+            shoes_color: Rgb {
                 r: 160,
                 g: 105,
                 b: 60,

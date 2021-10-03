@@ -1,5 +1,5 @@
 use crate::serde::{serializable_struct, Deserializable, PacketBody, Serializable, SliceCursor};
-use crate::structures::{LiquidType, NetString, Vec2, RGB};
+use crate::structures::{LiquidType, NetString, Vec2, Rgb};
 
 serializable_struct! {
     pub struct Liquid {
@@ -170,7 +170,7 @@ impl Deserializable for CreativePower {
 pub enum LoadNetModule {
     Liquid(Vec<Liquid>),
     // Client message is (command ID (text?), text)
-    // Server message is (author ID, net text, RGB)
+    // Server message is (author ID, net text, Rgb)
     // TODO ClientText and ServerText are the same packet but unfortunately
     //      the only way to differentiate them is to know "who we are", that
     //      is, if we were compiled as the client we would send ClientText
@@ -180,7 +180,7 @@ pub enum LoadNetModule {
     //      always expecting to receive from server), which means it would
     //      not work if we were actually being used as a client.
     //
-    //      We can probably determine if there's RGB at the end of the message
+    //      We can probably determine if there's Rgb at the end of the message
     //      to determine who we are…
     ///
     /// The vanilla commands are (case-sensitive):
@@ -199,7 +199,7 @@ pub enum LoadNetModule {
     ServerText {
         author: u8,
         text: NetString,
-        color: RGB,
+        color: Rgb,
     },
     Ping {
         pos: Vec2,

@@ -14,7 +14,7 @@ pub use chest::Chest;
 pub use liquid_type::LiquidType;
 pub use net_string::{NetString, NetStringMode};
 pub use player_death_reason::PlayerDeathReason;
-pub use rgb::RGB;
+pub use rgb::Rgb;
 pub use sign::Sign;
 pub use tile::Tile;
 pub use tile_entity::TileEntity;

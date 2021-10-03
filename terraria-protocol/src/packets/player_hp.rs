@@ -4,7 +4,7 @@ packet_struct! {
     /// Player health points and maximum HP.
     ///
     /// Direction: Server <-> Client (Sync).
-    pub struct PlayerHP {
+    pub struct PlayerHp {
         const TAG = 16;
 
         pub player_id: u8,

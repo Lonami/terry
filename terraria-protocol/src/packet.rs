@@ -21,7 +21,7 @@ pub enum Packet {
     UpdatePlayer(UpdatePlayer),         // 13
     PlayerActive(PlayerActive),         // 14
     Null(Null),                         // 15
-    PlayerHP(PlayerHP),                 // 16
+    PlayerHp(PlayerHp),                 // 16
     ModifyTile(ModifyTile),             // 17
     Time(Time),                         // 18
     DoorToggle(DoorToggle),             // 19
@@ -191,7 +191,7 @@ impl Packet {
             UpdatePlayer::TAG => Packet::UpdatePlayer(UpdatePlayer::from_body(&mut cursor)),
             PlayerActive::TAG => Packet::PlayerActive(PlayerActive::from_body(&mut cursor)),
             Null::TAG => Packet::Null(Null::from_body(&mut cursor)),
-            PlayerHP::TAG => Packet::PlayerHP(PlayerHP::from_body(&mut cursor)),
+            PlayerHp::TAG => Packet::PlayerHp(PlayerHp::from_body(&mut cursor)),
             ModifyTile::TAG => Packet::ModifyTile(ModifyTile::from_body(&mut cursor)),
             Time::TAG => Packet::Time(Time::from_body(&mut cursor)),
             DoorToggle::TAG => Packet::DoorToggle(DoorToggle::from_body(&mut cursor)),
@@ -449,7 +449,7 @@ impl Packet {
             Packet::UpdatePlayer(_) => UpdatePlayer::TAG,
             Packet::PlayerActive(_) => PlayerActive::TAG,
             Packet::Null(_) => Null::TAG,
-            Packet::PlayerHP(_) => PlayerHP::TAG,
+            Packet::PlayerHp(_) => PlayerHp::TAG,
             Packet::ModifyTile(_) => ModifyTile::TAG,
             Packet::Time(_) => Time::TAG,
             Packet::DoorToggle(_) => DoorToggle::TAG,

@@ -1,5 +1,5 @@
 use crate::serde::{PacketBody, SliceCursor};
-use crate::structures::{NetString, RGB};
+use crate::structures::{NetString, Rgb};
 use std::convert::TryInto;
 
 /// Smart Text Message (FKA. Chat Message v2).
@@ -8,7 +8,7 @@ use std::convert::TryInto;
 #[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct SmartTextMessage {
     /// Note that the client cannot change colors
-    pub message_color: RGB,
+    pub message_color: Rgb,
     pub message: NetString,
 }
 

@@ -205,7 +205,7 @@ pub use play_music_item::PlayMusicItem;
 pub use player_active::PlayerActive;
 pub use player_death::PlayerDeath;
 pub use player_dodge::PlayerDodge;
-pub use player_hp::PlayerHP;
+pub use player_hp::PlayerHp;
 pub use player_hurt::PlayerHurt;
 pub use player_info::{Difficulty, PlayerInfo, Torches};
 pub use player_inventory_slot::{PlayerInventorySlot, SlotLocation};

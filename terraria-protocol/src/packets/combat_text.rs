@@ -1,5 +1,5 @@
 use crate::serde::packet_struct;
-use crate::structures::{NetString, Vec2, RGB};
+use crate::structures::{NetString, Vec2, Rgb};
 
 packet_struct! {
     /// Combat text string.
@@ -9,7 +9,7 @@ packet_struct! {
         const TAG = 119;
 
         pub pos: Vec2,
-        pub color: RGB,
+        pub color: Rgb,
         pub combat_text: NetString,
     }
 }
