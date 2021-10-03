@@ -81,55 +81,47 @@ impl<'a> SliceCursor<'a> {
 
     // If the `const` feautre was a bit more advanced we could probably make
     // this return `[u8; n]` which would play nice with `{integer}::from_le`.
-    // TODO don't panic!() in these
     #[inline(always)]
     pub(crate) fn readn(&mut self, n: usize) -> Result<&[u8]> {
+        let buf = self
+            .slice
+            .get(self.pos..self.pos + n)
+            .ok_or(Error::PrematureEnd)?;
         self.pos += n;
-        Ok(&self.slice[self.pos - n..self.pos])
+        Ok(buf)
     }
 
     #[inline(always)]
     pub(crate) fn read1(&mut self) -> Result<[u8; 1]> {
-        self.pos += 1;
-        Ok([self.slice[self.pos - 1]])
+        self.readn(1).map(|buf| [buf[0]])
     }
 
     #[inline(always)]
     pub(crate) fn read2(&mut self) -> Result<[u8; 2]> {
-        self.pos += 2;
-        Ok([self.slice[self.pos - 2], self.slice[self.pos - 1]])
+        self.readn(2).map(|buf| [buf[0], buf[1]])
     }
 
     #[inline(always)]
     pub(crate) fn read4(&mut self) -> Result<[u8; 4]> {
-        self.pos += 4;
-        Ok([
-            self.slice[self.pos - 4],
-            self.slice[self.pos - 3],
-            self.slice[self.pos - 2],
-            self.slice[self.pos - 1],
-        ])
+        self.readn(4).map(|buf| [buf[0], buf[1], buf[2], buf[3]])
     }
 
     #[inline(always)]
     pub(crate) fn read8(&mut self) -> Result<[u8; 8]> {
-        self.pos += 8;
-        Ok([
-            self.slice[self.pos - 8],
-            self.slice[self.pos - 7],
-            self.slice[self.pos - 6],
-            self.slice[self.pos - 5],
-            self.slice[self.pos - 4],
-            self.slice[self.pos - 3],
-            self.slice[self.pos - 2],
-            self.slice[self.pos - 1],
-        ])
+        self.readn(8).map(|buf| {
+            [
+                buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7],
+            ]
+        })
     }
 
     #[inline(always)]
     pub(crate) fn write_slice(&mut self, slice: &[u8]) -> Result<()> {
-        let pos = self.pos;
-        self.slice[pos..pos + slice.len()].copy_from_slice(slice);
+        let buf = self
+            .slice
+            .get_mut(self.pos..self.pos + slice.len())
+            .ok_or(Error::PrematureEnd)?;
+        buf.copy_from_slice(slice);
         self.pos += slice.len();
         Ok(())
     }
