@@ -17,7 +17,7 @@ impl Vec2 {
     pub fn from_tile_pos(x: i16, y: i16) -> Self {
         Vec2 {
             x: (x as f32) * TILE_TO_POS_SCALE,
-            // Players seem to be 1.625 tiles tall and we need to be above.
+            // Players seem to be 1.625 tiles tall and we need to be above
             y: (y as f32 - 2.625) * TILE_TO_POS_SCALE,
         }
     }

@@ -46,7 +46,7 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> SendSection {
     let signs = (0..n).map(|_| cursor.read()).collect();
 
     let n = cursor.read::<u16>() as usize;
-    let mut tile_entities = (0..n).map(|_| cursor.read()).collect();
+    let tile_entities = (0..n).map(|_| cursor.read()).collect();
 
     SendSection {
         x_start,

@@ -1,8 +1,6 @@
 use crate::packets::packet_struct;
 use crate::structures::{serializable_bitflags, RGB};
 
-const MAX_HAIR_VARIANT: u8 = 162;
-
 serializable_bitflags! {
     pub struct Difficulty: u8 {
         const SOFTCORE = 0x00;
@@ -49,7 +47,7 @@ packet_struct! {
 }
 
 impl PlayerInfo {
-    fn terry() -> Self {
+    pub fn terry() -> Self {
         Self {
             player_id: 0,
             skin_variant: 0,

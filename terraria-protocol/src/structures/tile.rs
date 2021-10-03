@@ -100,6 +100,8 @@ impl Deserializable for Tile {
 
 impl Tile {
     pub fn deserialize_packed(cursor: &mut SliceCursor) -> (Self, u16) {
+        let mut tile_flags = TileFlags::empty();
+
         let mut flags: [u8; 3] = [cursor.read(), 0, 0];
         if flags[0] & 0x01 != 0 {
             flags[1] = cursor.read();
@@ -113,6 +115,7 @@ impl Tile {
         let frame;
         let color;
         if flags[0] & 0x02 != 0 {
+            tile_flags.insert(TileFlags::ACTIVE);
             let ty_val = if flags[0] & 0x20 != 0 {
                 cursor.read::<u16>()
             } else {
@@ -127,6 +130,7 @@ impl Tile {
             };
 
             color = if flags[2] & 0x08 != 0 {
+                tile_flags.insert(TileFlags::HAS_COLOR);
                 Some(cursor.read::<u8>())
             } else {
                 None
@@ -139,8 +143,10 @@ impl Tile {
 
         let mut wall_color = None;
         let mut wall = if flags[0] & 0x04 != 0 {
+            tile_flags.insert(TileFlags::HAS_WALL);
             let wall = cursor.read::<u8>() as u16;
             if flags[2] & 0x10 != 0 {
+                tile_flags.insert(TileFlags::HAS_WALL_COLOR);
                 wall_color = Some(cursor.read::<u8>());
             }
             Some(wall)
@@ -155,19 +161,29 @@ impl Tile {
             _ => None,
         };
 
-        let wire = [
-            flags[1] & 0x02 != 0,
-            flags[1] & 0x04 != 0,
-            flags[1] & 0x08 != 0,
-            flags[2] & 0x20 != 0,
-        ];
+        if liquid.is_some() {
+            tile_flags.insert(TileFlags::HAS_LIQUID);
+        }
+
+        tile_flags.set(TileFlags::WIRE1, flags[1] & 0x02 != 0);
+        tile_flags.set(TileFlags::WIRE2, flags[1] & 0x04 != 0);
+        tile_flags.set(TileFlags::WIRE3, flags[1] & 0x08 != 0);
+        tile_flags.set(TileFlags::WIRE4, flags[2] & 0x20 != 0);
 
         let shape = flags[1] & 0x70 >> 4;
-        let half_brick = shape == 1;
-        let slope = if shape > 1 { shape - 1 } else { 0 };
+        if let Some(flag) = match shape {
+            1 => Some(TileFlags::HALF_BRICK),
+            2 => Some(TileFlags::SLOPE1),
+            3 => Some(TileFlags::SLOPE2),
+            4 => Some(TileFlags::SLOPE3),
+            _ => None,
+        } {
+            tile_flags.insert(flag);
+        }
 
-        let actuator = flags[2] & 0x02 != 0;
-        let inactive = flags[2] & 0x04 != 0;
+        tile_flags.set(TileFlags::ACTUATOR, flags[2] & 0x02 != 0);
+        tile_flags.set(TileFlags::INACTIVE, flags[2] & 0x04 != 0);
+
         if flags[2] & 0x40 != 0 {
             // this flag basically sets the higher byte of the u16
             *wall.as_mut().expect("wall should be present") |= (cursor.read::<u8>() as u16) << 8;
