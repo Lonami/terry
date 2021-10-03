@@ -32,7 +32,15 @@ impl PacketBody for SmartTextMessage {
         let message_color = cursor.read()?;
         let message = cursor.read::<NetString>()?;
         let message_len = cursor.read()?;
-        assert_eq!(message.len() as u16, message_len);
+        if message.len() as u16 != message_len {
+            return Err(Error::MalformedPayload {
+                details: format!(
+                    "NetString len of {} differs with SmartTextMessage len of {}",
+                    message.len(),
+                    message_len
+                ),
+            });
+        }
         Ok(Self {
             message_color,
             message,
