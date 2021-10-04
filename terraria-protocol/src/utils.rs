@@ -10,3 +10,18 @@ impl<'a> fmt::Display for HexString<'a> {
         Ok(())
     }
 }
+
+#[derive(PartialEq, Eq, Default, Clone)]
+pub struct HexVec(pub Vec<u8>);
+
+impl fmt::Display for HexVec {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        HexString(&self.0).fmt(f)
+    }
+}
+
+impl fmt::Debug for HexVec {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&HexString(&self.0), f)
+    }
+}
