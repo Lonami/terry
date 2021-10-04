@@ -1,4 +1,4 @@
-use crate::serde::SliceCursor;
+use crate::serde::{Result, SliceCursor};
 use crate::Packet;
 
 #[derive(Debug)]
@@ -15,7 +15,7 @@ impl Parser {
         self.buffer.extend(data);
     }
 
-    pub fn next(&mut self) -> Option<Packet> {
+    pub fn next(&mut self) -> Option<Result<Packet>> {
         if self.buffer.len() < 2 {
             return None;
         }
@@ -28,7 +28,7 @@ impl Parser {
         }
 
         let mut cursor = SliceCursor::new(&mut self.buffer);
-        let packet = cursor.read().ok()?;
+        let packet = cursor.read();
         self.buffer.copy_within(len.., 0);
         self.buffer.truncate(self.buffer.len() - len);
         return Some(packet);

@@ -1,10 +1,10 @@
 use crate::serde::packet_struct;
 
 packet_struct! {
-    /// In theory "never sent".
+    /// No description known yet.
     ///
     /// Direction: ???.
-    pub struct Null {
+    pub struct Packet15 {
         const TAG = 15;
 
         pub id: i16,
