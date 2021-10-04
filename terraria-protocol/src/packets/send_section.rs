@@ -41,7 +41,7 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> Result<SendSection> {
     let mut tiles: Vec<Tile> = Vec::with_capacity(dimensions);
     let mut rle = 0; // kind of a run-length encoding
 
-    for _ in 0..width * height {
+    for _ in 0..dimensions {
         if rle != 0 {
             rle -= 1;
             tiles.push(tiles[tiles.len() - 1].clone());
