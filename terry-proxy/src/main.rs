@@ -151,8 +151,15 @@ async fn start() -> Result<()> {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
                 config.server_parser.feed(&buffer[..n]);
                 while let Some(packet) = config.server_parser.next() {
-                    if config.dbg_out_tags[packet.tag() as usize] {
-                        dbg!(packet);
+                    match packet {
+                        Ok(packet) => {
+                            if config.dbg_out_tags[packet.tag() as usize] {
+                                dbg!(packet);
+                            }
+                        }
+                        Err(err) => {
+                            eprintln!("Server-to-Client got bad packet: {}", err);
+                        }
                     }
                 }
                 if let Some(fd) = &mut config.server_traffic {
@@ -172,9 +179,16 @@ async fn start() -> Result<()> {
             {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
                 config.client_parser.feed(&buffer[..n]);
-                while let Some(packet) = config.client_parser.next() {
-                    if config.dbg_in_tags[packet.tag() as usize] {
-                        dbg!(packet);
+                while let Some(packet) = config.server_parser.next() {
+                    match packet {
+                        Ok(packet) => {
+                            if config.dbg_out_tags[packet.tag() as usize] {
+                                dbg!(packet);
+                            }
+                        }
+                        Err(err) => {
+                            eprintln!("Client-to-Server got bad packet: {}", err);
+                        }
                     }
                 }
                 if let Some(fd) = &mut config.client_traffic {
