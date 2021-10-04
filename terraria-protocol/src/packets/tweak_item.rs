@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
+use crate::serde::{fixup_flags, serializable_bitflags, PacketBody, Result, SliceCursor};
 
 serializable_bitflags! {
     pub struct TweakFlags: u8 {
@@ -53,8 +53,26 @@ impl PacketBody for TweakItem {
     const TAG: u8 = 88;
 
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
+        let fixed_extra = fixup_flags!(TweakExtraFlags where {
+            self.width.is_some() => WIDTH,
+            self.height.is_some() => HEIGHT,
+            self.scale.is_some() => SCALE,
+            self.ammo.is_some() => AMMO,
+            self.use_ammo.is_some() => USE_AMMO,
+            self.not_ammo.is_some() => NOT_AMMO,
+        } in self.extra_flags);
+
         cursor.write(&self.item_index)?;
-        cursor.write(&self.flags)?;
+        cursor.write(&fixup_flags!(TweakFlags where {
+            self.packed_color_value.is_some() => COLOR,
+            self.damage.is_some() => DAMAGE,
+            self.knockback.is_some() => KNOCKBACK,
+            self.use_animation.is_some() => USE_ANIMATON,
+            self.use_time.is_some() => USE_TIME,
+            self.shoot.is_some() => SHOOT,
+            self.shootspeed.is_some() => SHOOT_SPEED,
+            !fixed_extra.is_empty() => NEXT_FLAGS,
+        } in self.flags))?;
         if let Some(packed_color_value) = self.packed_color_value {
             cursor.write(&packed_color_value)?;
         }
@@ -76,8 +94,8 @@ impl PacketBody for TweakItem {
         if let Some(shootspeed) = self.shootspeed {
             cursor.write(&shootspeed)?;
         }
-        if self.flags.contains(TweakFlags::NEXT_FLAGS) {
-            cursor.write(&self.extra_flags)?;
+        if !fixed_extra.is_empty() {
+            cursor.write(&fixed_extra)?;
         }
         if let Some(width) = self.width {
             cursor.write(&width)?;

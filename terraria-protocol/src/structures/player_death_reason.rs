@@ -1,6 +1,5 @@
 use crate::serde::{
-    serializable_bitflags, serializable_enum, Deserializable, Result, Serializable,
-    SliceCursor,
+    serializable_bitflags, serializable_enum, Deserializable, Result, Serializable, SliceCursor,
 };
 
 serializable_bitflags! {

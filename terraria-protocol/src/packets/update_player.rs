@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
+use crate::serde::{fixup_flags, serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 serializable_bitflags! {
@@ -66,8 +66,12 @@ impl PacketBody for UpdatePlayer {
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
         cursor.write(&self.player_id)?;
         cursor.write(&self.keys)?;
-        cursor.write(&self.pulley)?;
-        cursor.write(&self.action)?;
+        cursor.write(&fixup_flags!(PulleyMode where {
+            self.vel.is_some() => HAS_VEL,
+        } in self.pulley))?;
+        cursor.write(&fixup_flags!(PlayerAction where {
+            self.original_and_home_pos.is_some() => HAS_ORIG_AND_HOME_POS,
+        } in self.action))?;
         cursor.write(&self.sleep_info)?;
         cursor.write(&self.selected_item)?;
         cursor.write(&self.pos)?;

@@ -338,4 +338,20 @@ macro_rules! packet_struct {
     };
 }
 
-pub(crate) use {packet_struct, serializable_bitflags, serializable_enum, serializable_struct};
+macro_rules! fixup_flags {
+    (
+        $ty:ty where {
+            $($cond:expr => $flag:ident,)+
+        } in $original:expr
+    ) => {
+        ($original - ( $(<$ty>::$flag)|+) ) | ( $(if $cond {
+            <$ty>::$flag
+        } else {
+            <$ty>::empty()
+        })|+ )
+    };
+}
+
+pub(crate) use {
+    fixup_flags, packet_struct, serializable_bitflags, serializable_enum, serializable_struct,
+};

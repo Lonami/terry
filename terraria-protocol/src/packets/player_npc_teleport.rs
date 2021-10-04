@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
+use crate::serde::{fixup_flags, serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 serializable_bitflags! {
@@ -28,7 +28,9 @@ impl PacketBody for PlayerNpcTeleport {
     const TAG: u8 = 65;
 
     fn write_body(&self, cursor: &mut SliceCursor) -> Result<()> {
-        cursor.write(&self.mode)?;
+        cursor.write(&fixup_flags!(TeleportMode where {
+            self.extra.is_some() => HAS_EXTRA_INFO,
+        } in self.mode))?;
         cursor.write(&self.target_id)?;
         cursor.write(&self.pos)?;
         cursor.write(&self.style)?;

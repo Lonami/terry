@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, Error, PacketBody, Result, SliceCursor};
+use crate::serde::{fixup_flags, serializable_bitflags, Error, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 use std::convert::TryInto;
@@ -78,7 +78,11 @@ impl PacketBody for NpcUpdate {
         cursor.write(&self.pos)?;
         cursor.write(&self.vel)?;
         cursor.write(&self.target)?;
-        cursor.write(&self.flags)?;
+        cursor.write(&fixup_flags!(NpcFlag where {
+            self.player_count_scale.is_some() => SCALE_PLAYER_COUNT,
+            self.strength_multiplier.is_some() => MULTIPLY_STRENGTH,
+            self.life.is_some() => HAS_LIFE,
+        } in self.flags))?;
         for (i, _) in [NpcFlag::AI1, NpcFlag::AI2, NpcFlag::AI3, NpcFlag::AI4]
             .iter()
             .enumerate()
@@ -105,9 +109,13 @@ impl PacketBody for NpcUpdate {
                 cursor.write::<i32>(&life)?;
             }
         }
-        if let Some(release_owner) = self.release_owner {
-            cursor.write(&release_owner)?;
+
+        if self.npc_net_id >= 0 && NPC_CATCHABLE[self.npc_net_id as usize] != 0 {
+            if let Some(release_owner) = self.release_owner {
+                cursor.write(&release_owner)?;
+            }
         }
+
         Ok(())
     }
 

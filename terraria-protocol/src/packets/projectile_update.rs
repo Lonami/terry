@@ -1,4 +1,4 @@
-use crate::serde::{serializable_bitflags, PacketBody, Result, SliceCursor};
+use crate::serde::{fixup_flags, serializable_bitflags, PacketBody, Result, SliceCursor};
 use crate::structures::Vec2;
 
 serializable_bitflags! {
@@ -43,7 +43,12 @@ impl PacketBody for ProjectileUpdate {
         cursor.write(&self.vel)?;
         cursor.write(&self.owner)?;
         cursor.write(&self.ty)?;
-        cursor.write(&self.flags)?;
+        cursor.write(&fixup_flags!(ProjectileFlag where {
+            self.damage.is_some() => HAS_DAMAGE,
+            self.knockback.is_some() => HAS_KNOCKBACK,
+            self.original_damage.is_some() => HAS_ORIG_DAMAGE,
+            self.proj_uuid.is_some() => HAS_UUID,
+        } in self.flags))?;
         if self.flags.contains(ProjectileFlag::AI1) {
             cursor.write(&self.ai[0])?;
         }
