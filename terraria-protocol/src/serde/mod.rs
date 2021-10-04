@@ -15,8 +15,10 @@ pub enum Error {
     /// An invalid or unknown enumeration value was found within a valid packet.
     InvalidEnumValue {
         enumeration: &'static str,
-        value: u16,
+        value: u8,
     },
+    /// An invallid or unknown flag combination was found within a valid packet.
+    InvalidFlagValue { flags: &'static str, value: u64 },
     /// Malformed data which cannot be treated was found (such as decompression failure).
     MalformedPayload { details: String },
 }
@@ -30,6 +32,11 @@ impl fmt::Display for Error {
                 f,
                 "invalid or unknown value for enumeration {}: {}",
                 enumeration, value
+            ),
+            Self::InvalidFlagValue { flags, value } => write!(
+                f,
+                "invalid or unknown value for bitflags {}: {}",
+                flags, value
             ),
             Self::MalformedPayload { details } => write!(f, "malformed payload data: {}", details),
         }
@@ -276,7 +283,14 @@ macro_rules! serializable_bitflags {
 
         impl crate::serde::Deserializable for $ident {
             fn deserialize(cursor: &mut crate::serde::SliceCursor) -> crate::serde::Result<Self> {
-                cursor.read().map(Self::from_bits_truncate)
+                let value = cursor.read()?;
+                match Self::from_bits(value) {
+                    Some(flags) => Ok(flags),
+                    None => Err(crate::serde::Error::InvalidFlagValue {
+                        flags: std::any::type_name::<Self>(),
+                        value: value as _,
+                    })
+                }
             }
         }
     };

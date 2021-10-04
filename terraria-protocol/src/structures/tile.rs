@@ -67,7 +67,7 @@ impl Serializable for Tile {
 
 impl Deserializable for Tile {
     fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
-        let flags = TileFlags::from_bits_truncate(cursor.read()?);
+        let flags = cursor.read::<TileFlags>()?;
 
         let color = flags
             .contains(TileFlags::HAS_COLOR)

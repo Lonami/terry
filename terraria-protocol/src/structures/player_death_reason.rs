@@ -1,5 +1,6 @@
 use crate::serde::{
-    serializable_bitflags, serializable_enum, Deserializable, Result, Serializable, SliceCursor,
+    serializable_bitflags, serializable_enum, Deserializable, Result, Serializable,
+    SliceCursor,
 };
 
 serializable_bitflags! {
@@ -55,7 +56,7 @@ impl Serializable for PlayerDeathReason {
 
 impl Deserializable for PlayerDeathReason {
     fn deserialize(cursor: &mut SliceCursor) -> Result<Self> {
-        let reason = DeathReason::from_bits_truncate(cursor.read()?);
+        let reason = cursor.read::<DeathReason>()?;
 
         let killer_player_id = reason
             .contains(DeathReason::HAS_KILLER)
