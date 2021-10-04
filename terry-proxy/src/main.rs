@@ -182,7 +182,7 @@ async fn start() -> Result<()> {
             {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
                 config.client_parser.feed(&buffer[..n]);
-                while let Some(packet) = config.server_parser.next() {
+                while let Some(packet) = config.client_parser.next() {
                     match packet {
                         Ok(packet) => {
                             if config.dbg_out_tags[packet.tag() as usize] {
