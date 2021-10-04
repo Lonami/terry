@@ -141,8 +141,10 @@ async fn start() -> Result<()> {
     let (mut client_rd, mut client_wr) = client.into_split();
     let (mut server_rd, mut server_wr) = server.into_split();
 
+    println!("Launching input thread (UIT)...");
     let input_thread = thread::spawn(|| user_input());
 
+    println!("Launching Server-to-Client task (STC)...");
     let sv_to_cl = task::spawn(async move {
         loop {
             let mut buffer = vec![0; BUFFER_SIZE];
@@ -154,11 +156,11 @@ async fn start() -> Result<()> {
                     match packet {
                         Ok(packet) => {
                             if config.dbg_out_tags[packet.tag() as usize] {
-                                dbg!(packet);
+                                eprintln!("STC< {} {:#?}", packet.tag(), packet);
                             }
                         }
                         Err(err) => {
-                            eprintln!("Server-to-Client got bad packet: {}", err);
+                            eprintln!("STC! bad packet: {}", err);
                         }
                     }
                 }
@@ -172,6 +174,7 @@ async fn start() -> Result<()> {
         Result::Ok(())
     });
 
+    println!("Launching Client-to-Server task (CTS)...");
     let cl_to_sv = task::spawn(async move {
         loop {
             let mut buffer = vec![0; BUFFER_SIZE];
@@ -183,11 +186,11 @@ async fn start() -> Result<()> {
                     match packet {
                         Ok(packet) => {
                             if config.dbg_out_tags[packet.tag() as usize] {
-                                dbg!(packet);
+                                eprintln!("CTS> {} {:#?}", packet.tag(), packet);
                             }
                         }
                         Err(err) => {
-                            eprintln!("Client-to-Server got bad packet: {}", err);
+                            eprintln!("CTS! bad packet: {}", err);
                         }
                     }
                 }
