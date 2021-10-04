@@ -27,6 +27,13 @@ const TILE_FRAME_IMPORTANT: [u8; 624] = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
 ];
 
+fn is_important(ty: u16) -> bool {
+    match TILE_FRAME_IMPORTANT.get(ty as usize) {
+        Some(n) => *n != 0,
+        None => false,
+    }
+}
+
 serializable_bitflags! {
     pub struct TileFlags: u16 {
         const ACTIVE = 0x0001;
@@ -85,7 +92,7 @@ impl Deserializable for Tile {
             .transpose()?;
 
         let frame = ty
-            .map(|t| TILE_FRAME_IMPORTANT[t as usize] != 0)
+            .map(is_important)
             .unwrap_or(false)
             .then(|| Ok((cursor.read()?, cursor.read()?)))
             .transpose()?;
@@ -137,7 +144,7 @@ impl Tile {
             };
             ty = Some(ty_val);
 
-            frame = if TILE_FRAME_IMPORTANT[ty_val as usize] != 0 {
+            frame = if is_important(ty_val) {
                 Some((cursor.read()?, cursor.read()?))
             } else {
                 None

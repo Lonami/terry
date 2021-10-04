@@ -70,6 +70,13 @@ const NPC_CATCHABLE: [u8; 668] = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
 ];
 
+fn is_catchable(id: i16) -> bool {
+    match NPC_CATCHABLE.get(id as usize) {
+        Some(n) => *n != 0,
+        None => false,
+    }
+}
+
 impl PacketBody for NpcUpdate {
     const TAG: u8 = 23;
 
@@ -110,7 +117,7 @@ impl PacketBody for NpcUpdate {
             }
         }
 
-        if self.npc_net_id >= 0 && NPC_CATCHABLE[self.npc_net_id as usize] != 0 {
+        if self.npc_net_id >= 0 && is_catchable(self.npc_net_id) {
             if let Some(release_owner) = self.release_owner {
                 cursor.write(&release_owner)?;
             }
@@ -164,7 +171,7 @@ impl PacketBody for NpcUpdate {
             })
             .transpose()?;
 
-        let release_owner = (npc_net_id >= 0 && NPC_CATCHABLE[npc_net_id as usize] != 0)
+        let release_owner = (npc_net_id >= 0 && is_catchable(npc_net_id))
             .then(|| cursor.read())
             .transpose()?;
 
