@@ -2,6 +2,8 @@ use crate::serde::{Error, PacketBody, Result, SliceCursor};
 use crate::structures::{Chest, Sign, Tile, TileEntity};
 use inflate;
 
+const ABSURD_SIZE: usize = 1000 * 1000;
+
 /// Send section.
 ///
 /// Direction: Server -> Client.
@@ -23,7 +25,20 @@ fn read_decompressed_section(cursor: &mut SliceCursor) -> Result<SendSection> {
     let width = cursor.read()?;
     let height = cursor.read()?;
 
-    let mut tiles: Vec<Tile> = Vec::with_capacity((width * height) as usize);
+    if width < 0 || height < 0 {
+        return Err(Error::MalformedPayload {
+            details: format!("Invalid section dimensions: {}x{}", width, height),
+        });
+    }
+
+    let dimensions = (width as usize) * (height as usize);
+    if dimensions > ABSURD_SIZE {
+        return Err(Error::MalformedPayload {
+            details: format!("Section dimensions are far too large: {}x{}", width, height),
+        });
+    }
+
+    let mut tiles: Vec<Tile> = Vec::with_capacity(dimensions);
     let mut rle = 0; // kind of a run-length encoding
 
     for _ in 0..width * height {
