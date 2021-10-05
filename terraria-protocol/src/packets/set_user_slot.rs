@@ -7,6 +7,7 @@ packet_struct! {
     pub struct SetUserSlot {
         const TAG = 3;
 
-        pub player_id: u16,
+        pub player_id: u8,
+        pub server_flag: bool,
     }
 }
