@@ -13,7 +13,7 @@ serializable_bitflags! {
         const AI3 = 0x0010;
         const AI4 = 0x0020;
         const SPRITE_DIR = 0x0040;
-        const HAS_LIFE = 0x0080;
+        const NO_LIFE = 0x0080;
         const SCALE_PLAYER_COUNT = 0x0100;
         const SPAWNED_FROM_STATUE = 0x0200;
         const MULTIPLY_STRENGTH = 0x0400;
@@ -88,7 +88,7 @@ impl PacketBody for NpcUpdate {
         cursor.write(&fixup_flags!(NpcFlag where {
             self.player_count_scale.is_some() => SCALE_PLAYER_COUNT,
             self.strength_multiplier.is_some() => MULTIPLY_STRENGTH,
-            self.life.is_some() => HAS_LIFE,
+            self.life.is_none() => NO_LIFE,
         } in self.flags))?;
         for (i, _) in [NpcFlag::AI1, NpcFlag::AI2, NpcFlag::AI3, NpcFlag::AI4]
             .iter()
@@ -154,22 +154,21 @@ impl PacketBody for NpcUpdate {
             .then(|| cursor.read())
             .transpose()?;
 
-        let life = flags
-            .contains(NpcFlag::HAS_LIFE)
-            .then(|| {
-                Ok(match cursor.read::<u8>()? {
-                    1 => cursor.read::<i8>()? as i32,
-                    2 => cursor.read::<i16>()? as i32,
-                    4 => cursor.read::<i32>()? as i32,
-                    n => {
-                        return Err(Error::InvalidEnumValue {
-                            enumeration: std::any::type_name::<NpcUpdate>(),
-                            value: n as _,
-                        })
-                    }
-                })
+        let life = if flags.contains(NpcFlag::NO_LIFE) {
+            None
+        } else {
+            Some(match cursor.read::<u8>()? {
+                1 => cursor.read::<i8>()? as i32,
+                2 => cursor.read::<i16>()? as i32,
+                4 => cursor.read::<i32>()? as i32,
+                n => {
+                    return Err(Error::InvalidEnumValue {
+                        enumeration: std::any::type_name::<NpcUpdate>(),
+                        value: n as _,
+                    })
+                }
             })
-            .transpose()?;
+        };
 
         let release_owner = (npc_net_id >= 0 && is_catchable(npc_net_id))
             .then(|| cursor.read())
