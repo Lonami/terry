@@ -154,8 +154,8 @@ async fn start() -> Result<()> {
 
     println!("Launching Server-to-Client task (STC)...");
     let sv_to_cl = task::spawn(async move {
+        let mut buffer = vec![0; BUFFER_SIZE];
         loop {
-            let mut buffer = vec![0; BUFFER_SIZE];
             let n = server_rd.read(&mut buffer).await?;
             {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
@@ -189,8 +189,8 @@ async fn start() -> Result<()> {
 
     println!("Launching Client-to-Server task (CTS)...");
     let cl_to_sv = task::spawn(async move {
+        let mut buffer = vec![0; BUFFER_SIZE];
         loop {
-            let mut buffer = vec![0; BUFFER_SIZE];
             let n = client_rd.read(&mut buffer).await?;
             {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
