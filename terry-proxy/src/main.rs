@@ -13,6 +13,7 @@ struct Config {
     client_parser: terraria_protocol::Parser,
     server_traffic: Option<BufWriter<File>>,
     client_traffic: Option<BufWriter<File>>,
+    flush_traffic: [bool; 2],
     dbg_in_tags: [bool; 256],
     dbg_out_tags: [bool; 256],
 }
@@ -78,6 +79,7 @@ fn user_input() {
                 println!("* show <in|out|both> <all|TAG>: show the dbg repr of in, out or both messages matching tag");
                 println!("* hide <in|out|both> <all|TAG>: hide the dbg repr of in, out or both messages matching tag");
                 println!("* list: list all tags along with the name");
+                println!("* flush: flush network traffic writes to disk");
                 println!("* nosave: stop saving network traffic to disk");
             }
             "quit" => break,
@@ -100,6 +102,11 @@ fn user_input() {
             "list" => {
                 todo!()
             }
+            "flush" => {
+                let mut config = CONFIG.get().unwrap().lock().unwrap();
+                config.flush_traffic[0] = true;
+                config.flush_traffic[1] = true;
+            }
             "nosave" => {
                 let mut config = CONFIG.get().unwrap().lock().unwrap();
                 config.server_traffic.take();
@@ -120,6 +127,7 @@ async fn start() -> Result<()> {
             client_parser: terraria_protocol::Parser::new(),
             server_traffic: Some(BufWriter::new(File::create(SERVER_TRAFFIC)?)),
             client_traffic: Some(BufWriter::new(File::create(CLIENT_TRAFFIC)?)),
+            flush_traffic: [false; 2],
             dbg_in_tags: [true; 256],
             dbg_out_tags: [true; 256],
         }))
@@ -164,8 +172,13 @@ async fn start() -> Result<()> {
                         }
                     }
                 }
+                let flush = config.flush_traffic[0];
                 if let Some(fd) = &mut config.server_traffic {
-                    fd.write(&buffer[..n])?;
+                    fd.write_all(&buffer[..n])?;
+                    if flush {
+                        fd.flush()?;
+                        config.flush_traffic[0] = false;
+                    }
                 }
             }
             client_wr.write_all(&buffer[..n]).await?;
@@ -194,8 +207,13 @@ async fn start() -> Result<()> {
                         }
                     }
                 }
+                let flush = config.flush_traffic[1];
                 if let Some(fd) = &mut config.client_traffic {
-                    fd.write(&buffer[..n])?;
+                    fd.write_all(&buffer[..n])?;
+                    if flush {
+                        fd.flush()?;
+                        config.flush_traffic[1] = false;
+                    }
                 }
             }
             server_wr.write_all(&buffer[..n]).await?;
