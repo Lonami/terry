@@ -1,13 +1,14 @@
 use crate::serde::{Error, PacketBody, Result, SliceCursor};
 use crate::structures::{Chest, Sign, Tile, TileEntity};
 use inflate;
+use std::fmt;
 
 const ABSURD_SIZE: usize = 1000 * 1000;
 
 /// Send section.
 ///
 /// Direction: Server -> Client.
-#[derive(Debug, PartialEq, Eq, Default, Clone)]
+#[derive(PartialEq, Eq, Default, Clone)]
 pub struct SendSection {
     pub x_start: i32,
     pub y_start: i32,
@@ -94,5 +95,20 @@ impl PacketBody for SendSection {
         } else {
             read_decompressed_section(cursor)
         }
+    }
+}
+
+impl fmt::Debug for SendSection {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SendSection")
+            .field("x_start", &self.x_start)
+            .field("y_start", &self.y_start)
+            .field("width", &self.width)
+            .field("height", &self.height)
+            // no tiles, cmd would be printing them for a long while
+            .field("chests", &self.chests)
+            .field("signs", &self.signs)
+            .field("tile_entities", &self.tile_entities)
+            .finish_non_exhaustive()
     }
 }
