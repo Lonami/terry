@@ -22,19 +22,20 @@ mod tests {
 
     #[test]
     fn check_remote_deserialization() {
-        let mut data = include_bytes!("../test-data/local.bin").to_vec();
+        let mut data = include_bytes!("../../server-traffic.bin").to_vec();
 
         let mut index = 0;
         while index < data.len() {
             // TODO don't reimplement this here
             let packet_len = u16::from_le_bytes([data[index], data[index + 1]]) as usize;
             eprintln!(
-                "checking tag {}: {:02x?}",
+                "checking tag {}: {}",
                 data[index + 2],
-                &data[index + 3..index + packet_len]
+                utils::HexString(&data[index + 3..index + packet_len])
             );
             let mut cursor = serde::SliceCursor::new(&mut data[index + 2..index + packet_len]);
-            cursor.read::<Packet>();
+
+            cursor.read::<Packet>().unwrap();
             index += packet_len;
         }
     }
