@@ -26,8 +26,7 @@ serializable_bitflags! {
         const CRIMSON = 0x0000_0000_0000_2000;
         const PUMPKIN_MOON = 0x0000_0000_0000_4000;
         const SNOW_MOON = 0x0000_0000_0000_8000;
-        const EXPERT_MODE = 0x0000_0000_0001_0000;
-        const FASTFORWARDTIME = 0x0000_0000_0002_0000;
+        const FAST_FORWARD_TIME = 0x0000_0000_0002_0000;
         const SLIME_RAIN = 0x0000_0000_0004_0000;
         const DOWNED_SLIME_KING = 0x0000_0000_0008_0000;
         const DOWNED_QUEEN_BEE = 0x0000_0000_0010_0000;
@@ -66,6 +65,7 @@ serializable_bitflags! {
         const DOWNED_EMPRESS_OF_LIGHT = 0x0020_0000_0000_0000;
         const DOWNED_QUEEN_SLIME = 0x0040_0000_0000_0000;
         const GET_GOOD_WORLD = 0x0080_0000_0000_0000;
+        const TENTH_ANNIVERSARY_WORLD = 0x0100_0000_0000_0000;
     }
 }
 
