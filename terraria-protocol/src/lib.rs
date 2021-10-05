@@ -34,8 +34,15 @@ mod tests {
                 utils::HexString(&data[index + 3..index + packet_len])
             );
             let mut cursor = serde::SliceCursor::new(&mut data[index + 2..index + packet_len]);
-
             cursor.read::<Packet>().unwrap();
+            let (slice, pos) = cursor.finish();
+            assert_eq!(
+                pos,
+                slice.len(),
+                "incomplete read of packet: {}",
+                utils::HexString(slice)
+            );
+
             index += packet_len;
         }
     }
