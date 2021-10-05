@@ -78,6 +78,7 @@ define_packet!(
     /*  18 */ Time,
     /*  19 */ DoorToggle,
     /*  20 */ SendTileSquare,
+    /*  21 */ UpdateItemDrop,
     /*  22 */ UpdateItemOwner,
     /*  23 */ NpcUpdate,
     /*  24 */ StrikeNpc,
