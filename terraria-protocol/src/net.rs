@@ -15,8 +15,6 @@ const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 const READ_MESSAGE_BUFFER: usize = 16;
 
-const DEFAULT_TIMEOUT: Duration = Duration::from_secs(5);
-
 pub struct Terraria {
     stream: TcpStream,
     out_buffer: Vec<u8>,
@@ -51,14 +49,23 @@ fn reader_worker(
 }
 
 impl Terraria {
-    pub fn connect<A: ToSocketAddrs>(addr: A, timeout: Option<Duration>) -> io::Result<Self> {        
+    pub fn connect_timeout<A: ToSocketAddrs>(addr: A, timeout: Duration) -> io::Result<Self> {
         // convert addr to SocketAddr
         let socket_addr = addr.to_socket_addrs()?.next().ok_or_else(|| {
             io::Error::new(io::ErrorKind::InvalidInput, "Invalid address")
         })?;
 
+        let stream = TcpStream::connect_timeout(&socket_addr, timeout)?;
+        return Self::connect_shared(stream);
+    }
+
+    pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<Self> {        
         // connection
-        let stream = TcpStream::connect_timeout(&socket_addr, timeout.unwrap_or(DEFAULT_TIMEOUT))?;
+        let stream = TcpStream::connect(addr)?;
+        return Self::connect_shared(stream);
+    }
+
+    fn connect_shared(stream: TcpStream) -> io::Result<Self> {
         let reader = BufReader::new(stream.try_clone()?);
         let (packet_tx, packet_rx) = mpsc::sync_channel(READ_MESSAGE_BUFFER);
         let _reader_thread = thread::Builder::new()
