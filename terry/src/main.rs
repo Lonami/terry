@@ -10,7 +10,7 @@ const SERVER_ADDR: &str = "localhost:7777";
 
 fn main() -> io::Result<()> {
     println!("Connecting to the server...");
-    let mut terraria = Terraria::connect(SERVER_ADDR)?;
+    let mut terraria = Terraria::connect(SERVER_ADDR, None)?;
     println!("Connected to the server!");
 
     let info = loop {
