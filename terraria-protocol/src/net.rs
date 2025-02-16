@@ -6,6 +6,7 @@ use std::io::{self, BufReader, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::mpsc;
 use std::thread;
+use std::time::Duration;
 
 const PROTOCOL_VERSION: &str = "Terraria238";
 
@@ -13,6 +14,8 @@ const PROTOCOL_VERSION: &str = "Terraria238";
 const PLAYER_UUID: &str = "01032c81-623f-4435-85e5-e0ec816b09ca"; // random
 
 const READ_MESSAGE_BUFFER: usize = 16;
+
+const DEFAULT_TIMEOUT: Duration = Duration::from_secs(5);
 
 pub struct Terraria {
     stream: TcpStream,
@@ -48,9 +51,14 @@ fn reader_worker(
 }
 
 impl Terraria {
-    pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<Self> {
+    pub fn connect<A: ToSocketAddrs>(addr: A, timeout: Option<Duration>) -> io::Result<Self> {        
+        // convert addr to SocketAddr
+        let socket_addr = addr.to_socket_addrs()?.next().ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "Invalid address")
+        })?;
+
         // connection
-        let stream = TcpStream::connect(addr)?;
+        let stream = TcpStream::connect_timeout(&socket_addr, timeout.unwrap_or(DEFAULT_TIMEOUT))?;
         let reader = BufReader::new(stream.try_clone()?);
         let (packet_tx, packet_rx) = mpsc::sync_channel(READ_MESSAGE_BUFFER);
         let _reader_thread = thread::Builder::new()
