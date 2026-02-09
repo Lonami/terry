@@ -1,3 +1,7 @@
+Moved to https://codeberg.org/Lonami/terry. The GitHub repository may be deleted in the future.
+
+---
+
 # terry
 
 A [Rust] implementation of [Terraria]'s multiplayer network protocol.
